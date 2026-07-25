@@ -1,19 +1,9 @@
 import "./App.css";
-import Hero from "./components/Hero";
-import HomeContent from "./components/HomeContent";
+import { RouterProvider } from "react-router-dom";
+import router from "@/router/router";
 
 function App() {
-  return (
-    <div className="app">
-      <div className="page">
-
-        <Hero />
-
-        <HomeContent />
-
-      </div>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

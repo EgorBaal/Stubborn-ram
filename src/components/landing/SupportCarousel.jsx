@@ -6,7 +6,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 import "./SupportCarousel.css";
-import supportSlides from "../data/supportSlides";
+import supportSlides from "../../data/supportSlides";
 import ImageViewer from "./ImageViewer";
 
 function SupportCarousel() {
@@ -41,7 +41,6 @@ function SupportCarousel() {
         {supportSlides.map((slide, index) => (
           <SwiperSlide key={index}>
             <div className="supportCard">
-
               {slide.type === "image" && slide.src ? (
                 <div className="supportImage">
                   <img
@@ -50,7 +49,7 @@ function SupportCarousel() {
                     className="supportMedia"
                     onClick={() =>
                       setCurrentIndex(
-                        images.findIndex((image) => image.src === slide.src)
+                        images.findIndex((image) => image.src === slide.src),
                       )
                     }
                     style={{ cursor: "zoom-in" }}
@@ -69,20 +68,15 @@ function SupportCarousel() {
                 </div>
               ) : (
                 <div className="supportImage">
-                  <div className="supportPlaceholder">
-                    Раздел в разработке
-                  </div>
+                  <div className="supportPlaceholder">Раздел в разработке</div>
                 </div>
               )}
 
               <div className="supportContent">
                 <h3 className="supportTitle">{slide.title}</h3>
 
-                <p className="supportDescription">
-                  {slide.description}
-                </p>
+                <p className="supportDescription">{slide.description}</p>
               </div>
-
             </div>
           </SwiperSlide>
         ))}

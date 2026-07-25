@@ -1,14 +1,14 @@
 import { useState } from "react";
 import ReactCompareImage from "react-compare-image";
 
-import client01Before from "../assets/before-after/Client-01-Before.jpg";
-import client01After from "../assets/before-after/Client-01-After.jpg";
+import client01Before from "../../assets/before-after/Client-01-Before.jpg";
+import client01After from "../../assets/before-after/Client-01-After.jpg";
 
-import client02Before from "../assets/before-after/Client-02-Before.jpg";
-import client02After from "../assets/before-after/Client-02-After.jpg";
+import client02Before from "../../assets/before-after/Client-02-Before.jpg";
+import client02After from "../../assets/before-after/Client-02-After.jpg";
 
-import client03Before from "../assets/before-after/Client-03-Before.jpg";
-import client03After from "../assets/before-after/Client-03-After.jpg";
+import client03Before from "../../assets/before-after/Client-03-Before.jpg";
+import client03After from "../../assets/before-after/Client-03-After.jpg";
 
 function BeforeAfter() {
   const clients = [

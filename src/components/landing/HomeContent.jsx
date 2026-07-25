@@ -1,4 +1,4 @@
-import aboutImage from "../assets/obo-mne.png";
+import aboutImage from "../../assets/obo-mne.png";
 import Reveal from "./Reveal";
 import SupportCarousel from "./SupportCarousel";
 import FAQ from "./FAQ";

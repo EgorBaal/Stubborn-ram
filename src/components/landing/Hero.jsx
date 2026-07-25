@@ -1,4 +1,4 @@
-import logo from "../assets/obshee-logo.png";
+import logo from "../../assets/obshee-logo.png";
 
 function Hero() {
   return (

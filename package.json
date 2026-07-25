@@ -17,6 +17,7 @@
     "react-compare-image": "^3.5.17",
     "react-dom": "^19.2.7",
     "react-icons": "^5.7.0",
+    "react-router-dom": "^7.18.1",
     "swiper": "^14.0.5",
     "yet-another-react-lightbox": "^3.32.1"
   },
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
     "oxlint": "^1.71.0",
+    "path": "^0.12.7",
     "vite": "^8.1.1"
   }
 }

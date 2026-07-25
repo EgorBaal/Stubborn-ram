@@ -1,0 +1,549 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+.questionnaire {
+  min-height: 100dvh;
+  background: #080808;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px 20px;
+}
+
+.questionnaire-card {
+  width: 100%;
+  max-width: 720px;
+
+  background: #121212;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 24px;
+
+  padding: 50px;
+
+  text-align: center;
+
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+}
+
+.questionnaire-card h1 {
+  color: white;
+
+  font-size: 40px;
+
+  margin-bottom: 30px;
+}
+
+.questionnaire-card p {
+  color: #d0d0d0;
+
+  line-height: 1.7;
+
+  font-size: 18px;
+
+  margin-bottom: 20px;
+}
+
+.questionnaire-time {
+  margin-top: 40px;
+
+  margin-bottom: 40px;
+
+  color: white;
+
+  font-size: 18px;
+}
+
+.questionnaire-button {
+  width: 100%;
+
+  max-width: 280px;
+
+  height: 54px;
+
+  margin: 0 auto;
+
+  background: #ff6200;
+
+  color: #fff;
+
+  border: none;
+
+  border-radius: 14px;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  transition: 0.25s;
+}
+
+.questionnaire-button:hover {
+  transform: translateY(-2px);
+
+  background: #ff7a26;
+}
+
+.questionnaire-input,
+.questionnaire-textarea {
+  width: 100%;
+
+  margin-top: 30px;
+
+  padding: 18px;
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: #1b1b1b;
+
+  color: white;
+
+  font-size: 18px;
+
+  outline: none;
+
+  transition: 0.2s;
+}
+
+.questionnaire-input:focus,
+.questionnaire-textarea:focus {
+  border-color: #ff6200;
+}
+
+.questionnaire-textarea {
+  min-height: 140px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.questionnaire-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.questionnaire-radio-button {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #1b1b1b;
+  color: white;
+  cursor: pointer;
+  font-size: 17px;
+  transition: 0.2s;
+  font-family: inherit;
+}
+
+.questionnaire-radio-button:hover {
+  border-color: #ff6200;
+}
+
+.questionnaire-radio-button.active {
+  border-color: #ff6200;
+
+  background: rgba(255, 98, 0, 0.18);
+
+  color: #fff;
+}
+
+.questionnaire-progress {
+  margin-bottom: 34px;
+}
+
+.questionnaire-progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 10px;
+}
+
+.questionnaire-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.questionnaire-progress-fill {
+  height: 100%;
+  background: #ff6200;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.questionnaire-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.questionnaire-back-button {
+  width: 100%;
+
+  height: clamp(52px, 7vh, 58px);
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  font-size: clamp(16px, 4vw, 18px);
+
+  transition: 0.2s;
+}
+
+.questionnaire-back-button:hover:not(:disabled) {
+  border-color: #ff6200;
+}
+
+.questionnaire-back-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.questionnaire-error {
+  margin-top: 12px;
+  color: #ff5b5b;
+  font-size: 14px;
+  text-align: left;
+}
+
+.questionnaire-exit-button {
+  background: transparent;
+  border: none;
+  color: #b5b5b5;
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+  transition: color 0.2s ease;
+}
+
+.questionnaire-exit-button:hover {
+  color: #ff6200;
+}
+
+/* ===========================================
+   MOBILE APP LAYOUT
+=========================================== */
+
+@media (max-width: 768px) {
+  .questionnaire {
+    height: 100dvh;
+    background: #121212;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    justify-content: center;
+    align-items: stretch;
+  }
+
+  .questionnaire-card {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    width: 100%;
+    max-width: none;
+
+    height: 100dvh;
+
+    background: #121212;
+
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    padding: clamp(16px, 5vw, 24px) clamp(16px, 5vw, 24px)
+      clamp(24px, 6vw, 32px);
+  }
+
+  .questionnaire-top {
+    flex-shrink: 0;
+  }
+
+  .questionnaire-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .questionnaire-intro-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .questionnaire-intro-actions {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+
+  /* ---------- Верх ---------- */
+
+  .questionnaire-exit-button {
+    margin: 0;
+
+    padding: 0;
+
+    font-size: 15px;
+
+    color: #c9c9c9;
+  }
+
+  .questionnaire-progress {
+    margin-top: 30px;
+    margin-bottom: 42px;
+  }
+
+  .questionnaire-progress-text {
+    font-size: 15px;
+
+    margin-bottom: 10px;
+
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .questionnaire-progress-bar {
+    height: 7px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .questionnaire-progress-fill {
+    border-radius: inherit;
+  }
+
+  /* ---------- Заголовок ---------- */
+
+  .questionnaire-card h1 {
+    margin: 0 0 clamp(28px, 5vh, 40px);
+
+    font-size: clamp(2rem, 6vw, 2.5rem);
+
+    line-height: 1.15;
+
+    text-align: center;
+
+    font-weight: 700;
+
+    letter-spacing: -0.03em;
+
+    text-wrap: balance;
+
+    overflow-wrap: break-word;
+
+    hyphens: auto;
+  }
+
+  /* ---------- Поля ---------- */
+
+  .questionnaire-input,
+  .questionnaire-textarea {
+    width: 100%;
+
+    margin-top: 32px;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: #1a1a1a;
+
+    color: white;
+
+    font-size: 18px;
+
+    transition: 0.2s;
+  }
+
+  .questionnaire-input {
+    height: clamp(54px, 7vw, 60px);
+
+    padding: 0 clamp(16px, 4vw, 20px);
+
+    font-size: clamp(16px, 4vw, 18px);
+  }
+
+  .questionnaire-textarea {
+    min-height: clamp(140px, 32vw, 180px);
+
+    max-height: 320px;
+
+    padding: clamp(16px, 4vw, 20px);
+
+    font-size: clamp(16px, 4vw, 18px);
+
+    line-height: 1.5;
+
+    resize: none;
+
+    overflow-y: auto;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: break-word;
+
+    word-break: normal;
+  }
+
+  .questionnaire-input::placeholder,
+  .questionnaire-textarea::placeholder {
+    color: #7b7b7b;
+  }
+
+  .questionnaire-input:focus,
+  .questionnaire-textarea:focus {
+    border-color: #ff6200;
+  }
+
+  /* ---------- Radio ---------- */
+
+  .questionnaire-radio-group {
+    margin-top: 28px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+  .questionnaire-radio-button {
+    min-height: 60px;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    background: #1a1a1a;
+
+    color: white;
+
+    font-size: 17px;
+
+    transition: 0.2s;
+  }
+
+  .questionnaire-radio-button:hover {
+    border-color: #ff6200;
+  }
+
+  .questionnaire-radio-button.active {
+    border-color: #ff6200;
+
+    background: rgba(255, 98, 0, 0.15);
+  }
+
+  /* ---------- Ошибка ---------- */
+
+  .questionnaire-error {
+    margin-top: 14px;
+
+    font-size: 14px;
+
+    color: #ff6565;
+  }
+
+  /* ---------- Низ ---------- */
+
+  .questionnaire-actions {
+    margin-top: auto;
+
+    padding-top: clamp(28px, 6vh, 42px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+  .questionnaire-back-button {
+    width: 100%;
+
+    min-height: 56px;
+
+    height: clamp(56px, 7vh, 62px);
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    background: transparent;
+
+    color: rgba(255, 255, 255, 0.75);
+
+    font-size: clamp(16px, 4vw, 18px);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    transition: 0.2s;
+  }
+
+  .questionnaire-back-button:disabled {
+    opacity: 0.35;
+  }
+
+  .questionnaire-button {
+    width: 100%;
+
+    max-width: 100%;
+
+    min-height: clamp(54px, 7vh, 60px);
+
+    border-radius: clamp(14px, 3vw, 16px);
+
+    padding: 0 clamp(16px, 4vw, 24px);
+
+    font-size: clamp(16px, 4vw, 18px);
+
+    font-weight: 700;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+  .questionnaire-button:active {
+    transform: scale(0.98);
+  }
+
+  .questionnaire-button:focus {
+    outline: none;
+  }
+
+  .questionnaire-button:focus-visible {
+    outline: none;
+  }
+}

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Pricing() {
   const [openCard, setOpenCard] = useState(null);
+  const navigate = useNavigate();
 
   const plans = [
     {
@@ -88,7 +90,15 @@ export default function Pricing() {
 
                   <button
                     className="pricingButton"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      if (index === 0) {
+                        navigate("/questionnaire/program");
+                      } else {
+                        navigate("/questionnaire/coaching");
+                      }
+                    }}
                   >
                     Оставить заявку
                   </button>
