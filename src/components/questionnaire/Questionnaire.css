@@ -264,7 +264,7 @@
     width: 100%;
     max-width: none;
 
-    height: 100dvh;
+    height: 100%;
 
     background: #121212;
 
@@ -284,6 +284,13 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    -webkit-overflow-scrolling: touch;
   }
 
   .questionnaire-intro-content {
@@ -469,12 +476,11 @@
   /* ---------- Низ ---------- */
 
   .questionnaire-actions {
-    margin-top: auto;
+    flex-shrink: 0;
 
     padding-top: clamp(28px, 6vh, 42px);
 
     display: flex;
-
     flex-direction: column;
 
     gap: 14px;
@@ -546,4 +552,85 @@
   .questionnaire-button:focus-visible {
     outline: none;
   }
+}
+
+.questionnaire-button-secondary {
+  margin-top: 12px;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.25s ease;
+}
+
+.questionnaire-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.questionnaire-contact-info {
+  color: #bdbdbd;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.questionnaire-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.contact-input {
+  display: flex;
+  align-items: center;
+
+  background: #1d1d1d;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  transition: 0.25s;
+}
+
+.contact-input:focus-within {
+  border-color: #ff6b00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.12);
+}
+
+.contact-icon {
+  width: 62px;
+  min-width: 62px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #ff6b00;
+
+  font-size: 19px;
+}
+
+.contact-input .questionnaire-input {
+  flex: 1;
+
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  padding: 18px 18px 18px 0;
+}
+
+.contact-input .questionnaire-input:focus {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.questionnaire-contact-note {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #9c9c9c;
+  line-height: 1.5;
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import QuestionnaireIntro from "./QuestionnaireIntro";
@@ -13,15 +13,52 @@ export default function Questionnaire() {
   const [answers, setAnswers] = useState({});
   const [error, setError] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasSavedQuestionnaire, setHasSavedQuestionnaire] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const saved = localStorage.getItem("sr-questionnaire");
+
+    if (saved) {
+      setHasSavedQuestionnaire(true);
+
+      try {
+        const data = JSON.parse(saved);
+
+        setStarted(false);
+        setCurrentIndex(data.currentIndex ?? 0);
+        setAnswers(data.answers ?? {});
+      } catch (e) {
+        console.error("Ошибка восстановления анкеты:", e);
+        localStorage.removeItem("sr-questionnaire");
+      }
+    }
+
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    localStorage.setItem(
+      "sr-questionnaire",
+      JSON.stringify({
+        started,
+        currentIndex,
+        answers,
+      }),
+    );
+  }, [started, currentIndex, answers, isLoaded]);
 
   const currentQuestion = questions[currentIndex];
 
   const handleAnswerChange = (value) => {
     setAnswers((prev) => ({
       ...prev,
-      [currentQuestion.id]: value,
+      [currentQuestion.id]:
+        typeof value === "function" ? value(prev[currentQuestion.id]) : value,
     }));
 
     if (error) {
@@ -30,7 +67,21 @@ export default function Questionnaire() {
   };
 
   if (!started) {
-    return <QuestionnaireIntro onStart={() => setStarted(true)} />;
+    return (
+      <QuestionnaireIntro
+        hasSavedQuestionnaire={hasSavedQuestionnaire}
+        onStart={() => {
+          localStorage.removeItem("sr-questionnaire");
+          setHasSavedQuestionnaire(false);
+          setAnswers({});
+          setCurrentIndex(0);
+          setStarted(true);
+        }}
+        onContinue={() => {
+          setStarted(true);
+        }}
+      />
+    );
   }
 
   return (
@@ -39,7 +90,21 @@ export default function Questionnaire() {
         question={currentQuestion}
         currentIndex={currentIndex}
         totalQuestions={questions.length}
-        value={answers[currentQuestion.id] || ""}
+        value={
+          answers[currentQuestion.id] ??
+          (currentQuestion.type === "checkbox"
+            ? { selected: [], details: "" }
+            : currentQuestion.type === "radioWithDetails"
+              ? { selected: "", details: "" }
+              : currentQuestion.type === "contacts"
+                ? {
+                    telegram: "",
+                    vk: "",
+                    instagram: "",
+                    phone: "",
+                  }
+                : "")
+        }
         error={error}
         onChange={handleAnswerChange}
         onExit={() => setShowExitModal(true)}
@@ -51,12 +116,66 @@ export default function Questionnaire() {
         onNext={() => {
           const value = answers[currentQuestion.id];
 
-          if (
-            currentQuestion.required &&
-            (!value || String(value).trim() === "")
-          ) {
-            setError("Пожалуйста, заполните это поле.");
-            return;
+          if (currentQuestion.required) {
+            if (currentQuestion.type === "checkbox") {
+              const hasSelected = value?.selected?.length > 0;
+              const hasDetails = value?.details?.trim() !== "";
+
+              if (!hasSelected && !hasDetails) {
+                setError(
+                  "Выберите хотя бы один вариант или опишите подробнее.",
+                );
+                return;
+              }
+            } else if (currentQuestion.type === "radioWithDetails") {
+              const hasSelected = value?.selected?.trim() !== "";
+              const hasDetails = value?.details?.trim() !== "";
+
+              if (!hasSelected && !hasDetails) {
+                setError(
+                  "Выберите вариант ответа или расскажите немного подробнее.",
+                );
+                return;
+              }
+            } else if (currentQuestion.type === "contacts") {
+              const phone = value?.phone ?? "";
+
+              const hasMessenger =
+                (value?.telegram?.trim() ?? "") !== "" ||
+                (value?.vk?.trim() ?? "") !== "" ||
+                (value?.instagram?.trim() ?? "") !== "";
+
+              // Маска считается заполненной только если не осталось символов "_"
+              const digits = phone.replace(/\D/g, "");
+
+              if (digits.length !== 11) {
+                setError("Введите корректный номер телефона.");
+                return;
+              }
+
+              if (!hasMessenger) {
+                setError(
+                  "Укажите хотя бы один способ связи: Telegram, ВКонтакте или Instagram.",
+                );
+                return;
+              }
+            } else {
+              const text = String(value || "").trim();
+
+              if (text === "") {
+                setError("Пожалуйста, заполните это поле.");
+                return;
+              }
+
+              if (currentQuestion.id === 1) {
+                const words = text.split(/\s+/);
+
+                if (words.length < 2) {
+                  setError("Пожалуйста, укажите фамилию и имя.");
+                  return;
+                }
+              }
+            }
           }
 
           setError("");
@@ -64,6 +183,9 @@ export default function Questionnaire() {
           if (currentIndex < questions.length - 1) {
             setCurrentIndex(currentIndex + 1);
           } else {
+            localStorage.removeItem("sr-questionnaire");
+            setHasSavedQuestionnaire(false);
+
             console.log(answers);
           }
         }}
@@ -72,7 +194,7 @@ export default function Questionnaire() {
       <ConfirmModal
         open={showExitModal}
         title="Выйти из анкеты?"
-        message="Все заполненные ответы будут потеряны."
+        message="Ответы сохраняются автоматически. Вы сможете продолжить заполнение позже."
         confirmText="Выйти"
         cancelText="Остаться"
         onCancel={() => setShowExitModal(false)}

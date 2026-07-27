@@ -1,6 +1,10 @@
 import "./Questionnaire.css";
 
-export default function QuestionnaireIntro({ onStart }) {
+export default function QuestionnaireIntro({
+  onStart,
+  onContinue,
+  hasSavedQuestionnaire,
+}) {
   return (
     <div className="questionnaire">
       <div className="questionnaire-card">
@@ -21,9 +25,24 @@ export default function QuestionnaireIntro({ onStart }) {
         </div>
 
         <div className="questionnaire-intro-actions">
-          <button className="questionnaire-button" onClick={onStart}>
-            Начать
-          </button>
+          {hasSavedQuestionnaire ? (
+            <>
+              <button className="questionnaire-button" onClick={onContinue}>
+                Продолжить заполнение
+              </button>
+
+              <button
+                className="questionnaire-button questionnaire-button-secondary"
+                onClick={onStart}
+              >
+                Начать заново
+              </button>
+            </>
+          ) : (
+            <button className="questionnaire-button" onClick={onStart}>
+              Начать
+            </button>
+          )}
         </div>
       </div>
     </div>
