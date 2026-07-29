@@ -1,4 +1,5 @@
 import "./Questionnaire.css";
+import "../../styles/page-transition.css";
 
 export default function QuestionnaireIntro({
   onStart,
@@ -6,7 +7,7 @@ export default function QuestionnaireIntro({
   hasSavedQuestionnaire,
 }) {
   return (
-    <div className="questionnaire">
+    <div className="questionnaire page-transition">
       <div className="questionnaire-card">
         <div className="questionnaire-intro-content">
           <h1>Онлайн-сопровождение</h1>

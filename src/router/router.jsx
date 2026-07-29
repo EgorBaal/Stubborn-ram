@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import LandingLayout from "@/layouts/LandingLayout";
+import ThankYou from "@/pages/questionnaire/ThankYou";
 import ProgramQuestionnaire from "@/pages/questionnaire/ProgramQuestionnaire";
 import CoachingQuestionnaire from "@/pages/questionnaire/CoachingQuestionnaire";
 
@@ -19,6 +20,11 @@ const router = createBrowserRouter(
     {
       path: "/questionnaire/coaching",
       element: <CoachingQuestionnaire />,
+    },
+
+    {
+      path: "/questionnaire/thank-you",
+      element: <ThankYou />,
     },
   ],
   {

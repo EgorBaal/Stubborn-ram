@@ -1,0 +1,156 @@
+.thank-you {
+  min-height: 100dvh;
+
+  background: #080808;
+
+  padding: 20px 20px 4px;
+}
+
+.thank-you__container {
+  width: 100%;
+  max-width: 480px;
+
+  height: calc(100dvh - 24px);
+
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.thank-you__icon {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  color: #fff;
+
+  font-size: 42px;
+  font-weight: 700;
+
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+}
+
+.thank-you__title {
+  margin: 0 0 8px;
+
+  color: #fff;
+
+  font-size: 34px;
+  font-weight: 700;
+
+  line-height: 1.15;
+
+  text-align: center;
+}
+
+.thank-you__subtitle {
+  margin: 10px 0 18px;
+
+  color: #ff6200;
+
+  font-size: 22px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+.thank-you__section {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 14px 0;
+
+  text-align: left;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.thank-you__number {
+  width: 36px;
+
+  flex-shrink: 0;
+
+  color: #ff6200;
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.thank-you__section h2 {
+  margin: 0 0 5px;
+
+  color: #fff;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  line-height: 1.25;
+}
+
+.thank-you__section p {
+  margin: 0;
+
+  color: #bdbdbd;
+
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.thank-you__important {
+  margin-top: 30px;
+  margin-bottom: 6px;
+
+  color: #b8b8b8;
+
+  text-align: center;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.thank-you__important strong {
+  color: #ff6200;
+}
+
+.thank-you__button {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+
+  margin-top: auto;
+
+  padding: 17px 20px;
+
+  border-radius: 16px;
+
+  background: #ff6200;
+
+  color: white;
+
+  text-decoration: none;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  transition: 0.2s;
+}
+
+.thank-you__button:hover {
+  background: #ff7d2a;
+  transform: translateY(-2px);
+}

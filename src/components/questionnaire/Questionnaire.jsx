@@ -15,6 +15,7 @@ export default function Questionnaire() {
   const [showExitModal, setShowExitModal] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasSavedQuestionnaire, setHasSavedQuestionnaire] = useState(false);
+  const [animateFirstQuestion, setAnimateFirstQuestion] = useState(true);
 
   const navigate = useNavigate();
 
@@ -76,9 +77,11 @@ export default function Questionnaire() {
           setAnswers({});
           setCurrentIndex(0);
           setStarted(true);
+          setAnimateFirstQuestion(true);
         }}
         onContinue={() => {
           setStarted(true);
+          setAnimateFirstQuestion(true);
         }}
       />
     );
@@ -87,6 +90,7 @@ export default function Questionnaire() {
   return (
     <>
       <QuestionCard
+        animate={animateFirstQuestion}
         question={currentQuestion}
         currentIndex={currentIndex}
         totalQuestions={questions.length}
@@ -102,6 +106,8 @@ export default function Questionnaire() {
                     vk: "",
                     instagram: "",
                     phone: "",
+                    foreignPhone: "",
+                    isForeign: false,
                   }
                 : "")
         }
@@ -118,8 +124,8 @@ export default function Questionnaire() {
 
           if (currentQuestion.required) {
             if (currentQuestion.type === "checkbox") {
-              const hasSelected = value?.selected?.length > 0;
-              const hasDetails = value?.details?.trim() !== "";
+              const hasSelected = (value?.selected?.length ?? 0) > 0;
+              const hasDetails = (value?.details ?? "").trim() !== "";
 
               if (!hasSelected && !hasDetails) {
                 setError(
@@ -128,9 +134,8 @@ export default function Questionnaire() {
                 return;
               }
             } else if (currentQuestion.type === "radioWithDetails") {
-              const hasSelected = value?.selected?.trim() !== "";
-              const hasDetails = value?.details?.trim() !== "";
-
+              const hasSelected = (value?.selected ?? "").trim() !== "";
+              const hasDetails = (value?.details ?? "").trim() !== "";
               if (!hasSelected && !hasDetails) {
                 setError(
                   "Выберите вариант ответа или расскажите немного подробнее.",
@@ -139,18 +144,26 @@ export default function Questionnaire() {
               }
             } else if (currentQuestion.type === "contacts") {
               const phone = value?.phone ?? "";
+              const foreignPhone = value?.foreignPhone ?? "";
+              const isForeign = value?.isForeign ?? false;
+
+              const digits = phone.replace(/\D/g, "");
 
               const hasMessenger =
                 (value?.telegram?.trim() ?? "") !== "" ||
                 (value?.vk?.trim() ?? "") !== "" ||
                 (value?.instagram?.trim() ?? "") !== "";
 
-              // Маска считается заполненной только если не осталось символов "_"
-              const digits = phone.replace(/\D/g, "");
-
-              if (digits.length !== 11) {
-                setError("Введите корректный номер телефона.");
-                return;
+              if (isForeign) {
+                if (foreignPhone.trim() === "") {
+                  setError("Введите номер телефона.");
+                  return;
+                }
+              } else {
+                if (digits.length !== 11) {
+                  setError("Введите корректный номер телефона.");
+                  return;
+                }
               }
 
               if (!hasMessenger) {
@@ -186,7 +199,7 @@ export default function Questionnaire() {
             localStorage.removeItem("sr-questionnaire");
             setHasSavedQuestionnaire(false);
 
-            console.log(answers);
+            navigate("/questionnaire/thank-you");
           }
         }}
       />

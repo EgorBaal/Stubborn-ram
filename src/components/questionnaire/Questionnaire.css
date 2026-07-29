@@ -58,6 +58,12 @@
 
   font-size: 18px;
 }
+.questionnaire-intro-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
 
 .questionnaire-button {
   width: 100%;
@@ -545,12 +551,11 @@
     transform: scale(0.98);
   }
 
-  .questionnaire-button:focus {
+  .questionnaire-button:focus,
+  .questionnaire-button:focus-visible,
+  .questionnaire-button:active {
     outline: none;
-  }
-
-  .questionnaire-button:focus-visible {
-    outline: none;
+    box-shadow: none;
   }
 }
 
@@ -633,4 +638,79 @@
   font-size: 0.85rem;
   color: #9c9c9c;
   line-height: 1.5;
+}
+
+.foreign-phone-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.foreign-phone-checkbox-input {
+  display: none;
+}
+
+.foreign-phone-checkbox-custom {
+  width: 20px;
+  height: 20px;
+
+  border: 2px solid #4b4b4b;
+  border-radius: 5px;
+
+  background: #1b1b1b;
+
+  flex-shrink: 0;
+
+  position: relative;
+
+  transition: all 0.2s ease;
+}
+
+.foreign-phone-checkbox-custom::after {
+  content: "";
+
+  position: absolute;
+
+  left: 5px;
+  top: 1px;
+
+  width: 5px;
+  height: 10px;
+
+  border: solid #ff6200;
+  border-width: 0 2px 2px 0;
+
+  transform: rotate(45deg) scale(0);
+
+  transition: transform 0.2s ease;
+}
+
+.foreign-phone-checkbox-input:checked + .foreign-phone-checkbox-custom::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.foreign-phone-checkbox-input:checked + .foreign-phone-checkbox-custom {
+  border-color: #ff6200;
+}
+
+.foreign-phone-checkbox-text {
+  color: #ff6200;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.foreign-phone-checkbox,
+.foreign-phone-checkbox * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.questionnaire-button,
+.questionnaire-back-button,
+.questionnaire-radio-button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
 }

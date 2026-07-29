@@ -1,6 +1,7 @@
 import { IMaskInput } from "react-imask";
 import { FaTelegramPlane, FaVk, FaInstagram } from "react-icons/fa";
 import { Phone } from "lucide-react";
+import "@/styles/page-transition.css";
 export default function QuestionCard({
   question,
   currentIndex,
@@ -13,7 +14,7 @@ export default function QuestionCard({
   onExit,
 }) {
   return (
-    <div className="questionnaire">
+    <div className="questionnaire page-transition">
       <div className="questionnaire-card">
         <div className="questionnaire-top">
           <button
@@ -46,7 +47,7 @@ export default function QuestionCard({
           {(question.type === "text" || question.type === "number") && (
             <input
               className="questionnaire-input"
-              type="text"
+              type={question.type === "number" ? "number" : "text"}
               inputMode={question.type === "number" ? "decimal" : "text"}
               placeholder={question.placeholder}
               value={value}
@@ -264,21 +265,59 @@ export default function QuestionCard({
                     <Phone size={20} />
                   </div>
 
-                  <IMaskInput
-                    className="questionnaire-input"
-                    mask="+{7} (000) 000-00-00"
-                    lazy={false}
-                    overwrite
-                    placeholder="+7 (___) ___-__-__"
-                    value={value?.phone ?? ""}
-                    onAccept={(valueMask) =>
+                  {value?.isForeign ? (
+                    <input
+                      className="questionnaire-input"
+                      type="tel"
+                      autoComplete="off"
+                      placeholder="+49 176 12345678"
+                      value={value?.foreignPhone ?? ""}
+                      onChange={(e) =>
+                        onChange((prev = {}) => ({
+                          ...prev,
+                          foreignPhone: e.target.value,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <IMaskInput
+                      className="questionnaire-input"
+                      type="tel"
+                      inputMode="numeric"
+                      mask="+{7} (000) 000-00-00"
+                      lazy={false}
+                      overwrite
+                      placeholder="+7 (___) ___-__-__"
+                      value={value?.phone ?? ""}
+                      onAccept={(valueMask) =>
+                        onChange((prev = {}) => ({
+                          ...prev,
+                          phone: valueMask,
+                        }))
+                      }
+                    />
+                  )}
+                </div>
+
+                <label className="foreign-phone-checkbox">
+                  <input
+                    className="foreign-phone-checkbox-input"
+                    type="checkbox"
+                    checked={value?.isForeign ?? false}
+                    onChange={(e) =>
                       onChange((prev = {}) => ({
                         ...prev,
-                        phone: valueMask,
+                        isForeign: e.target.checked,
                       }))
                     }
                   />
-                </div>
+
+                  <span className="foreign-phone-checkbox-custom"></span>
+
+                  <span className="foreign-phone-checkbox-text">
+                    Другой формат телефона
+                  </span>
+                </label>
 
                 <div className="questionnaire-contact-note">
                   Контактные данные используются только для связи с вами и не
@@ -304,7 +343,10 @@ export default function QuestionCard({
           <button
             type="button"
             className="questionnaire-button"
-            onClick={onNext}
+            onClick={(e) => {
+              e.currentTarget.blur();
+              onNext();
+            }}
           >
             {currentIndex === totalQuestions - 1 ? "Отправить" : "Далее"}
           </button>
