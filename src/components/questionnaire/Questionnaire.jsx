@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createLead } from "@/services/leadService";
 import { useNavigate } from "react-router-dom";
 
 import QuestionnaireIntro from "./QuestionnaireIntro";
@@ -11,6 +12,7 @@ export default function Questionnaire() {
   const [started, setStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [showExitModal, setShowExitModal] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -54,6 +56,34 @@ export default function Questionnaire() {
   }, [started, currentIndex, answers, isLoaded]);
 
   const currentQuestion = questions[currentIndex];
+  function buildLeadFromAnswers(answers) {
+    return {
+      full_name: answers[1] ?? "",
+      age: Number(answers[2]),
+      height: Number(answers[3]),
+      weight: Number(answers[4]),
+
+      goals: answers[5]?.selected ?? [],
+      goal_details: answers[5]?.details ?? "",
+
+      training_experience: answers[6]?.selected ?? "",
+      training_experience_details: answers[6]?.details ?? "",
+
+      difficulties: answers[7]?.selected ?? [],
+      difficulties_details: answers[7]?.details ?? "",
+
+      ideal_results: answers[8]?.selected ?? [],
+      ideal_result_details: answers[8]?.details ?? "",
+
+      report_preferences: answers[9]?.selected ?? [],
+      report_preferences_details: answers[9]?.details ?? "",
+
+      telegram: answers[10]?.telegram ?? "",
+      phone: answers[10]?.isForeign
+        ? (answers[10]?.foreignPhone ?? "")
+        : (answers[10]?.phone ?? ""),
+    };
+  }
 
   const handleAnswerChange = (value) => {
     setAnswers((prev) => ({
@@ -112,6 +142,7 @@ export default function Questionnaire() {
                 : "")
         }
         error={error}
+        isSubmitting={isSubmitting}
         onChange={handleAnswerChange}
         onExit={() => setShowExitModal(true)}
         onBack={() => {
@@ -196,10 +227,25 @@ export default function Questionnaire() {
           if (currentIndex < questions.length - 1) {
             setCurrentIndex(currentIndex + 1);
           } else {
-            localStorage.removeItem("sr-questionnaire");
-            setHasSavedQuestionnaire(false);
+            (async () => {
+              try {
+                setIsSubmitting(true);
 
-            navigate("/questionnaire/thank-you");
+                const lead = buildLeadFromAnswers(answers);
+
+                await createLead(lead);
+
+                localStorage.removeItem("sr-questionnaire");
+                setHasSavedQuestionnaire(false);
+
+                navigate("/questionnaire/thank-you");
+              } catch (err) {
+                console.error(err);
+                setError("Не удалось отправить анкету. Попробуйте еще раз.");
+              } finally {
+                setIsSubmitting(false);
+              }
+            })();
           }
         }}
       />

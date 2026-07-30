@@ -8,6 +8,7 @@ export default function QuestionCard({
   totalQuestions,
   value,
   error,
+  isSubmitting,
   onChange,
   onBack,
   onNext,
@@ -343,12 +344,17 @@ export default function QuestionCard({
           <button
             type="button"
             className="questionnaire-button"
+            disabled={isSubmitting}
             onClick={(e) => {
               e.currentTarget.blur();
               onNext();
             }}
           >
-            {currentIndex === totalQuestions - 1 ? "Отправить" : "Далее"}
+            {isSubmitting
+              ? "Отправляем..."
+              : currentIndex === totalQuestions - 1
+                ? "Отправить"
+                : "Далее"}
           </button>
         </div>
       </div>

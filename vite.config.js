@@ -11,5 +11,5 @@ export default defineConfig({
     },
   },
 
-  base: "/Stubborn-ram/",
+  base: "/",
 });
