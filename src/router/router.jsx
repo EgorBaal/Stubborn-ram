@@ -5,31 +5,26 @@ import ThankYou from "@/pages/questionnaire/ThankYou";
 import ProgramQuestionnaire from "@/pages/questionnaire/ProgramQuestionnaire";
 import CoachingQuestionnaire from "@/pages/questionnaire/CoachingQuestionnaire";
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <LandingLayout />,
-    },
-
-    {
-      path: "/questionnaire/program",
-      element: <ProgramQuestionnaire />,
-    },
-
-    {
-      path: "/questionnaire/coaching",
-      element: <CoachingQuestionnaire />,
-    },
-
-    {
-      path: "/questionnaire/thank-you",
-      element: <ThankYou />,
-    },
-  ],
+const router = createBrowserRouter([
   {
-    basename: "/Stubborn-ram",
+    path: "/",
+    element: <LandingLayout />,
   },
-);
+
+  {
+    path: "/questionnaire/program",
+    element: <ProgramQuestionnaire />,
+  },
+
+  {
+    path: "/questionnaire/coaching",
+    element: <CoachingQuestionnaire />,
+  },
+
+  {
+    path: "/questionnaire/thank-you",
+    element: <ThankYou />,
+  },
+]);
 
 export default router;
