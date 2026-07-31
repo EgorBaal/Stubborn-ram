@@ -1,9 +1,13 @@
 .thank-you {
   min-height: 100dvh;
-
   background: #080808;
 
-  padding: 20px 20px 4px;
+  padding-top: max(56px, calc(env(safe-area-inset-top) + 20px));
+  padding-right: 20px;
+  padding-bottom: max(12px, calc(env(safe-area-inset-bottom) + 4px));
+  padding-left: 20px;
+
+  box-sizing: border-box;
 }
 
 .thank-you__container {
@@ -156,7 +160,6 @@
 }
 
 @media (max-height: 760px) {
-
   .thank-you {
     padding: 14px 18px 2px;
   }
@@ -203,5 +206,4 @@
     padding: 15px;
     font-size: 17px;
   }
-
 }
