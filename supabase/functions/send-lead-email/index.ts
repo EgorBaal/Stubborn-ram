@@ -21,7 +21,7 @@ export default {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Stubborn Ram <onboarding@resend.dev>",
+        from: "Stubborn Ram <noreply@stubbornram.ru>",
         to: [TRAINER_EMAIL],
         subject: "Новая заявка Stubborn Ram",
         html: `
