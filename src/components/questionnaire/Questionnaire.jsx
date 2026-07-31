@@ -79,6 +79,9 @@ export default function Questionnaire() {
       report_preferences_details: answers[9]?.details ?? "",
 
       telegram: answers[10]?.telegram ?? "",
+      vk: answers[10]?.vk ?? "",
+      instagram: answers[10]?.instagram ?? "",
+
       phone: answers[10]?.isForeign
         ? (answers[10]?.foreignPhone ?? "")
         : (answers[10]?.phone ?? ""),
