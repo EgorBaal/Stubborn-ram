@@ -10,7 +10,7 @@
   width: 100%;
   max-width: 480px;
 
-  height: calc(100dvh - 24px);
+  min-height: calc(100dvh - 24px);
 
   margin: 0 auto;
 
@@ -153,4 +153,55 @@
 .thank-you__button:hover {
   background: #ff7d2a;
   transform: translateY(-2px);
+}
+
+@media (max-height: 760px) {
+
+  .thank-you {
+    padding: 14px 18px 2px;
+  }
+
+  .thank-you__icon {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 12px;
+    font-size: 34px;
+  }
+
+  .thank-you__title {
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+
+  .thank-you__subtitle {
+    font-size: 19px;
+    margin: 6px 0 12px;
+  }
+
+  .thank-you__section {
+    padding: 10px 0;
+  }
+
+  .thank-you__number {
+    font-size: 22px;
+  }
+
+  .thank-you__section h2 {
+    font-size: 17px;
+  }
+
+  .thank-you__section p {
+    font-size: 14px;
+  }
+
+  .thank-you__important {
+    margin-top: 16px;
+    font-size: 13px;
+  }
+
+  .thank-you__button {
+    padding: 15px;
+    font-size: 17px;
+  }
+
 }
