@@ -42,6 +42,7 @@ export default {
 
     const lead = (await req.json()) as Lead;
     const now = new Date().toLocaleString("ru-RU", {
+  timeZone: "Asia/Yekaterinburg",
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
@@ -77,19 +78,31 @@ export default {
 <table role="presentation" width="760" cellpadding="0" cellspacing="0" style="background:#121212;border-radius:18px;overflow:hidden;border:1px solid #222;">
 
 <tr>
-<td style="background:#ff6200;padding:38px;color:#ffffff;">
+<td style="background:#d85a00;padding:42px 48px;color:#ffffff;">
 
-<div style="font-size:34px;font-weight:bold;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+
+<td valign="middle">
+
+<div style="font-size:38px;font-weight:700;">
 Stubborn Ram
 </div>
 
-<div style="margin-top:8px;font-size:18px;">
+<div style="margin-top:12px;font-size:19px;color:#FFF4E8;">
 Новая заявка с сайта
 </div>
 
-<div style="margin-top:12px;font-size:14px;opacity:.9;">
+<div style="margin-top:16px;font-size:14px;color:#FFE7D0;">
 ${now}
 </div>
+
+</td>
+
+
+
+</tr>
+</table>
 
 </td>
 </tr>

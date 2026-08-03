@@ -55,7 +55,7 @@ function Reveal({
     return () => observer.disconnect();
 
 
-  }, []);
+  }, [delay, immediate]);
 
 
   return (

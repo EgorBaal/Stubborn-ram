@@ -1,12 +1,18 @@
+import { useNavigate } from "react-router-dom";
+
 import logo from "../../assets/obshee-logo.png";
 
 function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero">
       <div className="topBar hero-topbar">
         <button className="topButton">Регистрация</button>
 
-        <button className="topButton">Вход</button>
+        <button className="topButton" onClick={() => navigate("/app/home")}>
+          Вход
+        </button>
       </div>
 
       <img src={logo} alt="Stubborn Ram" className="logo hero-logo" />

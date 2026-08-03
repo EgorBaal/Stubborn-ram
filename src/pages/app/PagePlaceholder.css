@@ -1,0 +1,17 @@
+.app-page--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.app-page--placeholder h1 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  color: #ffffff;
+}
+
+.app-page--placeholder p {
+  margin: 0;
+  color: #d0d0d0;
+}
