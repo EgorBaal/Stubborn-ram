@@ -1,0 +1,51 @@
+.app-layout {
+  position: relative;
+
+  width: 100%;
+  max-width: 480px;
+  height: 100dvh;
+
+  margin: 0 auto;
+
+  background: #080808;
+
+  overflow: hidden;
+}
+
+.app-layout__content {
+  height: 100%;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-bottom: calc(var(--tabbar-height) + 20px);
+
+  scrollbar-width: none;
+}
+
+.app-layout__content::-webkit-scrollbar {
+  display: none;
+}
+
+.app-layout {
+  width: 100%;
+  height: 100dvh;
+
+  background: #080808;
+
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+}
+
+.app-layout__content {
+  width: 100%;
+  max-width: var(--app-max-width);
+
+  height: 100%;
+
+  overflow: hidden;
+
+  position: relative;
+}

@@ -1,4 +1,3 @@
-import BottomTabBar from "@/components/app/BottomTabBar";
 import HomeHeader from "@/components/home/HomeHeader";
 import ModuleGrid from "@/components/home/ModuleGrid";
 import NotificationSection from "@/components/home/NotificationSection";
@@ -6,7 +5,7 @@ import NotificationSection from "@/components/home/NotificationSection";
 import "./HomePage.css";
 
 const mockUser = {
-  userName: "Александр",
+  userName: "Яна",
   avatarUrl: null,
   notificationsCount: 2,
 };
@@ -14,10 +13,11 @@ const mockUser = {
 export default function HomePage() {
   return (
     <main className="app-page home-page">
-      <HomeHeader {...mockUser} />
-      <NotificationSection />
-      <ModuleGrid />
-      <BottomTabBar />
+      <div className="home-page__content">
+        <HomeHeader {...mockUser} />
+        <NotificationSection />
+        <ModuleGrid />
+      </div>
     </main>
   );
 }

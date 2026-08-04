@@ -1,9 +1,9 @@
 @font-face {
-    font-family: "Comfortaa";
-    src: url("./assets/fonts/Comfortaa.ttf") format("truetype");
-    font-weight: 300 600;
-    font-style: normal;
-    font-display: swap;
+  font-family: "Comfortaa";
+  src: url("./assets/fonts/Comfortaa.ttf") format("truetype");
+  font-weight: 300 600;
+  font-style: normal;
+  font-display: swap;
 }
 :root {
   --bg: #070707;
@@ -12,6 +12,15 @@
   --accent2: #d92727;
   --text: #ffffff;
   --text2: #bfbfbf;
+  --app-max-width: 480px;
+
+  --app-padding: clamp(16px, 5vw, 20px);
+
+  --tabbar-height: 86px;
+
+  --card-radius: 22px;
+
+  --section-gap: 18px;
 }
 
 html {
@@ -24,4 +33,12 @@ body {
   font-family: "Comfortaa", sans-serif;
   color: var(--text);
   overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+
+  display: flex;
+  justify-content: center;
 }

@@ -1,54 +1,106 @@
 .notification-section {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+
+  gap: clamp(8px, 2vw, 12px);
+
   width: 100%;
+
+  margin-bottom: 12px;
+
+  flex-shrink: 0;
 }
 
 .notification-card {
   display: grid;
-  grid-template-columns: 58px 1fr 30px;
+
+  grid-template-columns: 48px 1fr 24px;
+
   align-items: center;
-  gap: 16px;
-  min-height: 104px;
-  padding: 18px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 20px;
-  background: #1a1a1a;
-  color: #f3f3f3;
-  text-align: left;
-  cursor: pointer;
-  touch-action: pan-y;
+
+  gap: clamp(10px, 2vw, 14px);
+
+  min-height: clamp(72px, 10vh, 92px);
+
+  padding: clamp(12px, 2.5vw, 16px);
+
+  border: 1px solid rgba(255,255,255,.06);
+
+  border-radius: var(--card-radius);
+
+  background:#1a1a1a;
+
+  color:#f3f3f3;
+
+  cursor:pointer;
+
+  transition:.18s;
 }
 
-.notification-card__icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border: 2px solid #ff6200;
-  border-radius: 50%;
-  color: #ff6200;
+.notification-card:hover{
+
+    background:#202020;
+
 }
 
-.notification-card__content {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.notification-card__icon{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:42px;
+
+    height:42px;
+
+    border:2px solid #ff6200;
+
+    border-radius:50%;
+
+    color:#ff6200;
+
+    flex-shrink:0;
+
 }
 
-.notification-card h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
+.notification-card__content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+    min-width:0;
+
 }
 
-.notification-card p {
-  margin: 0;
-  font-size: 14px;
-  color: #b8b8b8;
+.notification-card h3{
+
+    margin:0;
+
+    font-size:clamp(14px,3.8vw,16px);
+
+    font-weight:700;
+
 }
 
-.notification-card__arrow {
-  color: #b8b8b8;
+.notification-card p{
+
+    margin:0;
+
+    font-size:clamp(12px,3.2vw,14px);
+
+    color:#b8b8b8;
+
+}
+
+.notification-card__arrow{
+
+    color:#8f8f8f;
+
+    justify-self:end;
+
 }

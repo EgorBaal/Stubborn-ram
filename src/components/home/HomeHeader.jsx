@@ -22,10 +22,13 @@ export default function HomeHeader({
 
   return (
     <header className="home-header">
-      <p className="home-header__greeting">
-        <span>Добрый вечер,</span>
-        <strong>{userName}</strong>
-      </p>
+      <div className="home-header__left">
+        <p className="home-header__greeting">
+          <span className="home-header__greeting-text">Добрый вечер,</span>
+
+          <strong className="home-header__user-name">{userName}</strong>
+        </p>
+      </div>
 
       <div className="home-header__actions">
         <button
@@ -38,15 +41,26 @@ export default function HomeHeader({
           }
         >
           <Bell aria-hidden="true" size={20} strokeWidth={1.8} />
+
           {hasNotifications && (
-            <span className="home-header__notification-badge" aria-hidden="true">
+            <span
+              className="home-header__notification-badge"
+              aria-hidden="true"
+            >
               {notificationsCount}
             </span>
           )}
         </button>
 
-        <div className="home-header__avatar" aria-label={`Профиль: ${userName}`}>
-          {avatarUrl ? <img src={avatarUrl} alt="" /> : <span>{avatarInitials}</span>}
+        <div
+          className="home-header__avatar"
+          aria-label={`Профиль: ${userName}`}
+        >
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" />
+          ) : (
+            <span>{avatarInitials}</span>
+          )}
         </div>
       </div>
     </header>
