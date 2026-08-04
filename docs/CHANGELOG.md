@@ -270,3 +270,39 @@ Email тренеру
 
 The project now has a structured system for AI-assisted development.
 Future AI agents can understand project principles, decisions, and workflow through repository documentation.
+
+# 03.08.2026
+
+## Добавлено
+
+- первый App Shell приложения;
+- маршрутизация внутреннего приложения;
+- переход с Landing Page на HOME;
+- HomePage;
+- HomeHeader;
+- NotificationSection;
+- ModuleGrid;
+- BottomTabBar;
+- страницы-заглушки всех основных разделов.
+
+---
+
+## Изменено
+
+- HOME приведён к новой мобильной архитектуре;
+- Header переработан под утверждённый дизайн;
+- реализована первая версия карточек уведомлений;
+- реализована первая версия сетки модулей;
+- переработана нижняя навигация.
+
+---
+
+## Подготовлено
+
+Под будущую реализацию подготовлены:
+
+- свайпы уведомлений;
+- динамическая навигация;
+- подключение Supabase;
+- система уведомлений;
+- модульная структура приложения.
