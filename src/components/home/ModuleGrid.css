@@ -1,75 +1,45 @@
 .module-grid {
-  flex: 1;
-
   display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  grid-template-rows: repeat(2, 1fr);
-
-  gap: clamp(8px, 2vw, 14px);
-
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  column-gap: 8px;
+  row-gap: 8px;
+  flex: 1;
   min-height: 0;
-
-  width: 100%;
-
-  box-sizing: border-box;
+  align-content: stretch;
 }
 
 .module-grid__item {
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
-
-  gap: clamp(8px, 2vw, 12px);
-
+  gap: 10px;
+  min-height: 0;
   height: 100%;
-
-  padding: clamp(12px, 3vw, 18px);
-
-  border-radius: 20px;
-
+  padding: 14px 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-
+  border-radius: 18px;
   background: #181818;
-
-  color: #fff;
-
+  color: #f3f3f3;
+  text-align: center;
   cursor: pointer;
-
-  transition: 0.18s;
-}
-
-.module-grid__item:hover {
-  background: #1f1f1f;
 }
 
 .module-grid__icon {
-  display: flex;
-
+  display: inline-flex;
   align-items: center;
-
   justify-content: center;
-
   color: #ff6200;
 }
 
 .module-grid__icon svg {
-  width: clamp(30px, 8vw, 42px);
-
-  height: clamp(30px, 8vw, 42px);
+  width: 38px;
+  height: 38px;
 }
 
 .module-grid__label {
-  font-size: clamp(14px, 3.7vw, 17px);
-
+  font-size: 16px;
   font-weight: 700;
-
-  line-height: 1.15;
-
-  text-align: center;
+  color: #f3f3f3;
 }

@@ -1,25 +1,21 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import LandingLayout from "@/layouts/LandingLayout";
-import AppLayout from "@/layouts/AppLayout";
-
+import ActivityPlaceholderPage from "@/pages/app/ActivityPlaceholderPage";
+import AnalyticsPage from "@/pages/app/AnalyticsPage";
+import ChatPage from "@/pages/app/ChatPage";
+import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
 import HomePage from "@/pages/app/HomePage";
 import LibraryPage from "@/pages/app/LibraryPage";
-import ChatPage from "@/pages/app/ChatPage";
-import AnalyticsPage from "@/pages/app/AnalyticsPage";
-import ProfilePage from "@/pages/app/ProfilePage";
-
-import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
-import ReportPlaceholderPage from "@/pages/app/ReportPlaceholderPage";
-import ActivityPlaceholderPage from "@/pages/app/ActivityPlaceholderPage";
-import TrainingPlaceholderPage from "@/pages/app/TrainingPlaceholderPage";
 import NutritionPlaceholderPage from "@/pages/app/NutritionPlaceholderPage";
 import PhotosPlaceholderPage from "@/pages/app/PhotosPlaceholderPage";
+import ProfilePage from "@/pages/app/ProfilePage";
+import ReportPlaceholderPage from "@/pages/app/ReportPlaceholderPage";
+import TrainingPlaceholderPage from "@/pages/app/TrainingPlaceholderPage";
 import WeightPlaceholderPage from "@/pages/app/WeightPlaceholderPage";
-
+import ThankYou from "@/pages/questionnaire/ThankYou";
 import ProgramQuestionnaire from "@/pages/questionnaire/ProgramQuestionnaire";
 import CoachingQuestionnaire from "@/pages/questionnaire/CoachingQuestionnaire";
-import ThankYou from "@/pages/questionnaire/ThankYou";
 
 const router = createBrowserRouter([
   {
@@ -28,66 +24,73 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/app",
-    element: <AppLayout />,
-    children: [
-      {
-        path: "home",
-        element: <HomePage />,
-      },
-      {
-        path: "library",
-        element: <LibraryPage />,
-      },
-      {
-        path: "chat",
-        element: <ChatPage />,
-      },
-      {
-        path: "analytics",
-        element: <AnalyticsPage />,
-      },
-      {
-        path: "profile",
-        element: <ProfilePage />,
-      },
-      {
-        path: "comments",
-        element: <CommentsPlaceholderPage />,
-      },
-      {
-        path: "report",
-        element: <ReportPlaceholderPage />,
-      },
-      {
-        path: "activity",
-        element: <ActivityPlaceholderPage />,
-      },
-      {
-        path: "training",
-        element: <TrainingPlaceholderPage />,
-      },
-      {
-        path: "nutrition",
-        element: <NutritionPlaceholderPage />,
-      },
-      {
-        path: "activity-module",
-        element: <ActivityPlaceholderPage />,
-      },
-      {
-        path: "report-module",
-        element: <ReportPlaceholderPage />,
-      },
-      {
-        path: "photos",
-        element: <PhotosPlaceholderPage />,
-      },
-      {
-        path: "weight",
-        element: <WeightPlaceholderPage />,
-      },
-    ],
+    path: "/app/home",
+    element: <HomePage />,
+  },
+
+  {
+    path: "/app/library",
+    element: <LibraryPage />,
+  },
+
+  {
+    path: "/app/chat",
+    element: <ChatPage />,
+  },
+
+  {
+    path: "/app/analytics",
+    element: <AnalyticsPage />,
+  },
+
+  {
+    path: "/app/profile",
+    element: <ProfilePage />,
+  },
+
+  {
+    path: "/app/comments",
+    element: <CommentsPlaceholderPage />,
+  },
+
+  {
+    path: "/app/report",
+    element: <ReportPlaceholderPage />,
+  },
+
+  {
+    path: "/app/activity",
+    element: <ActivityPlaceholderPage />,
+  },
+
+  {
+    path: "/app/training",
+    element: <TrainingPlaceholderPage />,
+  },
+
+  {
+    path: "/app/nutrition",
+    element: <NutritionPlaceholderPage />,
+  },
+
+  {
+    path: "/app/activity-module",
+    element: <ActivityPlaceholderPage />,
+  },
+
+  {
+    path: "/app/report-module",
+    element: <ReportPlaceholderPage />,
+  },
+
+  {
+    path: "/app/photos",
+    element: <PhotosPlaceholderPage />,
+  },
+
+  {
+    path: "/app/weight",
+    element: <WeightPlaceholderPage />,
   },
 
   {

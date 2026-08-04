@@ -1,35 +1,21 @@
 .app-page {
+  position: relative;
   width: 100%;
-  height: 100%;
-
-  max-width: var(--app-max-width);
-
+  height: 100dvh;
+  max-width: 480px;
   margin: 0 auto;
-
+  padding: max(12px, env(safe-area-inset-top)) 20px
+    calc(var(--tabbar-height) + 14px + env(safe-area-inset-bottom));
   background: #080808;
+  overflow: hidden;
 }
 
 .home-page {
-  width: 100%;
-  height: 100%;
-
   display: flex;
   flex-direction: column;
-}
-
-.home-page__content {
+  gap: 12px;
   flex: 1;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow: hidden;
-
-  padding-inline: var(--app-padding);
-
-  padding-top: max(18px, env(safe-area-inset-top));
-
-  padding-bottom: 2px;
+  min-height: 0;
 }
 
 .app-page--placeholder {
