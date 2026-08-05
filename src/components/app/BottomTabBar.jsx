@@ -1,5 +1,11 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { MessageCircle } from "lucide-react";
+import {
+  House,
+  BookOpen,
+  ChartColumn,
+  User,
+  MessageCircle,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import "./BottomTabBar.css";
@@ -12,11 +18,31 @@ let lastIndicatorState = {
 };
 
 const tabs = [
-  { label: "Главная", path: "/app/home" },
-  { label: "Библиотека", path: "/app/library" },
-  { label: "Чат", path: "/app/chat" },
-  { label: "Аналитика", path: "/app/analytics" },
-  { label: "Профиль", path: "/app/profile" },
+  {
+    label: "Главная",
+    path: "/app/home",
+    icon: House,
+  },
+  {
+    label: "Библиотека",
+    path: "/app/library",
+    icon: BookOpen,
+  },
+  {
+    label: "Чат",
+    path: "/app/chat",
+    icon: MessageCircle,
+  },
+  {
+    label: "Аналитика",
+    path: "/app/analytics",
+    icon: ChartColumn,
+  },
+  {
+    label: "Профиль",
+    path: "/app/profile",
+    icon: User,
+  },
 ];
 
 export default function BottomTabBar() {
@@ -42,20 +68,25 @@ export default function BottomTabBar() {
 
     const navNode = navRef.current;
     const tabNode = tabRefs.current[activeTab.path];
-    const labelNode = tabNode?.querySelector(".bottom-tab-bar__label");
+    const contentNode = tabNode?.querySelector(".bottom-tab-bar__content");
 
-    if (!navNode || !tabNode || !labelNode) {
+    if (!navNode || !tabNode || !contentNode) {
       return;
     }
 
     const navRect = navNode.getBoundingClientRect();
     const tabRect = tabNode.getBoundingClientRect();
-    const labelRect = labelNode.getBoundingClientRect();
 
-    const capsulePadding = 13;
-    const maxCapsuleWidth = Math.max(0, tabRect.width - 14);
-    const desiredWidth = labelRect.width + capsulePadding * 2;
-    const finalWidth = Math.min(desiredWidth, maxCapsuleWidth);
+    const contentRect = contentNode.getBoundingClientRect();
+
+    const horizontalPadding = 16;
+
+    const desiredWidth = contentRect.width + horizontalPadding * 2;
+
+    const maxWidth = tabRect.width - 8;
+
+    const finalWidth = Math.min(desiredWidth, maxWidth);
+
     const left = tabRect.left - navRect.left + (tabRect.width - finalWidth) / 2;
 
     setIndicatorStyle({
@@ -105,6 +136,7 @@ export default function BottomTabBar() {
       {tabs.map((tab) => {
         const isActive = location.pathname === tab.path;
         const isChat = tab.path === "/app/chat";
+        const Icon = tab.icon;
 
         return (
           <Link
@@ -123,7 +155,15 @@ export default function BottomTabBar() {
                 <MessageCircle size={20} strokeWidth={2} />
               </span>
             ) : (
-              <span className="bottom-tab-bar__label">{tab.label}</span>
+              <div className="bottom-tab-bar__content">
+                <Icon
+                  size={20}
+                  strokeWidth={2}
+                  className="bottom-tab-bar__icon"
+                />
+
+                <span className="bottom-tab-bar__label">{tab.label}</span>
+              </div>
             )}
           </Link>
         );

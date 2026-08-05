@@ -12,19 +12,40 @@ function getInitials(userName) {
     .toUpperCase();
 }
 
-export default function HomeHeader({
-  userName,
-  avatarUrl,
-  notificationsCount,
-}) {
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export default function HomeHeader({ userName, avatarUrl }) {
   const avatarInitials = getInitials(userName);
+
+  const now = new Date();
+
+  const weekday = new Intl.DateTimeFormat("ru-RU", {
+    weekday: "long",
+  }).format(now);
+
+  const date = new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "long",
+  }).format(now);
 
   return (
     <header className="home-header">
       <img className="home-header__logo" src={logo} alt="Stubborn Ram" />
 
+      <div className="home-header__date">
+        <span className="home-header__weekday">{capitalize(weekday)}</span>
+
+        <span className="home-header__current-date">{date}</span>
+      </div>
+
       <div className="home-header__avatar" aria-label={`Профиль: ${userName}`}>
-        {avatarUrl ? <img src={avatarUrl} alt="" /> : <span>{avatarInitials}</span>}
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="" />
+        ) : (
+          <span>{avatarInitials}</span>
+        )}
       </div>
     </header>
   );

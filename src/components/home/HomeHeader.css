@@ -1,10 +1,11 @@
 .home-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 14px;
+
   width: 100%;
-  min-height: 48px;
-  padding: 0;
+  min-height: 54px;
 }
 
 .home-header__logo,
@@ -15,9 +16,41 @@
 
 .home-header__logo {
   width: auto;
-  height: 30px;
+  height: 50px;
   object-fit: contain;
   display: block;
+
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.home-header__logo:hover {
+  transform: scale(1.05);
+}
+
+.home-header__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  line-height: 1;
+}
+
+.home-header__weekday {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.58);
+
+  margin-bottom: 6px;
+}
+
+.home-header__current-date {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+
+  letter-spacing: -0.3px;
 }
 
 .home-header__avatar {
