@@ -11,11 +11,16 @@ import { useNavigate } from "react-router-dom";
 import "./ModuleGrid.css";
 
 const modules = [
-  { label: "Тренировка", path: "/app/training", icon: Dumbbell },
-  { label: "Питание", path: "/app/nutrition", icon: Salad },
-  { label: "Активность", path: "/app/activity-module", icon: Activity },
-  { label: "Отчёт", path: "/app/report-module", icon: ClipboardList },
   { label: "Фото и замеры", path: "/app/photos", icon: Camera },
+
+  { label: "Питание", path: "/app/nutrition", icon: Salad },
+
+  { label: "Тренировка", path: "/app/training", icon: Dumbbell },
+
+  { label: "Отчёт", path: "/app/report-module", icon: ClipboardList },
+
+  { label: "Активность", path: "/app/activity-module", icon: Activity },
+
   { label: "Вес", path: "/app/weight", icon: Scale },
 ];
 

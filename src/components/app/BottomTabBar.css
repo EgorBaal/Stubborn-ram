@@ -2,7 +2,7 @@
   position: fixed;
   left: clamp(10px, 3vw, 16px);
   right: clamp(10px, 3vw, 16px);
-  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(2px + env(safe-area-inset-bottom, 0px));
   display: grid;
   grid-template-columns:
     1fr
