@@ -3,6 +3,17 @@
   <head>
     <meta charset="UTF-8" />
 
+    <script>
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
+
+        if (redirect) {
+          window.history.replaceState(null, "", decodeURIComponent(redirect));
+        }
+      })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
