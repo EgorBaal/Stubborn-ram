@@ -11,7 +11,16 @@ import { useNavigate } from "react-router-dom";
 import "./ModuleGrid.css";
 
 const modules = [
-  { label: "Фото и замеры", path: "/app/photos", icon: Camera },
+  {
+    label: (
+      <span className="module-grid__label-stack">
+        <span>Фото</span>
+        <span>Замеры</span>
+      </span>
+    ),
+    path: "/app/photos",
+    icon: Camera,
+  },
 
   { label: "Питание", path: "/app/nutrition", icon: Salad },
 
@@ -31,7 +40,7 @@ export default function ModuleGrid() {
     <section className="module-grid" aria-label="Основные модули">
       {modules.map(({ label, path, icon: Icon }) => (
         <button
-          key={label}
+          key={path}
           type="button"
           className="module-grid__item"
           onClick={() => navigate(path)}
@@ -39,6 +48,7 @@ export default function ModuleGrid() {
           <span className="module-grid__icon" aria-hidden="true">
             <Icon size={34} strokeWidth={2} />
           </span>
+
           <span className="module-grid__label">{label}</span>
         </button>
       ))}

@@ -22,17 +22,45 @@
 
   display: flex;
   flex-direction: column;
+  position: relative;
 
   overflow: hidden;
 
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
-  background: #0d0d0d;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 10px 30px rgba(0, 0, 0, 0.25);
+    0 12px 24px rgba(0, 0, 0, 0.44),
+    0 2px 6px rgba(255, 98, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.32);
+}
+
+.supportCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* ---------- Верхняя часть ---------- */
@@ -103,7 +131,7 @@
 
   padding: 24px;
 
-  background: #111;
+  background: transparent;
 }
 
 .supportTitle {
