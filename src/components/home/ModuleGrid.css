@@ -14,16 +14,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 0;
+  gap: 9px;
+  min-height: 120px;
   height: 100%;
-  padding: 14px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  padding: 16px 8px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
-  background: #181818;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.42),
+    0 2px 6px rgba(255, 98, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -12px 18px rgba(0, 0, 0, 0.3);
   color: #f3f3f3;
   text-align: center;
   cursor: pointer;
+  overflow: hidden;
+}
+
+.module-grid__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0));
+  pointer-events: none;
 }
 
 .module-grid__icon {
@@ -31,15 +53,49 @@
   align-items: center;
   justify-content: center;
   color: #ff6200;
+  text-shadow: 0 0 10px rgba(255, 98, 0, 0.28);
+  transform: translateY(-2px);
 }
 
 .module-grid__icon svg {
-  width: 38px;
-  height: 38px;
+  width: 35px;
+  height: 35px;
+  stroke-width: 1.9;
 }
 
 .module-grid__label {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.08px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   color: #f3f3f3;
+}
+
+@media (max-width: 340px) {
+  .module-grid {
+    column-gap: 6px;
+    row-gap: 7px;
+  }
+
+  .module-grid__item {
+    min-height: 114px;
+    padding: 14px 7px 17px;
+    gap: 8px;
+    border-radius: 16px;
+  }
+
+  .module-grid__icon svg {
+    width: 31px;
+    height: 31px;
+    stroke-width: 1.8;
+  }
+
+  .module-grid__label {
+    font-size: 12px;
+    letter-spacing: -0.04px;
+  }
 }

@@ -39,7 +39,9 @@
 
 .home-header__weekday {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.08px;
   color: rgba(255, 255, 255, 0.58);
 
   margin-bottom: 6px;
@@ -47,10 +49,11 @@
 
 .home-header__current-date {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   color: #ffffff;
+  line-height: 1.05;
 
-  letter-spacing: -0.3px;
+  letter-spacing: -0.22px;
 }
 
 .home-header__avatar {
@@ -62,7 +65,7 @@
   background: linear-gradient(145deg, #2a2a2a, #151515);
   color: #ffffff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .home-header__avatar img {

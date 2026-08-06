@@ -1,7 +1,7 @@
 .notification-section {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 9px;
+  gap: 5px;
   width: 100%;
 }
 
@@ -9,26 +9,58 @@
   display: grid;
   grid-template-columns: 40px 1fr 22px;
   align-items: center;
-  gap: 10px;
-  min-height: 80px;
-  padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 9px;
+  position: relative;
+  min-height: 59px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  background: #1a1a1a;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 22%),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.44),
+    0 2px 6px rgba(255, 98, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.32);
   color: #f3f3f3;
   text-align: left;
   cursor: pointer;
   touch-action: pan-y;
+  overflow: hidden;
+}
+
+.notification-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+  pointer-events: none;
 }
 
 .notification-card__icon {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border: 2px solid #ff6200;
   border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 98, 0, 0.18), rgba(255, 98, 0, 0.03) 68%);
+  box-shadow:
+    0 0 0 1px rgba(255, 98, 0, 0.2),
+    inset 0 0 10px rgba(255, 98, 0, 0.14);
   color: #ff6200;
+}
+
+.notification-card__icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.85;
 }
 
 .notification-card__content {
@@ -40,17 +72,55 @@
 .notification-card h3 {
   margin: 0;
   font-size: 14px;
-  font-weight: 700;
-  line-height: 1.15;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.08px;
 }
 
 .notification-card p {
   margin: 0;
   font-size: 12px;
-  line-height: 1.25;
-  color: #b8b8b8;
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: 0.02px;
+  color: #b3b3b3;
 }
 
 .notification-card__arrow {
-  color: #b8b8b8;
+  color: #c0c0c0;
+}
+
+.notification-card__arrow svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.85;
+}
+
+@media (max-width: 340px) {
+  .notification-card {
+    grid-template-columns: 32px 1fr 18px;
+    min-height: 55px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .notification-card__icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .notification-card__icon svg,
+  .notification-card__arrow svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 1.8;
+  }
+
+  .notification-card h3 {
+    font-size: 13px;
+  }
+
+  .notification-card p {
+    font-size: 11px;
+  }
 }

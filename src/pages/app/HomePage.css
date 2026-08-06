@@ -5,7 +5,7 @@
   max-width: 480px;
   margin: 0 auto;
   padding: max(12px, env(safe-area-inset-top)) 20px
-    calc(var(--tabbar-height) + 14px + env(safe-area-inset-bottom));
+    calc(var(--tabbar-height) + env(safe-area-inset-bottom));
   background: #080808;
   overflow: hidden;
 }
@@ -13,9 +13,20 @@
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
   min-height: 0;
+}
+
+@media (max-width: 340px) {
+  .app-page {
+    padding: max(10px, env(safe-area-inset-top)) 14px
+      calc(var(--tabbar-height) + env(safe-area-inset-bottom));
+  }
+
+  .home-page {
+    gap: 9px;
+  }
 }
 
 .app-page--placeholder {
