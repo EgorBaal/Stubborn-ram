@@ -51,7 +51,7 @@
   --surface-color-rgb: var(--module-accent-rgb);
   --surface-rest-opacity: 0.07;
 
-  --beam-a-duration: 28s;
+  --beam-a-duration: 10s;
   --beam-a-delay: -3.5s;
   --beam-a-angle: 34deg;
   --beam-a-start-x: -30%;
@@ -59,13 +59,139 @@
   --beam-a-end-x: 30%;
   --beam-a-end-y: 24%;
 
-  --beam-b-duration: 39s;
+  --beam-b-duration: 13s;
   --beam-b-delay: -17s;
   --beam-b-angle: -24deg;
   --beam-b-start-x: 27%;
   --beam-b-start-y: -18%;
   --beam-b-end-x: -29%;
   --beam-b-end-y: 20%;
+
+  --beam-c-duration: 37s;
+  --beam-c-delay: -11s;
+  --beam-c-angle: 118deg;
+  --beam-c-start-x: -32%;
+  --beam-c-start-y: 28%;
+  --beam-c-end-x: 30%;
+  --beam-c-end-y: -30%;
+}
+
+.module-grid__item--training {
+  --module-accent: #c96a24;
+  --module-accent-rgb: 201, 106, 36;
+}
+
+.module-grid__item--nutrition {
+  --module-accent: #b58a1e;
+  --module-accent-rgb: 181, 138, 30;
+}
+
+.module-grid__item--activity {
+  --module-accent: #1f8b5b;
+  --module-accent-rgb: 31, 139, 91;
+}
+
+.module-grid__item--photo {
+  --module-accent: #2d6ea8;
+  --module-accent-rgb: 45, 110, 168;
+}
+
+.module-grid__item--report {
+  --module-accent: #6c46a3;
+  --module-accent-rgb: 108, 70, 163;
+}
+
+.module-grid__item--weight {
+  --module-accent: #7a2e3a;
+  --module-accent-rgb: 122, 46, 58;
+}
+
+.module-grid__item:nth-child(n + 4) {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  column-gap: 8px;
+  row-gap: 8px;
+  flex: 1;
+  min-height: 0;
+  align-content: stretch;
+}
+
+.module-grid__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 120px;
+  height: 100%;
+  position: relative;
+  isolation: isolate;
+  padding: 16px 8px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.42),
+    0 2px 6px rgba(255, 98, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -12px 18px rgba(0, 0, 0, 0.3);
+  color: #f3f3f3;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  font-family: "Comfortaa", sans-serif;
+  transition:
+    transform 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  --module-accent: #ff6200;
+  --module-accent-rgb: 255, 98, 0;
+  --surface-color-rgb: var(--module-accent-rgb);
+  --surface-rest-opacity: 0.07;
+
+  --beam-a-duration: 10s;
+  --beam-a-delay: -3.5s;
+  --beam-a-angle: 34deg;
+  --beam-a-start-x: -30%;
+  --beam-a-start-y: -24%;
+  --beam-a-end-x: 30%;
+  --beam-a-end-y: 24%;
+
+  --beam-b-duration: 13s;
+  --beam-b-delay: -17s;
+  --beam-b-angle: -24deg;
+  --beam-b-start-x: 27%;
+  --beam-b-start-y: -18%;
+  --beam-b-end-x: -29%;
+  --beam-b-end-y: 20%;
+
+  --beam-c-duration: 37s;
+  --beam-c-delay: -11s;
+  --beam-c-angle: 118deg;
+  --beam-c-start-x: -32%;
+  --beam-c-start-y: 28%;
+  --beam-c-end-x: 30%;
+  --beam-c-end-y: -30%;
 }
 
 .module-grid__item--training {
@@ -109,111 +235,63 @@
 }
 
 .module-grid__item:nth-child(1) {
-  --beam-a-duration: 26s;
-  --beam-a-delay: -2.3s;
-  --beam-a-angle: 32deg;
-  --beam-a-start-x: -34%;
-  --beam-a-start-y: -26%;
-  --beam-a-end-x: 28%;
-  --beam-a-end-y: 22%;
-
-  --beam-b-duration: 42s;
-  --beam-b-delay: -15.2s;
-  --beam-b-angle: -88deg;
-  --beam-b-start-x: 0%;
-  --beam-b-start-y: 34%;
-  --beam-b-end-x: 0%;
-  --beam-b-end-y: -34%;
+  --beam-c-duration: 35s;
+  --beam-c-delay: -7s;
+  --beam-c-angle: 118deg;
+  --beam-c-start-x: -32%;
+  --beam-c-start-y: 30%;
+  --beam-c-end-x: 30%;
+  --beam-c-end-y: -30%;
 }
 
 .module-grid__item:nth-child(2) {
-  --beam-a-duration: 31s;
-  --beam-a-delay: -9.4s;
-  --beam-a-angle: 88deg;
-  --beam-a-start-x: -3%;
-  --beam-a-start-y: -36%;
-  --beam-a-end-x: 2%;
-  --beam-a-end-y: 34%;
-
-  --beam-b-duration: 36s;
-  --beam-b-delay: -4.9s;
-  --beam-b-angle: 14deg;
-  --beam-b-start-x: -34%;
-  --beam-b-start-y: 4%;
-  --beam-b-end-x: 34%;
-  --beam-b-end-y: -4%;
+  --beam-c-duration: 41s;
+  --beam-c-delay: -18s;
+  --beam-c-angle: -18deg;
+  --beam-c-start-x: 34%;
+  --beam-c-start-y: -8%;
+  --beam-c-end-x: -34%;
+  --beam-c-end-y: 8%;
 }
 
 .module-grid__item:nth-child(3) {
-  --beam-a-duration: 24s;
-  --beam-a-delay: -13.8s;
-  --beam-a-angle: -36deg;
-  --beam-a-start-x: 30%;
-  --beam-a-start-y: -26%;
-  --beam-a-end-x: -30%;
-  --beam-a-end-y: 24%;
-
-  --beam-b-duration: 44s;
-  --beam-b-delay: -1.7s;
-  --beam-b-angle: 90deg;
-  --beam-b-start-x: 1%;
-  --beam-b-start-y: 36%;
-  --beam-b-end-x: -1%;
-  --beam-b-end-y: -36%;
+  --beam-c-duration: 32s;
+  --beam-c-delay: -11s;
+  --beam-c-angle: 64deg;
+  --beam-c-start-x: -18%;
+  --beam-c-start-y: -34%;
+  --beam-c-end-x: 18%;
+  --beam-c-end-y: 34%;
 }
 
 .module-grid__item:nth-child(4) {
-  --beam-a-duration: 33s;
-  --beam-a-delay: -6.6s;
-  --beam-a-angle: 176deg;
-  --beam-a-start-x: 34%;
-  --beam-a-start-y: -2%;
-  --beam-a-end-x: -34%;
-  --beam-a-end-y: 2%;
-
-  --beam-b-duration: 38s;
-  --beam-b-delay: -20.4s;
-  --beam-b-angle: 44deg;
-  --beam-b-start-x: -28%;
-  --beam-b-start-y: -30%;
-  --beam-b-end-x: 28%;
-  --beam-b-end-y: 30%;
+  --beam-c-duration: 39s;
+  --beam-c-delay: -23s;
+  --beam-c-angle: -132deg;
+  --beam-c-start-x: 28%;
+  --beam-c-start-y: 30%;
+  --beam-c-end-x: -28%;
+  --beam-c-end-y: -30%;
 }
 
 .module-grid__item:nth-child(5) {
-  --beam-a-duration: 27s;
-  --beam-a-delay: -16.2s;
-  --beam-a-angle: -142deg;
-  --beam-a-start-x: 32%;
-  --beam-a-start-y: 30%;
-  --beam-a-end-x: -32%;
-  --beam-a-end-y: -30%;
-
-  --beam-b-duration: 41s;
-  --beam-b-delay: -8.3s;
-  --beam-b-angle: -10deg;
-  --beam-b-start-x: 34%;
-  --beam-b-start-y: 8%;
-  --beam-b-end-x: -34%;
-  --beam-b-end-y: -8%;
+  --beam-c-duration: 36s;
+  --beam-c-delay: -5s;
+  --beam-c-angle: 12deg;
+  --beam-c-start-x: -34%;
+  --beam-c-start-y: -6%;
+  --beam-c-end-x: 34%;
+  --beam-c-end-y: 6%;
 }
 
 .module-grid__item:nth-child(6) {
-  --beam-a-duration: 30s;
-  --beam-a-delay: -11.6s;
-  --beam-a-angle: 128deg;
-  --beam-a-start-x: -22%;
-  --beam-a-start-y: 34%;
-  --beam-a-end-x: 22%;
-  --beam-a-end-y: -34%;
-
-  --beam-b-duration: 46s;
-  --beam-b-delay: -2.1s;
-  --beam-b-angle: 4deg;
-  --beam-b-start-x: -34%;
-  --beam-b-start-y: -10%;
-  --beam-b-end-x: 34%;
-  --beam-b-end-y: 10%;
+  --beam-c-duration: 44s;
+  --beam-c-delay: -15s;
+  --beam-c-angle: 96deg;
+  --beam-c-start-x: 0%;
+  --beam-c-start-y: 34%;
+  --beam-c-end-x: 0%;
+  --beam-c-end-y: -34%;
 }
 
 .module-grid__item:hover {
@@ -375,6 +453,11 @@
     cubic-bezier(0.18, 0.05, 0.16, 1) var(--beam-b-delay) infinite;
 }
 
+.module-grid__surface-beam--c {
+  animation: module-grid-surface-beam-c var(--beam-c-duration)
+    cubic-bezier(0.18, 0.05, 0.16, 1) var(--beam-c-delay) infinite;
+}
+
 @keyframes module-grid-surface-beam-a {
   0% {
     transform: translate3d(var(--beam-a-start-x), var(--beam-a-start-y), 0)
@@ -382,29 +465,21 @@
     opacity: 0;
   }
 
-  18% {
-    transform: translate3d(var(--beam-a-start-x), var(--beam-a-start-y), 0)
-      rotate(var(--beam-a-angle));
-    opacity: 0;
-  }
-
-  28% {
+  6% {
     opacity: 0.12;
   }
 
-  38% {
+  18% {
     opacity: 0.95;
   }
 
-  52% {
+  42% {
     transform: translate3d(var(--beam-a-end-x), var(--beam-a-end-y), 0)
       rotate(var(--beam-a-angle));
     opacity: 0.08;
   }
 
-  58% {
-    transform: translate3d(var(--beam-a-end-x), var(--beam-a-end-y), 0)
-      rotate(var(--beam-a-angle));
+  48% {
     opacity: 0;
   }
 
@@ -451,6 +526,345 @@
   100% {
     transform: translate3d(var(--beam-b-end-x), var(--beam-b-end-y), 0)
       rotate(var(--beam-b-angle));
+    opacity: 0;
+  }
+}
+
+@keyframes module-grid-surface-beam-c {
+  0% {
+    transform: translate3d(var(--beam-c-start-x), var(--beam-c-start-y), 0)
+      rotate(var(--beam-c-angle));
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.08;
+  }
+
+  22% {
+    opacity: 0.9;
+  }
+
+  46% {
+    transform: translate3d(var(--beam-c-end-x), var(--beam-c-end-y), 0)
+      rotate(var(--beam-c-angle));
+    opacity: 0.06;
+  }
+
+  54% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate3d(var(--beam-c-end-x), var(--beam-c-end-y), 0)
+      rotate(var(--beam-c-angle));
+    opacity: 0;
+  }
+}
+
+/* Только для "Фото / Замеры" */
+.module-grid__label-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+
+@media (max-width: 340px) {
+  .module-grid {
+    column-gap: 6px;
+    row-gap: 7px;
+  }
+
+  .module-grid__item {
+    min-height: 114px;
+    padding: 14px 7px 17px;
+    gap: 8px;
+    border-radius: 16px;
+  }
+
+  .module-grid__icon svg {
+    width: 31px;
+    height: 31px;
+    stroke-width: 1.8;
+  }
+
+  .module-grid__label {
+    font-size: 12px;
+    line-height: 1.1;
+    letter-spacing: -0.04px;
+  }
+
+  .module-grid__label-stack {
+    gap: 4px;
+  }
+}
+
+.module-grid__item:hover {
+  border-color: #ff6200;
+
+  box-shadow:
+    0 0 16px rgba(255, 98, 0, 0.22),
+    0 6px 18px rgba(0, 0, 0, 0.32);
+
+  transform: translateY(-2px);
+  z-index: 2;
+}
+
+.module-grid__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+}
+
+.module-grid__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  color: #ff6200;
+  text-shadow: 0 0 8px rgba(255, 98, 0, 0.22);
+  transform: translateY(-2px);
+}
+
+.module-grid__icon svg {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.7;
+}
+
+.module-grid__label {
+  position: relative;
+  z-index: 2;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03px;
+  white-space: normal;
+  text-align: center;
+  max-width: 100%;
+  color: #f3f3f3;
+}
+
+.module-grid__surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.module-grid__surface-texture {
+  position: absolute;
+  inset: 0;
+  opacity: var(--surface-rest-opacity);
+  background:
+    radial-gradient(
+        circle at 1px 1px,
+        rgba(var(--surface-color-rgb), 0.24) 0 0.56px,
+        transparent 0.92px
+      )
+      0 0 / 7px 7px repeat,
+    radial-gradient(
+        circle at 1px 1px,
+        rgba(var(--surface-color-rgb), 0.2) 0 0.54px,
+        transparent 0.9px
+      )
+      3px 2px / 8px 6px repeat,
+    radial-gradient(
+        circle at 1.5px 1.5px,
+        rgba(var(--surface-color-rgb), 0.2) 0 0.9px,
+        transparent 1.35px
+      )
+      2px 1px / 13px 11px repeat,
+    radial-gradient(
+        circle at 1.5px 1.5px,
+        rgba(var(--surface-color-rgb), 0.16) 0 0.88px,
+        transparent 1.3px
+      )
+      8px 5px / 15px 12px repeat,
+    radial-gradient(
+        circle at 2px 2px,
+        rgba(var(--surface-color-rgb), 0.16) 0 1.16px,
+        transparent 1.9px
+      )
+      4px 3px / 21px 19px repeat,
+    radial-gradient(
+        circle at 2px 2px,
+        rgba(var(--surface-color-rgb), 0.14) 0 1.14px,
+        transparent 1.85px
+      )
+      11px 9px / 24px 21px repeat;
+}
+
+.module-grid__surface-texture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      142deg,
+      rgba(8, 8, 8, 0.04) 10%,
+      rgba(8, 8, 8, 0.25) 44%,
+      rgba(8, 8, 8, 0.22) 62%,
+      rgba(8, 8, 8, 0.05) 92%
+    ),
+    linear-gradient(
+      28deg,
+      rgba(8, 8, 8, 0.03) 8%,
+      rgba(8, 8, 8, 0.2) 41%,
+      rgba(8, 8, 8, 0.22) 60%,
+      rgba(8, 8, 8, 0.04) 90%
+    );
+}
+
+.module-grid__surface-beam {
+  position: absolute;
+  left: -62%;
+  top: -46%;
+  width: 224%;
+  height: 172%;
+  border-radius: 999px;
+  opacity: 0;
+  filter: blur(15px);
+  background: linear-gradient(
+    90deg,
+    rgba(var(--surface-color-rgb), 0) 0%,
+    rgba(var(--surface-color-rgb), 0.05) 24%,
+    rgba(var(--surface-color-rgb), 0.3) 50%,
+    rgba(var(--surface-color-rgb), 0.05) 76%,
+    rgba(var(--surface-color-rgb), 0) 100%
+  );
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.module-grid__surface-beam--a {
+  animation: module-grid-surface-beam-a var(--beam-a-duration)
+    cubic-bezier(0.2, 0.03, 0.16, 1) var(--beam-a-delay) infinite;
+}
+
+.module-grid__surface-beam--b {
+  animation: module-grid-surface-beam-b var(--beam-b-duration)
+    cubic-bezier(0.18, 0.05, 0.16, 1) var(--beam-b-delay) infinite;
+}
+
+.module-grid__surface-beam--c {
+  animation: module-grid-surface-beam-c var(--beam-c-duration)
+    cubic-bezier(0.18, 0.05, 0.16, 1) var(--beam-c-delay) infinite;
+}
+
+@keyframes module-grid-surface-beam-a {
+  0% {
+    transform: translate3d(var(--beam-a-start-x), var(--beam-a-start-y), 0)
+      rotate(var(--beam-a-angle));
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.12;
+  }
+
+  18% {
+    opacity: 0.95;
+  }
+
+  42% {
+    transform: translate3d(var(--beam-a-end-x), var(--beam-a-end-y), 0)
+      rotate(var(--beam-a-angle));
+    opacity: 0.08;
+  }
+
+  48% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate3d(var(--beam-a-end-x), var(--beam-a-end-y), 0)
+      rotate(var(--beam-a-angle));
+    opacity: 0;
+  }
+}
+
+@keyframes module-grid-surface-beam-b {
+  0% {
+    transform: translate3d(var(--beam-b-start-x), var(--beam-b-start-y), 0)
+      rotate(var(--beam-b-angle));
+    opacity: 0;
+  }
+
+  33% {
+    transform: translate3d(var(--beam-b-start-x), var(--beam-b-start-y), 0)
+      rotate(var(--beam-b-angle));
+    opacity: 0;
+  }
+
+  42% {
+    opacity: 0.1;
+  }
+
+  54% {
+    opacity: 0.88;
+  }
+
+  68% {
+    transform: translate3d(var(--beam-b-end-x), var(--beam-b-end-y), 0)
+      rotate(var(--beam-b-angle));
+    opacity: 0.07;
+  }
+
+  74% {
+    transform: translate3d(var(--beam-b-end-x), var(--beam-b-end-y), 0)
+      rotate(var(--beam-b-angle));
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate3d(var(--beam-b-end-x), var(--beam-b-end-y), 0)
+      rotate(var(--beam-b-angle));
+    opacity: 0;
+  }
+}
+
+@keyframes module-grid-surface-beam-c {
+  0% {
+    transform: translate3d(var(--beam-c-start-x), var(--beam-c-start-y), 0)
+      rotate(var(--beam-c-angle));
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.08;
+  }
+
+  22% {
+    opacity: 0.9;
+  }
+
+  46% {
+    transform: translate3d(var(--beam-c-end-x), var(--beam-c-end-y), 0)
+      rotate(var(--beam-c-angle));
+    opacity: 0.06;
+  }
+
+  54% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate3d(var(--beam-c-end-x), var(--beam-c-end-y), 0)
+      rotate(var(--beam-c-angle));
     opacity: 0;
   }
 }
