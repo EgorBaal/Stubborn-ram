@@ -234,65 +234,7 @@
     linear-gradient(180deg, #141414 0%, #090909 100%);
 }
 
-.module-grid__item:nth-child(1) {
-  --beam-c-duration: 35s;
-  --beam-c-delay: -7s;
-  --beam-c-angle: 118deg;
-  --beam-c-start-x: -32%;
-  --beam-c-start-y: 30%;
-  --beam-c-end-x: 30%;
-  --beam-c-end-y: -30%;
-}
 
-.module-grid__item:nth-child(2) {
-  --beam-c-duration: 41s;
-  --beam-c-delay: -18s;
-  --beam-c-angle: -18deg;
-  --beam-c-start-x: 34%;
-  --beam-c-start-y: -8%;
-  --beam-c-end-x: -34%;
-  --beam-c-end-y: 8%;
-}
-
-.module-grid__item:nth-child(3) {
-  --beam-c-duration: 32s;
-  --beam-c-delay: -11s;
-  --beam-c-angle: 64deg;
-  --beam-c-start-x: -18%;
-  --beam-c-start-y: -34%;
-  --beam-c-end-x: 18%;
-  --beam-c-end-y: 34%;
-}
-
-.module-grid__item:nth-child(4) {
-  --beam-c-duration: 39s;
-  --beam-c-delay: -23s;
-  --beam-c-angle: -132deg;
-  --beam-c-start-x: 28%;
-  --beam-c-start-y: 30%;
-  --beam-c-end-x: -28%;
-  --beam-c-end-y: -30%;
-}
-
-.module-grid__item:nth-child(5) {
-  --beam-c-duration: 36s;
-  --beam-c-delay: -5s;
-  --beam-c-angle: 12deg;
-  --beam-c-start-x: -34%;
-  --beam-c-start-y: -6%;
-  --beam-c-end-x: 34%;
-  --beam-c-end-y: 6%;
-}
-
-.module-grid__item:nth-child(6) {
-  --beam-c-duration: 44s;
-  --beam-c-delay: -15s;
-  --beam-c-angle: 96deg;
-  --beam-c-start-x: 0%;
-  --beam-c-start-y: 34%;
-  --beam-c-end-x: 0%;
-  --beam-c-end-y: -34%;
-}
 
 .module-grid__item:hover {
   border-color: #ff6200;
