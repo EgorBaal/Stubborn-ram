@@ -76,6 +76,7 @@ export default function ModuleGrid() {
             <span className="module-grid__surface-beam module-grid__surface-beam--a" />
             <span className="module-grid__surface-beam module-grid__surface-beam--b" />
             <span className="module-grid__surface-beam module-grid__surface-beam--c" />
+            <span className="module-grid__surface-beam module-grid__surface-beam--d" />
           </span>
 
           <span className="module-grid__icon" aria-hidden="true">

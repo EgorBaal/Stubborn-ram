@@ -74,6 +74,14 @@
   --beam-c-start-y: 28%;
   --beam-c-end-x: 30%;
   --beam-c-end-y: -30%;
+
+  --beam-d-duration: 14s;
+  --beam-d-delay: -8s;
+  --beam-d-angle: -150deg;
+  --beam-d-start-x: 30%;
+  --beam-d-start-y: 30%;
+  --beam-d-end-x: -30%;
+  --beam-d-end-y: -30%;
 }
 
 .module-grid__item--training {
@@ -257,9 +265,9 @@
   background: linear-gradient(
     90deg,
     rgba(var(--surface-color-rgb), 0) 0%,
-    rgba(var(--surface-color-rgb), 0.1) 24%,
-    rgba(var(--surface-color-rgb), 0.53) 50%,
-    rgba(var(--surface-color-rgb), 0.1) 76%,
+    rgba(var(--surface-color-rgb), 0.08) 24%,
+    rgba(var(--surface-color-rgb), 0.42) 50%,
+    rgba(var(--surface-color-rgb), 0.08) 76%,
     rgba(var(--surface-color-rgb), 0) 100%
   );
 
@@ -280,6 +288,11 @@
 .module-grid__surface-beam--c {
   animation: module-grid-surface-beam-c var(--beam-c-duration)
     cubic-bezier(0.18, 0.05, 0.16, 1) var(--beam-c-delay) infinite;
+}
+
+.module-grid__surface-beam--d {
+  animation: module-grid-surface-beam-d var(--beam-d-duration)
+    cubic-bezier(0.18, 0.05, 0.16, 1) var(--beam-d-delay) infinite;
 }
 
 @keyframes module-grid-surface-beam-a {
@@ -374,6 +387,38 @@
   100% {
     transform: translate3d(var(--beam-c-end-x), var(--beam-c-end-y), 0)
       rotate(var(--beam-c-angle));
+    opacity: 0;
+  }
+}
+
+@keyframes module-grid-surface-beam-d {
+  0% {
+    transform: translate3d(var(--beam-d-start-x), var(--beam-d-start-y), 0)
+      rotate(var(--beam-d-angle));
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.08;
+  }
+
+  18% {
+    opacity: 0.9;
+  }
+
+  72% {
+    transform: translate3d(var(--beam-d-end-x), var(--beam-d-end-y), 0)
+      rotate(var(--beam-d-angle));
+    opacity: 0.06;
+  }
+
+  78% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate3d(var(--beam-d-end-x), var(--beam-d-end-y), 0)
+      rotate(var(--beam-d-angle));
     opacity: 0;
   }
 }
