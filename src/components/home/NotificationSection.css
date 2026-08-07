@@ -35,6 +35,7 @@
   cursor: pointer;
   touch-action: pan-y;
   overflow: hidden;
+  isolation: isolate;
   transition:
     transform 0.2s,
     border-color 0.2s,
@@ -66,6 +67,37 @@
     rgba(255, 255, 255, 0)
   );
   pointer-events: none;
+}
+
+.notification-card::after {
+  content: "";
+  position: absolute;
+
+  left: -120%;
+  top: -80%;
+
+  width: 40%;
+  height: 260%;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.04) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  filter: blur(15px);
+  transform: rotate(28deg);
+
+  opacity: 0;
+
+  mix-blend-mode: screen;
+
+  animation: notification-shine 12s ease-in-out infinite;
 }
 
 .notification-card__icon {
@@ -152,5 +184,34 @@
 
   .notification-card p {
     font-size: 10px;
+  }
+}
+
+@keyframes notification-shine {
+  0% {
+    left: -75%;
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 0;
+  }
+
+  14% {
+    opacity: 0.8;
+  }
+
+  34% {
+  left: 120%;
+    opacity: 0.1;
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  100% {
+    left: 115%;
+    opacity: 0;
   }
 }
