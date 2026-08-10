@@ -2,21 +2,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import logo from "../../assets/obshee-logo.png";
 
-import { signIn, signUp } from "@/services/auth/authService";
+import { signUp } from "@/services/auth/authService";
 
 import "./AuthModal.css";
 
-import { useNavigate } from "react-router-dom";
-
 const CLOSE_ANIMATION_MS = 280;
 
-export default function AuthModal({ onClose, onOpenRegister }) {
-  const navigate = useNavigate();
+export default function RegisterModal({ onClose }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isClosed, setIsClosed] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const closeTimerRef = useRef(null);
 
@@ -35,35 +35,29 @@ export default function AuthModal({ onClose, onOpenRegister }) {
       }
     }, CLOSE_ANIMATION_MS);
   }, [isClosing, isClosed]);
-  async function handleSignIn() {
-    const { data, error } = await signIn(email, password);
-
-    console.log("DATA:", data);
-    console.log("ERROR:", error);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    requestClose();
-
-    navigate("/app/home");
-  }
 
   async function handleSignUp() {
-    const { data, error } = await signUp(email, password);
-
-    console.log("SIGN UP DATA:", data);
-    console.log("SIGN UP ERROR:", error);
-
-    if (error) {
-      alert(error.message);
+    setError("");
+    setSuccess("");
+    if (password.length < 6) {
+      setError("Пароль должен содержать минимум 6 символов.");
       return;
     }
 
-    alert(
-      "Регистрация прошла успешно. Проверьте электронную почту и подтвердите аккаунт.",
+    if (password !== confirmPassword) {
+      setError("Пароли не совпадают.");
+      return;
+    }
+
+    const { error } = await signUp(email, password);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setSuccess(
+      "Регистрация почти завершена. Проверьте электронную почту и подтвердите аккаунт.",
     );
   }
 
@@ -146,7 +140,7 @@ export default function AuthModal({ onClose, onOpenRegister }) {
                 id="auth-password"
                 className="auth-input auth-input--password"
                 type={isPasswordVisible ? "text" : "password"}
-                autoComplete="current-password"
+                autoComplete="new-password"
                 placeholder="Пароль"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -208,30 +202,32 @@ export default function AuthModal({ onClose, onOpenRegister }) {
             </div>
           </label>
 
+          <label className="auth-field" htmlFor="auth-confirm-password">
+            <input
+              id="auth-confirm-password"
+              className="auth-input"
+              type={isPasswordVisible ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="Повторите пароль"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </label>
+
+          {error && (
+            <div className="auth-message auth-message--error">{error}</div>
+          )}
+
+          {success && (
+            <div className="auth-message auth-message--success">{success}</div>
+          )}
+
           <button
             type="button"
             className="auth-action auth-action--primary"
-            onClick={handleSignIn}
-          >
-            Войти
-          </button>
-
-          <button
-            type="button"
-            className="auth-action auth-action--secondary"
-            onClick={() => {
-              requestClose();
-
-              setTimeout(() => {
-                onOpenRegister();
-              }, 280);
-            }}
+            onClick={handleSignUp}
           >
             Зарегистрироваться
-          </button>
-
-          <button type="button" className="auth-link">
-            Забыли пароль?
           </button>
         </form>
       </div>

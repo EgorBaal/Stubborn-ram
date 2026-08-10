@@ -12,6 +12,9 @@ export async function signUp(email, password) {
   return await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: "https://stubbornram.ru/app/home",
+    },
   });
 }
 

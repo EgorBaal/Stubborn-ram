@@ -7,13 +7,18 @@
   align-items: center;
   justify-content: center;
 
-  padding: 0 12px 120px;
+  padding: max(env(safe-area-inset-top), 16px) 12px
+    max(env(safe-area-inset-bottom), 16px);
 
   background: rgba(5, 5, 5, 0.62);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 
   animation: authOverlayIn 0.28s ease forwards;
+
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .auth-overlay--closing {
@@ -25,6 +30,11 @@
   max-height: 100%;
 
   overflow-y: auto;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+
   scrollbar-width: none;
 
   position: relative;
@@ -489,4 +499,28 @@
     padding-left: 14px;
     padding-right: 14px;
   }
+}
+
+.auth-message {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.auth-message--error {
+  color: #ff8c8c;
+  background: rgba(255, 60, 60, 0.08);
+  border: 1px solid rgba(255, 60, 60, 0.25);
+}
+
+.auth-message--success {
+  color: #8dffb2;
+  background: rgba(40, 180, 90, 0.08);
+  border: 1px solid rgba(40, 180, 90, 0.25);
 }

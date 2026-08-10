@@ -1,10 +1,12 @@
 import logo from "../../assets/obshee-logo.png";
 
-function Hero({ onOpenAuth }) {
+function Hero({ onOpenAuth, onOpenRegister }) {
   return (
     <section className="hero">
       <div className="topBar hero-topbar">
-        <button className="topButton">Регистрация</button>
+        <button className="topButton" onClick={onOpenRegister}>
+          Регистрация
+        </button>
 
         <button className="topButton" onClick={onOpenAuth}>
           Вход
