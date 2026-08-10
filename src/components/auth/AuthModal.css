@@ -4,11 +4,13 @@
   z-index: 1200;
 
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
   padding: max(env(safe-area-inset-top), 16px) 12px
     max(env(safe-area-inset-bottom), 16px);
+
+  padding-top: max(env(safe-area-inset-top), 140px);
 
   background: rgba(5, 5, 5, 0.62);
   -webkit-backdrop-filter: blur(8px);
@@ -27,13 +29,13 @@
 
 .auth-modal {
   width: min(100%, 480px);
-  max-height: 100%;
+  max-height: fit-content;
 
-  overflow-y: auto;
+  overflow: hidden;
 
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  touch-action: none;
 
   scrollbar-width: none;
 
