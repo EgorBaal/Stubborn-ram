@@ -1,16 +1,12 @@
-import { useNavigate } from "react-router-dom";
-
 import logo from "../../assets/obshee-logo.png";
 
-function Hero() {
-  const navigate = useNavigate();
-
+function Hero({ onOpenAuth }) {
   return (
     <section className="hero">
       <div className="topBar hero-topbar">
         <button className="topButton">Регистрация</button>
 
-        <button className="topButton" onClick={() => navigate("/app/home")}>
+        <button className="topButton" onClick={onOpenAuth}>
           Вход
         </button>
       </div>

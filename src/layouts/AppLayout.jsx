@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 
 import BottomTabBar from "@/components/app/BottomTabBar";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 import "./AppLayout.css";
 
@@ -11,12 +12,14 @@ export default function AppLayout() {
   const hideTabBar = location.pathname === "/app/chat";
 
   return (
-    <div className="app-layout">
-      <div className="app-layout__content">
-        <Outlet />
-      </div>
+    <AuthGuard>
+      <div className="app-layout">
+        <div className="app-layout__content">
+          <Outlet />
+        </div>
 
-      {!hideTabBar && <BottomTabBar />}
-    </div>
+        {!hideTabBar && <BottomTabBar />}
+      </div>
+    </AuthGuard>
   );
 }
