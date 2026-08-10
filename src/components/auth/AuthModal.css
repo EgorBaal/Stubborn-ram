@@ -28,7 +28,7 @@
 }
 
 .auth-modal {
-  width: min(100%, 480px);
+  width: min(calc(100% - 32px), 480px);
   max-height: fit-content;
 
   overflow: hidden;
