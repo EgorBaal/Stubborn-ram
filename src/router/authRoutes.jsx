@@ -11,6 +11,10 @@ const authRoutes = [
     path: "/auth/confirm",
     element: <ConfirmEmailPage />,
   },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
+  },
 ];
 
 export default authRoutes;
