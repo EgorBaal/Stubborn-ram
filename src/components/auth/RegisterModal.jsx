@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import logo from "../../assets/obshee-logo.png";
 
 import { signUp } from "@/services/auth/authService";
+import { getAuthErrorMessage } from "@/services/auth/authErrors";
 
 import "./AuthModal.css";
 
@@ -52,7 +53,7 @@ export default function RegisterModal({ onClose }) {
     const { error } = await signUp(email, password);
 
     if (error) {
-      setError(error.message);
+      setError(getAuthErrorMessage(error));
       return;
     }
 

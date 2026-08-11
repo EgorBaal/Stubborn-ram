@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import logo from "../../assets/obshee-logo.png";
 
-import { signIn, signUp } from "@/services/auth/authService";
+import { signIn } from "@/services/auth/authService";
+
+import { getAuthErrorMessage } from "@/services/auth/authErrors";
 
 import "./AuthModal.css";
 
@@ -17,7 +19,7 @@ export default function AuthModal({ onClose, onOpenRegister }) {
   const [isClosed, setIsClosed] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [error, setError] = useState("");
   const closeTimerRef = useRef(null);
 
   const requestClose = useCallback(() => {
@@ -36,35 +38,17 @@ export default function AuthModal({ onClose, onOpenRegister }) {
     }, CLOSE_ANIMATION_MS);
   }, [isClosing, isClosed]);
   async function handleSignIn() {
+    setError("");
     const { data, error } = await signIn(email, password);
 
-    console.log("DATA:", data);
-    console.log("ERROR:", error);
-
     if (error) {
-      alert(error.message);
+      setError(getAuthErrorMessage(error));
       return;
     }
 
     requestClose();
 
     navigate("/app/home");
-  }
-
-  async function handleSignUp() {
-    const { data, error } = await signUp(email, password);
-
-    console.log("SIGN UP DATA:", data);
-    console.log("SIGN UP ERROR:", error);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    alert(
-      "Регистрация прошла успешно. Проверьте электронную почту и подтвердите аккаунт.",
-    );
   }
 
   useEffect(() => {
@@ -207,6 +191,10 @@ export default function AuthModal({ onClose, onOpenRegister }) {
               </button>
             </div>
           </label>
+
+          {error && (
+            <div className="auth-message auth-message--error">{error}</div>
+          )}
 
           <button
             type="button"
