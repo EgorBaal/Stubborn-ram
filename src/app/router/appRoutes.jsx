@@ -1,7 +1,7 @@
 import AppLayout from "@/app/layouts/AppLayout";
 import AuthGuard from "@/components/auth/AuthGuard";
 
-import HomePage from "@/pages/app/HomePage";
+import HomePage from "@/modules/home/HomePage";
 import LibraryPage from "@/pages/app/LibraryPage";
 import ChatPage from "@/pages/app/ChatPage";
 import AnalyticsPage from "@/pages/app/AnalyticsPage";

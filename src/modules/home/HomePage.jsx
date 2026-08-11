@@ -1,7 +1,6 @@
-import BottomTabBar from "@/components/app/BottomTabBar";
-import HomeHeader from "@/components/home/HomeHeader";
-import ModuleGrid from "@/components/home/ModuleGrid";
-import NotificationSection from "@/components/home/NotificationSection";
+import HomeHeader from "@/modules/home/components/HomeHeader";
+import ModuleGrid from "@/modules/home/components/ModuleGrid";
+import NotificationSection from "@/modules/home/components/NotificationSection";
 
 import "./HomePage.css";
 
@@ -17,7 +16,6 @@ export default function HomePage() {
       <HomeHeader {...mockUser} />
       <NotificationSection />
       <ModuleGrid />
-      <BottomTabBar />
     </main>
   );
 }
