@@ -4,10 +4,12 @@ import Hero from "@/components/landing/Hero";
 import HomeContent from "@/components/landing/HomeContent";
 import AuthModal from "@/components/auth/AuthModal";
 import RegisterModal from "@/components/auth/RegisterModal";
+import ResetPasswordModal from "@/components/auth/ResetPasswordModal";
 
 export default function LandingPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
 
   return (
     <>
@@ -25,11 +27,19 @@ export default function LandingPage() {
             setIsAuthOpen(false);
             setIsRegisterOpen(true);
           }}
+          onOpenResetPassword={() => {
+            setIsAuthOpen(false);
+            setIsResetPasswordOpen(true);
+          }}
         />
       )}
 
       {isRegisterOpen && (
         <RegisterModal onClose={() => setIsRegisterOpen(false)} />
+      )}
+
+      {isResetPasswordOpen && (
+        <ResetPasswordModal onClose={() => setIsResetPasswordOpen(false)} />
       )}
     </>
   );

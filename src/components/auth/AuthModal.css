@@ -526,3 +526,16 @@
   background: rgba(40, 180, 90, 0.08);
   border: 1px solid rgba(40, 180, 90, 0.25);
 }
+
+.auth-description {
+  margin: 0 0 24px;
+
+  color: rgba(255, 255, 255, 0.74);
+
+  text-align: center;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  font-family: "Comfortaa", sans-serif;
+}

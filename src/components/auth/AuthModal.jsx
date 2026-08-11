@@ -12,7 +12,11 @@ import { useNavigate } from "react-router-dom";
 
 const CLOSE_ANIMATION_MS = 280;
 
-export default function AuthModal({ onClose, onOpenRegister }) {
+export default function AuthModal({
+  onClose,
+  onOpenRegister,
+  onOpenResetPassword,
+}) {
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -218,7 +222,17 @@ export default function AuthModal({ onClose, onOpenRegister }) {
             Зарегистрироваться
           </button>
 
-          <button type="button" className="auth-link">
+          <button
+            type="button"
+            className="auth-link"
+            onClick={() => {
+              requestClose();
+
+              setTimeout(() => {
+                onOpenResetPassword();
+              }, 280);
+            }}
+          >
             Забыли пароль?
           </button>
         </form>
