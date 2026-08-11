@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(180deg, #0a0d11 0%, #11151b 100%);
   color: #f4f4f4;
-  padding: 20px 16px 96px;
+  padding: 20px 16px calc(24px + 92px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   font-family: "Comfortaa", sans-serif;
 }
@@ -10,9 +10,10 @@
 .profile-page__content {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   max-width: 720px;
   margin: 0 auto;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 }
 
 .profile-card {
@@ -184,7 +185,8 @@
 }
 
 .profile-page__signout {
-  margin-top: 18px;
+  margin-top: 10px;
+  margin-bottom: 4px;
   border: none;
   border-radius: 16px;
   background: #d9480f;
