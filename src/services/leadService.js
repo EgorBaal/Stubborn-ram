@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/shared/lib/supabaseClient";
 
 export async function createLead(lead) {
   const { error } = await supabase.from("leads").insert([lead]);

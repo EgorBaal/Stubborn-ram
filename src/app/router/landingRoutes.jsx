@@ -1,4 +1,4 @@
-import LandingLayout from "@/layouts/LandingLayout";
+import LandingLayout from "@/app/layouts/LandingLayout";
 
 const landingRoutes = [
   {

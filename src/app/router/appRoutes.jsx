@@ -1,4 +1,4 @@
-import AppLayout from "@/layouts/AppLayout";
+import AppLayout from "@/app/layouts/AppLayout";
 import AuthGuard from "@/components/auth/AuthGuard";
 
 import HomePage from "@/pages/app/HomePage";
