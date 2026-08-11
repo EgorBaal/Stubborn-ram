@@ -1,0 +1,211 @@
+.profile-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0d11 0%, #11151b 100%);
+  color: #f4f4f4;
+  padding: 20px 16px 96px;
+  box-sizing: border-box;
+  font-family: "Comfortaa", sans-serif;
+}
+
+.profile-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.42),
+    0 2px 6px rgba(255, 98, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -12px 18px rgba(0, 0, 0, 0.3);
+}
+
+.profile-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 98, 0, 0.16),
+    transparent 35%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  pointer-events: none;
+}
+
+.profile-card--hero {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0) 24%
+    ),
+    linear-gradient(135deg, rgba(255, 98, 0, 0.16), rgba(255, 98, 0, 0.03));
+}
+
+.profile-card__avatar {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6200, #ff8c3a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(255, 98, 0, 0.16);
+}
+
+.profile-card__info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-card__name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.profile-card__email {
+  margin: 0;
+  font-size: 13px;
+  color: #b9bcc2;
+}
+
+.profile-section {
+  padding: 8px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -12px 20px rgba(0, 0, 0, 0.24);
+}
+
+.profile-section__title {
+  margin: 0 16px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ff6200;
+}
+
+.profile-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  color: #f3f3f3;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background-color 0.2s ease;
+}
+
+.profile-list__item:first-child {
+  border-top: none;
+}
+
+.profile-list__item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.profile-list__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-list__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 98, 0, 0.24);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 98, 0, 0.2),
+    rgba(255, 98, 0, 0.04) 70%
+  );
+  color: #ff6200;
+  box-shadow: inset 0 0 10px rgba(255, 98, 0, 0.16);
+}
+
+.profile-list__label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.profile-list__arrow {
+  color: #8a8f95;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.profile-page__signout {
+  margin-top: 18px;
+  border: none;
+  border-radius: 16px;
+  background: #d9480f;
+  color: #fff;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(217, 72, 15, 0.24);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.profile-page__signout:hover {
+  background: #e85d1f;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(232, 93, 31, 0.24);
+}
+
+.profile-page__signout:active {
+  transform: none;
+}

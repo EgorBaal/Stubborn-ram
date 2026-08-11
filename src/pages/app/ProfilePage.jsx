@@ -1,14 +1,150 @@
-import BottomTabBar from "@/components/app/BottomTabBar";
+import { useNavigate } from "react-router-dom";
+import {
+  Bell,
+  CircleHelp,
+  FileText,
+  MessageCircleMore,
+  MonitorSmartphone,
+  ShieldCheck,
+  SlidersHorizontal,
+  UserRound,
+} from "lucide-react";
 
-import "./PagePlaceholder.css";
+import BottomTabBar from "@/components/app/BottomTabBar";
+import { useAuth } from "@/contexts/AuthContext";
+import { signOut } from "@/services/auth/authService";
+
+import "./ProfilePage.css";
+
+const accountSections = [
+  { label: "Личные данные", icon: UserRound },
+  { label: "Настройки", icon: SlidersHorizontal },
+  { label: "Уведомления", icon: Bell },
+];
+
+const supportSections = [
+  { label: "FAQ", icon: CircleHelp },
+  { label: "Связаться с нами", icon: MessageCircleMore },
+  { label: "Политика конфиденциальности", icon: ShieldCheck },
+];
+
+const aboutSections = [
+  { label: "Версия приложения", icon: MonitorSmartphone },
+  { label: "Пользовательское соглашение", icon: FileText },
+];
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split("@")[0] ||
+    "Пользователь";
+
+  const email = user?.email || "example@mail.com";
+
+  async function handleSignOut() {
+    const { error } = await signOut();
+
+    if (!error) {
+      navigate("/", { replace: true });
+    }
+  }
+
   return (
-    <main className="app-page app-page--placeholder">
-      <div>
-        <h1>Profile</h1>
-        <p>Модуль находится в разработке.</p>
+    <main className="app-page profile-page">
+      <div className="profile-page__content">
+        <section className="profile-card profile-card--hero">
+          <div className="profile-card__avatar" aria-hidden="true">
+            {displayName.charAt(0).toUpperCase()}
+          </div>
+
+          <div className="profile-card__info">
+            <h1 className="profile-card__name">{displayName}</h1>
+            <p className="profile-card__email">{email}</p>
+          </div>
+        </section>
+
+        <section className="profile-section">
+          <h2 className="profile-section__title">Аккаунт</h2>
+          <ul className="profile-list">
+            {accountSections.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <li key={item.label} className="profile-list__item">
+                  <span className="profile-list__left">
+                    <span className="profile-list__icon" aria-hidden="true">
+                      <Icon size={16} strokeWidth={1.8} />
+                    </span>
+                    <span className="profile-list__label">{item.label}</span>
+                  </span>
+                  <span className="profile-list__arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <section className="profile-section">
+          <h2 className="profile-section__title">Поддержка</h2>
+          <ul className="profile-list">
+            {supportSections.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <li key={item.label} className="profile-list__item">
+                  <span className="profile-list__left">
+                    <span className="profile-list__icon" aria-hidden="true">
+                      <Icon size={16} strokeWidth={1.8} />
+                    </span>
+                    <span className="profile-list__label">{item.label}</span>
+                  </span>
+                  <span className="profile-list__arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <section className="profile-section">
+          <h2 className="profile-section__title">О приложении</h2>
+          <ul className="profile-list">
+            {aboutSections.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <li key={item.label} className="profile-list__item">
+                  <span className="profile-list__left">
+                    <span className="profile-list__icon" aria-hidden="true">
+                      <Icon size={16} strokeWidth={1.8} />
+                    </span>
+                    <span className="profile-list__label">{item.label}</span>
+                  </span>
+                  <span className="profile-list__arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <button
+          type="button"
+          className="profile-page__signout"
+          onClick={handleSignOut}
+        >
+          Выйти из аккаунта
+        </button>
       </div>
+
       <BottomTabBar />
     </main>
   );
