@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import logo from "@/assets/obshee-logo.png";
 
 import "@/components/auth/AuthModal.css";
+import { getAuthErrorMessage } from "@/services/auth/authErrors";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function ResetPasswordPage() {
     });
 
     if (error) {
-      setError(error.message);
+      setError(getAuthErrorMessage(error));
       return;
     }
 

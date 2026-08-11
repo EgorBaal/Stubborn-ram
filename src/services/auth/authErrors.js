@@ -29,5 +29,9 @@ export function getAuthErrorMessage(error) {
     return "Слишком много попыток. Попробуйте позже.";
   }
 
+  if (message.includes("new password should be different")) {
+    return "Новый пароль должен отличаться от предыдущего.";
+  }
+
   return "Произошла ошибка. Попробуйте еще раз.";
 }
