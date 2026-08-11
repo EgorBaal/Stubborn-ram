@@ -54,7 +54,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="app-page profile-page">
+    <main className="profile-page">
       <div className="profile-page__content">
         <section className="profile-card profile-card--hero">
           <div className="profile-card__avatar" aria-hidden="true">

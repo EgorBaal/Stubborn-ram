@@ -1,37 +1,27 @@
-.app-page {
+.home-page {
   position: relative;
   width: 100%;
   height: 100dvh;
   max-width: 480px;
+  max-height: 100dvh;
   margin: 0 auto;
   padding: max(12px, env(safe-area-inset-top)) 20px
     calc(var(--tabbar-height) + env(safe-area-inset-bottom));
   background: #080808;
   overflow: hidden;
-}
-
-.home-page {
+  overscroll-behavior: none;
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex: 1;
   min-height: 0;
+  box-sizing: border-box;
 }
 
 @media (max-width: 340px) {
-  .app-page {
+  .home-page {
+    gap: 9px;
     padding: max(10px, env(safe-area-inset-top)) 14px
       calc(var(--tabbar-height) + env(safe-area-inset-bottom));
   }
-
-  .home-page {
-    gap: 9px;
-  }
-}
-
-.app-page--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
 }

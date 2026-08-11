@@ -13,7 +13,7 @@ const mockUser = {
 
 export default function HomePage() {
   return (
-    <main className="app-page home-page">
+    <main className="home-page">
       <HomeHeader {...mockUser} />
       <NotificationSection />
       <ModuleGrid />

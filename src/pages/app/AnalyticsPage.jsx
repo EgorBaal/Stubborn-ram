@@ -1,10 +1,10 @@
 import BottomTabBar from "@/components/app/BottomTabBar";
 
-import "./PagePlaceholder.css";
+import "./AnalyticsPage.css";
 
 export default function AnalyticsPage() {
   return (
-    <main className="app-page app-page--placeholder">
+    <main className="analytics-page">
       <div>
         <h1>Analytics</h1>
         <p>Модуль находится в разработке.</p>

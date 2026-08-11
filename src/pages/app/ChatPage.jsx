@@ -1,10 +1,10 @@
 import BottomTabBar from "@/components/app/BottomTabBar";
 
-import "./PagePlaceholder.css";
+import "./ChatPage.css";
 
 export default function ChatPage() {
   return (
-    <main className="app-page app-page--placeholder">
+    <main className="chat-page">
       <div>
         <h1>Chat</h1>
         <p>Модуль находится в разработке.</p>

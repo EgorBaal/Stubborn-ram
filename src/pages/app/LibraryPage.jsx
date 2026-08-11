@@ -1,10 +1,10 @@
 import BottomTabBar from "@/components/app/BottomTabBar";
 
-import "./PagePlaceholder.css";
+import "./LibraryPage.css";
 
 export default function LibraryPage() {
   return (
-    <main className="app-page app-page--placeholder">
+    <main className="library-page">
       <div>
         <h1>Library</h1>
         <p>Модуль находится в разработке.</p>
