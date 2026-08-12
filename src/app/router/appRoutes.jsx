@@ -12,7 +12,7 @@ import ReportPlaceholderPage from "@/modules/report/ReportPlaceholderPage";
 import ActivityPlaceholderPage from "@/pages/app/ActivityPlaceholderPage";
 import TrainingPlaceholderPage from "@/modules/training/TrainingPlaceholderPage";
 import NutritionPlaceholderPage from "@/modules/nutrition/NutritionPlaceholderPage";
-import PhotosPlaceholderPage from "@/pages/app/PhotosPlaceholderPage";
+import PhotosPlaceholderPage from "@/modules/photos/PhotosPlaceholderPage";
 import WeightPlaceholderPage from "@/pages/app/WeightPlaceholderPage";
 
 const appRoutes = [
