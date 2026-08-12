@@ -10,7 +10,7 @@ import ProfilePage from "@/modules/profile/ProfilePage";
 import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
 import ReportPlaceholderPage from "@/pages/app/ReportPlaceholderPage";
 import ActivityPlaceholderPage from "@/pages/app/ActivityPlaceholderPage";
-import TrainingPlaceholderPage from "@/pages/app/TrainingPlaceholderPage";
+import TrainingPlaceholderPage from "@/modules/training/TrainingPlaceholderPage";
 import NutritionPlaceholderPage from "@/pages/app/NutritionPlaceholderPage";
 import PhotosPlaceholderPage from "@/pages/app/PhotosPlaceholderPage";
 import WeightPlaceholderPage from "@/pages/app/WeightPlaceholderPage";
