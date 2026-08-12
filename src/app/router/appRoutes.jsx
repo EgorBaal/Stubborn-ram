@@ -8,7 +8,7 @@ import AnalyticsPage from "@/pages/app/AnalyticsPage";
 import ProfilePage from "@/modules/profile/ProfilePage";
 
 import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
-import ReportPlaceholderPage from "@/pages/app/ReportPlaceholderPage";
+import ReportPlaceholderPage from "@/modules/report/ReportPlaceholderPage";
 import ActivityPlaceholderPage from "@/pages/app/ActivityPlaceholderPage";
 import TrainingPlaceholderPage from "@/modules/training/TrainingPlaceholderPage";
 import NutritionPlaceholderPage from "@/modules/nutrition/NutritionPlaceholderPage";
