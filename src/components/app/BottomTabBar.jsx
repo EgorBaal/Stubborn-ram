@@ -66,6 +66,7 @@ export default function BottomTabBar() {
 
     const navNode = navRef.current;
     const tabNode = tabRefs.current[activeTab.path];
+    const isChatTab = activeTab.path === "/app/chat";
     const contentNode =
       tabNode?.querySelector(".bottom-tab-bar__content") ||
       tabNode?.querySelector(".bottom-tab-bar__chat-button") ||
@@ -80,8 +81,9 @@ export default function BottomTabBar() {
     const contentRect = contentNode.getBoundingClientRect();
 
     const horizontalPadding = 16;
-
-    const desiredWidth = contentRect.width + horizontalPadding * 2;
+    const desiredWidth = isChatTab
+      ? contentRect.width
+      : contentRect.width + horizontalPadding * 2;
 
     const maxWidth = tabRect.width - 8;
 

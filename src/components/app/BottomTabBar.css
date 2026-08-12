@@ -89,7 +89,6 @@
   text-decoration: none;
   font-weight: 700;
   z-index: 1;
-  transition: color 220ms ease;
   min-width: 0;
 }
 
@@ -161,11 +160,6 @@
     0 0 0 1px rgba(255, 98, 0, 0.06),
     0 8px 18px rgba(0, 0, 0, 0.35),
     0 0 18px rgba(255, 98, 0, 0.08);
-  transition:
-    transform 220ms ease,
-    box-shadow 280ms ease,
-    border-color 220ms ease,
-    color 220ms ease;
 }
 
 .bottom-tab-bar__item.is-chat:active .bottom-tab-bar__chat-button {
