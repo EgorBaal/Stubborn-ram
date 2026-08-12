@@ -49,6 +49,7 @@ export default function BottomTabBar() {
   const location = useLocation();
   const navRef = useRef(null);
   const tabRefs = useRef({});
+  const isChatActive = location.pathname === "/app/chat";
   const [indicatorStyle, setIndicatorStyle] = useState({
     left: lastIndicatorState.left,
     width: lastIndicatorState.width,
@@ -126,7 +127,7 @@ export default function BottomTabBar() {
       aria-label="Основная навигация приложения"
     >
       <span
-        className={`bottom-tab-bar__indicator ${indicatorStyle.visible ? "is-visible" : ""} ${indicatorStyle.ready ? "is-ready" : ""}`}
+        className={`bottom-tab-bar__indicator ${indicatorStyle.visible ? "is-visible" : ""} ${indicatorStyle.ready ? "is-ready" : ""} ${isChatActive ? "is-chat-target" : ""}`}
         style={{
           left: `${indicatorStyle.left}px`,
           width: `${indicatorStyle.width}px`,
