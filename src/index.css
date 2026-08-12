@@ -34,6 +34,9 @@ body {
   font-family: "Comfortaa";
   color: var(--text);
   overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 #root {
@@ -57,4 +60,20 @@ select,
 textarea,
 [role="button"] {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#root *,
+#root *::before,
+#root *::after {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
