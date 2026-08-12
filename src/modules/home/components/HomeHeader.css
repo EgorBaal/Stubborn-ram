@@ -24,8 +24,10 @@
   transition: transform 0.25s ease;
 }
 
-.home-header__logo:hover {
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .home-header__logo:hover {
+    transform: scale(1.05);
+  }
 }
 
 .home-header__date {
@@ -74,15 +76,17 @@
     box-shadow 0.2s;
 }
 
-.home-header__avatar:hover {
-  border-color: #ff6200;
+@media (hover: hover) and (pointer: fine) {
+  .home-header__avatar:hover {
+    border-color: #ff6200;
 
-  box-shadow:
-    0 0 16px rgba(255, 98, 0, 0.22),
-    0 6px 18px rgba(0, 0, 0, 0.32);
+    box-shadow:
+      0 0 16px rgba(255, 98, 0, 0.22),
+      0 6px 18px rgba(0, 0, 0, 0.32);
 
-  transform: translateY(-2px);
-  z-index: 2;
+    transform: translateY(-2px);
+    z-index: 2;
+  }
 }
 
 .home-header__avatar img {

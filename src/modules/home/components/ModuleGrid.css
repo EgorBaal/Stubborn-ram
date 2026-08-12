@@ -124,15 +124,17 @@
     linear-gradient(180deg, #171717 0%, #0c0c0c 100%);
 }
 
-.module-grid__item:hover {
-  border-color: #ff6200;
+@media (hover: hover) and (pointer: fine) {
+  .module-grid__item:hover {
+    border-color: #ff6200;
 
-  box-shadow:
-    0 0 16px rgba(255, 98, 0, 0.22),
-    0 6px 18px rgba(0, 0, 0, 0.32);
+    box-shadow:
+      0 0 16px rgba(255, 98, 0, 0.22),
+      0 6px 18px rgba(0, 0, 0, 0.32);
 
-  transform: translateY(-2px);
-  z-index: 2;
+    transform: translateY(-2px);
+    z-index: 2;
+  }
 }
 
 .module-grid__item::before {

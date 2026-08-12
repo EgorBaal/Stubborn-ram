@@ -42,15 +42,17 @@
     box-shadow 0.2s;
 }
 
-.notification-card:hover {
-  border-color: #ff6200;
+@media (hover: hover) and (pointer: fine) {
+  .notification-card:hover {
+    border-color: #ff6200;
 
-  box-shadow:
-    0 0 16px rgba(255, 98, 0, 0.22),
-    0 6px 18px rgba(0, 0, 0, 0.32);
+    box-shadow:
+      0 0 16px rgba(255, 98, 0, 0.22),
+      0 6px 18px rgba(0, 0, 0, 0.32);
 
-  transform: translateY(-2px);
-  z-index: 2;
+    transform: translateY(-2px);
+    z-index: 2;
+  }
 }
 
 .notification-card::before {
@@ -202,7 +204,7 @@
   }
 
   34% {
-  left: 120%;
+    left: 120%;
     opacity: 0.1;
   }
 

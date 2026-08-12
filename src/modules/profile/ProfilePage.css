@@ -167,12 +167,20 @@
   pointer-events: none;
 }
 
-.profile-list__item:hover {
-  border-color: #ff6200;
-  box-shadow:
-    0 0 16px rgba(255, 98, 0, 0.22),
-    0 6px 18px rgba(0, 0, 0, 0.32);
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .profile-list__item:hover {
+    border-color: #ff6200;
+    box-shadow:
+      0 0 16px rgba(255, 98, 0, 0.22),
+      0 6px 18px rgba(0, 0, 0, 0.32);
+    transform: translateY(-2px);
+  }
+
+  .profile-page__signout:hover {
+    background: #e85d1f;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 24px rgba(232, 93, 31, 0.24);
+  }
 }
 
 .profile-list__left {
@@ -224,12 +232,6 @@
     transform 0.2s ease,
     box-shadow 0.2s ease,
     background-color 0.2s ease;
-}
-
-.profile-page__signout:hover {
-  background: #e85d1f;
-  transform: translateY(-1px);
-  box-shadow: 0 14px 24px rgba(232, 93, 31, 0.24);
 }
 
 .profile-page__signout:active {
