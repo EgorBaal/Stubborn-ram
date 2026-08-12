@@ -28,6 +28,11 @@
   display: none;
 }
 
+.app-layout__content:has(.home-page) {
+  overflow-y: hidden;
+  overscroll-behavior-y: none;
+}
+
 .app-layout {
   width: 100%;
   height: 100dvh;
