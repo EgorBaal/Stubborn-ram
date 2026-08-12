@@ -57,9 +57,7 @@ export default function BottomTabBar() {
   });
 
   const updateIndicatorPosition = () => {
-    const activeTab = tabs.find(
-      (tab) => tab.path === location.pathname && tab.path !== "/app/chat",
-    );
+    const activeTab = tabs.find((tab) => tab.path === location.pathname);
 
     if (!activeTab) {
       setIndicatorStyle((prev) => ({ ...prev, visible: false, ready: true }));
