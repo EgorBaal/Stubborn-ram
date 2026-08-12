@@ -1,5 +1,3 @@
-import BottomTabBar from "@/components/app/BottomTabBar";
-
 export default function SectionPlaceholderPage({
   title,
   pageClassName = "placeholder-page",
@@ -10,7 +8,6 @@ export default function SectionPlaceholderPage({
         <h1>{title}</h1>
         <p>Раздел находится в разработке.</p>
       </div>
-      <BottomTabBar />
     </main>
   );
 }
