@@ -1,5 +1,3 @@
-import BottomTabBar from "@/components/app/BottomTabBar";
-
 import "./LibraryPage.css";
 
 export default function LibraryPage() {
@@ -9,7 +7,6 @@ export default function LibraryPage() {
         <h1>Library</h1>
         <p>Модуль находится в разработке.</p>
       </div>
-      <BottomTabBar />
     </main>
   );
 }
