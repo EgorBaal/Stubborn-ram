@@ -3,8 +3,8 @@ import AuthGuard from "@/components/auth/AuthGuard";
 
 import HomePage from "@/modules/home/HomePage";
 import LibraryPage from "@/modules/library/LibraryPage";
-import ChatPage from "@/pages/app/ChatPage";
-import AnalyticsPage from "@/pages/app/AnalyticsPage";
+import ChatPage from "@/modules/chat/ChatPage";
+import AnalyticsPage from "@/modules/analytics/AnalyticsPage";
 import ProfilePage from "@/modules/profile/ProfilePage";
 
 import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";

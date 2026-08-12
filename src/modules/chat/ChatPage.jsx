@@ -1,5 +1,3 @@
-import BottomTabBar from "@/components/app/BottomTabBar";
-
 import "./ChatPage.css";
 
 export default function ChatPage() {
@@ -9,7 +7,6 @@ export default function ChatPage() {
         <h1>Chat</h1>
         <p>Модуль находится в разработке.</p>
       </div>
-      <BottomTabBar />
     </main>
   );
 }
