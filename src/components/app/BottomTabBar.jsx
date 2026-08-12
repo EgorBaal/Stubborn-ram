@@ -66,7 +66,10 @@ export default function BottomTabBar() {
 
     const navNode = navRef.current;
     const tabNode = tabRefs.current[activeTab.path];
-    const contentNode = tabNode?.querySelector(".bottom-tab-bar__content");
+    const contentNode =
+      tabNode?.querySelector(".bottom-tab-bar__content") ||
+      tabNode?.querySelector(".bottom-tab-bar__chat-button") ||
+      tabNode;
 
     if (!navNode || !tabNode || !contentNode) {
       return;
@@ -74,7 +77,6 @@ export default function BottomTabBar() {
 
     const navRect = navNode.getBoundingClientRect();
     const tabRect = tabNode.getBoundingClientRect();
-
     const contentRect = contentNode.getBoundingClientRect();
 
     const horizontalPadding = 16;
