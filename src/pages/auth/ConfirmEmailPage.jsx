@@ -24,9 +24,7 @@ export default function ConfirmEmailPage() {
       >
         <div style={{ fontSize: "58px", marginBottom: "16px" }}>✅</div>
 
-        <h1 style={{ marginBottom: "16px" }}>
-          Почта подтверждена
-        </h1>
+        <h1 style={{ marginBottom: "16px" }}>Почта подтверждена</h1>
 
         <p style={{ color: "#b8b8b8" }}>
           Теперь вы можете войти в свой аккаунт.

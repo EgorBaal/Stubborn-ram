@@ -1,9 +1,14 @@
 import LandingLayout from "@/app/layouts/LandingLayout";
+import { PublicRoute } from "@/components/auth/AuthGuard";
 
 const landingRoutes = [
   {
     path: "/",
-    element: <LandingLayout />,
+    element: (
+      <PublicRoute>
+        <LandingLayout />
+      </PublicRoute>
+    ),
   },
 ];
 

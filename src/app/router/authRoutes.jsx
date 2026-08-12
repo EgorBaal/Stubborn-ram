@@ -1,3 +1,4 @@
+import { PublicRoute } from "@/components/auth/AuthGuard";
 import LoginPage from "@/pages/auth/LoginPage";
 import ConfirmEmailPage from "@/pages/auth/ConfirmEmailPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
@@ -5,15 +6,27 @@ import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 const authRoutes = [
   {
     path: "/login",
-    element: <LoginPage />,
+    element: (
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    ),
   },
   {
     path: "/auth/confirm",
-    element: <ConfirmEmailPage />,
+    element: (
+      <PublicRoute>
+        <ConfirmEmailPage />
+      </PublicRoute>
+    ),
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordPage />,
+    element: (
+      <PublicRoute>
+        <ResetPasswordPage />
+      </PublicRoute>
+    ),
   },
 ];
 
