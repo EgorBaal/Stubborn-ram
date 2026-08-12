@@ -11,7 +11,7 @@ import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
 import ReportPlaceholderPage from "@/pages/app/ReportPlaceholderPage";
 import ActivityPlaceholderPage from "@/pages/app/ActivityPlaceholderPage";
 import TrainingPlaceholderPage from "@/modules/training/TrainingPlaceholderPage";
-import NutritionPlaceholderPage from "@/pages/app/NutritionPlaceholderPage";
+import NutritionPlaceholderPage from "@/modules/nutrition/NutritionPlaceholderPage";
 import PhotosPlaceholderPage from "@/pages/app/PhotosPlaceholderPage";
 import WeightPlaceholderPage from "@/pages/app/WeightPlaceholderPage";
 
