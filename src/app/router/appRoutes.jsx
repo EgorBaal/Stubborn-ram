@@ -5,7 +5,7 @@ import HomePage from "@/modules/home/HomePage";
 import LibraryPage from "@/pages/app/LibraryPage";
 import ChatPage from "@/pages/app/ChatPage";
 import AnalyticsPage from "@/pages/app/AnalyticsPage";
-import ProfilePage from "@/pages/app/ProfilePage";
+import ProfilePage from "@/modules/profile/ProfilePage";
 
 import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
 import ReportPlaceholderPage from "@/pages/app/ReportPlaceholderPage";

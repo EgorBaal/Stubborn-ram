@@ -10,7 +10,6 @@ import {
   UserRound,
 } from "lucide-react";
 
-import BottomTabBar from "@/components/app/BottomTabBar";
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/services/auth/authService";
 
@@ -144,8 +143,6 @@ export default function ProfilePage() {
           Выйти из аккаунта
         </button>
       </div>
-
-      <BottomTabBar />
     </main>
   );
 }
