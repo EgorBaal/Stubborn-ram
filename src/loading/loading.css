@@ -1,0 +1,20 @@
+.loading-overlay {
+  position: relative;
+}
+
+.loading-screen {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-screen__label {
+  font-size: 14px;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+}
