@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 
 import BottomTabBar from "@/components/app/BottomTabBar";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { LoadingOverlay } from "@/loading";
 
 import "./AppLayout.css";
 
@@ -12,6 +13,8 @@ export default function AppLayout() {
         <div className="app-layout__content">
           <Outlet />
         </div>
+
+        <LoadingOverlay />
 
         <BottomTabBar />
       </div>
