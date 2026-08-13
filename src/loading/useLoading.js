@@ -9,5 +9,9 @@ export default function useLoading() {
     throw new Error("useLoading must be used inside LoadingProvider");
   }
 
-  return context;
+  return {
+    show: context.show,
+    hide: context.hide,
+    run: context.run,
+  };
 }

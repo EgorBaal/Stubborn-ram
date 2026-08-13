@@ -2,36 +2,37 @@ import { useMemo, useState } from "react";
 
 import { LoadingContext } from "./LoadingContext";
 
-const defaultMeta = null;
-
 export default function LoadingProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [meta, setMeta] = useState(defaultMeta);
 
-  const startLoading = (nextMeta = defaultMeta) => {
-    setMeta(nextMeta);
+  const show = () => {
     setIsLoading(true);
   };
 
-  const stopLoading = () => {
+  const hide = () => {
     setIsLoading(false);
-    setMeta(defaultMeta);
   };
 
-  const setLoading = (nextValue, nextMeta = defaultMeta) => {
-    setIsLoading(Boolean(nextValue));
-    setMeta(nextValue ? nextMeta : defaultMeta);
+  const run = async (operation) => {
+    show();
+
+    try {
+      return await operation();
+    } finally {
+      hide();
+    }
   };
 
   const value = useMemo(
     () => ({
+      // Internal state can be consumed by infrastructure UI on integration stage.
       isLoading,
-      meta,
-      startLoading,
-      stopLoading,
-      setLoading,
+      // Public contract for all modules.
+      show,
+      hide,
+      run,
     }),
-    [isLoading, meta],
+    [isLoading],
   );
 
   return (
