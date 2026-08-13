@@ -1,7 +1,8 @@
-import LoadingSpinner from "./LoadingSpinner";
+import loadingVideoSrc from "@/assets/loading/stubborn-ram-loading.mp4";
+
 import "./loading.css";
 
-export default function LoadingScreen({ label = "Loading" }) {
+export default function LoadingScreen() {
   return (
     <div
       className="loading-screen"
@@ -9,8 +10,16 @@ export default function LoadingScreen({ label = "Loading" }) {
       aria-live="polite"
       aria-busy="true"
     >
-      <LoadingSpinner />
-      <span className="loading-screen__label">{label}</span>
+      <video
+        className="loading-screen__video"
+        src={loadingVideoSrc}
+        autoPlay
+        muted
+        playsInline
+        loop
+        preload="auto"
+      />
+      <span className="loading-screen__sr-only">Loading</span>
     </div>
   );
 }

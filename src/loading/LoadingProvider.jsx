@@ -3,14 +3,16 @@ import { useMemo, useState } from "react";
 import { LoadingContext } from "./LoadingContext";
 
 export default function LoadingProvider({ children }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeLoads, setActiveLoads] = useState(0);
+
+  const isLoading = activeLoads > 0;
 
   const show = () => {
-    setIsLoading(true);
+    setActiveLoads((previous) => previous + 1);
   };
 
   const hide = () => {
-    setIsLoading(false);
+    setActiveLoads((previous) => (previous > 0 ? previous - 1 : 0));
   };
 
   const run = async (operation) => {

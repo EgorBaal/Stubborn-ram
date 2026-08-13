@@ -3,6 +3,7 @@
 D:.
 |   .diff
 |   .env.local
+|   .gitignore
 |   .oxlintrc.json
 |   App.css
 |   changes.diff
@@ -12,11 +13,11 @@ D:.
 |   jsconfig.json
 |   package-lock.json
 |   package.json
-|   project-tree.txt
 |   PROJECT_TREE.txt
 |   README.md
 |   vite.config.js
 |   
++---.github
 |   \---workflows
 |           deploy.yml
 |           
@@ -45,6 +46,7 @@ D:.
 |           Питание образец 3.png
 |           Чат образец 1.png
 |           
++---dist
 |   |   404.html
 |   |   apple-touch-icon.png
 |   |   CNAME
@@ -68,8 +70,8 @@ D:.
 |           Client-03-After-U3Wyw1fP.jpg
 |           Client-03-Before-B_AFjwja.jpg
 |           Comfortaa-BI3T4Jo2.ttf
-|           index-DGM1uSon.js
-|           index-Xk56cmYd.css
+|           index-BkjZO0ME.css
+|           index-DcctN3mt.js
 |           obo-mne-CFoAeSP-.png
 |           obratnaya_svyaz-CfClsMbl.mp4
 |           obshee-logo-CzIs8Vc9.png
@@ -124,6 +126,7 @@ D:.
 +---home
 |       index.html
 |       
++---node_modules
 |   |   .package-lock.json
 |   |   
 |   +---.bin
@@ -143,9 +146,12 @@ D:.
 |   |       vite.cmd
 |   |       vite.ps1
 |   |       
+|   +---.vite
 |   |   \---deps
 |   |           @supabase_supabase-js.js
 |   |           @supabase_supabase-js.js.map
+|   |           dist-UVxyDIhr.js
+|   |           dist-UVxyDIhr.js.map
 |   |           lucide-react.js
 |   |           lucide-react.js.map
 |   |           package.json
@@ -179,6 +185,7 @@ D:.
 |   |           yet-another-react-lightbox_plugins_zoom.js.map
 |   |           _metadata.json
 |   |           
+|   +---.vite-temp
 |   +---@babel
 |   |   \---runtime-corejs3
 |   |       |   LICENSE
@@ -808,6 +815,7 @@ D:.
 |   |       |   package.json
 |   |       |   README.md
 |   |       |   
+|   |       \---dist
 |   |           |   filter-B_mD-HGz.mjs
 |   |           |   index.d.mts
 |   |           |   index.mjs
@@ -823,6 +831,7 @@ D:.
 |   |   |   |   package.json
 |   |   |   |   README.md
 |   |   |   |   
+|   |   |   +---dist
 |   |   |   |   |   tsconfig.module.tsbuildinfo
 |   |   |   |   |   tsconfig.tsbuildinfo
 |   |   |   |   |   
@@ -1043,6 +1052,7 @@ D:.
 |   |   |   |   package.json
 |   |   |   |   README.md
 |   |   |   |   
+|   |   |   +---dist
 |   |   |   |   |   tsconfig.module.tsbuildinfo
 |   |   |   |   |   tsconfig.tsbuildinfo
 |   |   |   |   |   
@@ -1167,6 +1177,7 @@ D:.
 |   |   |   |   package.json
 |   |   |   |   README.md
 |   |   |   |   
+|   |   |   +---dist
 |   |   |   |       index.cjs
 |   |   |   |       index.cjs.map
 |   |   |   |       index.d.cts
@@ -1210,6 +1221,7 @@ D:.
 |   |   |   |   package.json
 |   |   |   |   README.md
 |   |   |   |   
+|   |   |   +---dist
 |   |   |   |   |   tsconfig.module.tsbuildinfo
 |   |   |   |   |   tsconfig.tsbuildinfo
 |   |   |   |   |   
@@ -1376,6 +1388,7 @@ D:.
 |   |   |   |   package.json
 |   |   |   |   README.md
 |   |   |   |   
+|   |   |   +---dist
 |   |   |   |   |   index.cjs
 |   |   |   |   |   index.cjs.map
 |   |   |   |   |   index.d.cts
@@ -1424,6 +1437,7 @@ D:.
 |   |       |   package.json
 |   |       |   README.md
 |   |       |   
+|   |       +---dist
 |   |       |   |   cors.cjs
 |   |       |   |   cors.cjs.map
 |   |       |   |   cors.d.cts
@@ -1514,6 +1528,7 @@ D:.
 |   |       |   package.json
 |   |       |   README.md
 |   |       |   
+|   |       +---dist
 |   |       |       index.d.ts
 |   |       |       index.js
 |   |       |       refresh-runtime.js
@@ -1527,6 +1542,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   \---dist
 |   |           index.d.ts
 |   |           index.js
 |   |           index.js.map
@@ -5824,6 +5840,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   \---dist
 |   |           index.cjs
 |   |           index.d.cts
 |   |           index.d.mts
@@ -5834,6 +5851,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   \---dist
 |   |           index.cjs
 |   |           index.cjs.map
 |   |           index.d.cts
@@ -5846,6 +5864,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   +---dist
 |   |   |       imask.cjs
 |   |   |       imask.cjs.map
 |   |   |       imask.js
@@ -6017,6 +6036,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   \---dist
 |   |       |   lucide-react.d.ts
 |   |       |   lucide-react.prefixed.d.ts
 |   |       |   lucide-react.suffixed.d.ts
@@ -6096,6 +6116,12 @@ D:.
 |   |           |       align-end-horizontal.mjs.map
 |   |           |       align-end-vertical.mjs
 |   |           |       align-end-vertical.mjs.map
+|   |           |       align-horizontal-distribute-center.mjs
+|   |           |       align-horizontal-distribute-center.mjs.map
+|   |           |       align-horizontal-distribute-end.mjs
+|   |           |       align-horizontal-distribute-end.mjs.map
+|   |           |       align-horizontal-distribute-start.mjs
+|   |           |       align-horizontal-distribute-start.mjs.map
 |   |           |       align-horizontal-justify-center.mjs
 |   |           |       align-horizontal-justify-center.mjs.map
 |   |           |       align-horizontal-justify-end.mjs
@@ -6116,6 +6142,12 @@ D:.
 |   |           |       align-start-horizontal.mjs.map
 |   |           |       align-start-vertical.mjs
 |   |           |       align-start-vertical.mjs.map
+|   |           |       align-vertical-distribute-center.mjs
+|   |           |       align-vertical-distribute-center.mjs.map
+|   |           |       align-vertical-distribute-end.mjs
+|   |           |       align-vertical-distribute-end.mjs.map
+|   |           |       align-vertical-distribute-start.mjs
+|   |           |       align-vertical-distribute-start.mjs.map
 |   |           |       align-vertical-justify-center.mjs
 |   |           |       align-vertical-justify-center.mjs.map
 |   |           |       align-vertical-justify-end.mjs
@@ -10109,6 +10141,7 @@ D:.
 |   |   +---bin
 |   |   |       oxlint
 |   |   |       
+|   |   \---dist
 |   |           bindings.js
 |   |           cli.js
 |   |           index.d.ts
@@ -10287,11 +10320,13 @@ D:.
 |   |   |       react-compare-image.iml
 |   |   |       vcs.xml
 |   |   |       
+|   |   +---dist
 |   |   |       ReactCompareImage.d.ts
 |   |   |       ReactCompareImage.mjs
 |   |   |       ReactCompareImage.umd.js
 |   |   |       
 |   |   \---scripts
+|   |           smoke-test-dist.mjs
 |   |           
 |   +---react-dom
 |   |   |   client.js
@@ -10554,6 +10589,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   +---dist
 |   |   |       react-imask.cjs
 |   |   |       react-imask.cjs.map
 |   |   |       react-imask.js
@@ -10594,6 +10630,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   +---dist
 |   |   |   +---development
 |   |   |   |   |   browser-B2PdsXXH.d.ts
 |   |   |   |   |   browser-DBmQ1yAR.d.mts
@@ -10780,6 +10817,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   \---dist
 |   |           index.d.mts
 |   |           index.d.ts
 |   |           index.js
@@ -10793,6 +10831,7 @@ D:.
 |   |   +---bin
 |   |   |       cli.mjs
 |   |   |       
+|   |   +---dist
 |   |   |   |   cli.d.mts
 |   |   |   |   cli.mjs
 |   |   |   |   config.d.mts
@@ -10825,6 +10864,7 @@ D:.
 |   |   |           constructors-D_3i7dpX.mjs
 |   |   |           define-config-BhJ90aEv.d.mts
 |   |   |           define-config-Demdg3_4.mjs
+|   |   |           dist-DKbukT1H.mjs
 |   |   |           error-BHRSI0R7.mjs
 |   |   |           get-log-filter-BpNVNJ5-.d.mts
 |   |   |           load-config-BL_FI6dc.mjs
@@ -10840,6 +10880,7 @@ D:.
 |   |   |           transform-BPrUvqEZ.d.mts
 |   |   |           watch-B1b0gmVh.mjs
 |   |   |           
+|   |   \---node_modules
 |   |       \---@rolldown
 |   |           \---binding-win32-x64-msvc
 |   |                   package.json
@@ -11398,6 +11439,7 @@ D:.
 |   |   |   package.json
 |   |   |   README.md
 |   |   |   
+|   |   \---dist
 |   |           index.cjs
 |   |           index.d.cts
 |   |           index.d.mts
@@ -11441,6 +11483,7 @@ D:.
 |   |   |       openChrome.js
 |   |   |       vite.js
 |   |   |       
+|   |   +---dist
 |   |   |   +---client
 |   |   |   |       client.mjs
 |   |   |   |       env.mjs
@@ -11456,6 +11499,7 @@ D:.
 |   |   |       |   
 |   |   |       \---chunks
 |   |   |               build.js
+|   |   |               dist.js
 |   |   |               lib.js
 |   |   |               moduleRunnerTransport.d.ts
 |   |   |               node.js
@@ -11486,6 +11530,7 @@ D:.
 |       |   package.json
 |       |   README.md
 |       |   
+|       \---dist
 |           |   index.d.ts
 |           |   index.js
 |           |   styles.css

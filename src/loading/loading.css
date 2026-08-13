@@ -1,26 +1,61 @@
 .loading-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 2147483647;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 8, 8, 0.45);
+
+  background: #000000;
+  opacity: 0;
+  transition: opacity 280ms ease;
+
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
+}
+
+.loading-overlay--entering,
+.loading-overlay--visible {
+  opacity: 1;
+}
+
+.loading-overlay--leaving {
+  opacity: 0;
 }
 
 .loading-screen {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  width: min(58vmin, 24rem);
+  min-width: min(48vw, 10rem);
+  max-width: 82vw;
 }
 
-.loading-screen__label {
-  font-size: 14px;
+.loading-screen__video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 68vh;
+  object-fit: contain;
 }
 
-.loading-spinner {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  border: 2px solid currentColor;
+.loading-screen__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 768px) {
+  .loading-screen {
+    width: min(48vmin, 26rem);
+    max-width: 56vw;
+  }
 }
