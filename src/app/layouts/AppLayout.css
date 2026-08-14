@@ -4,28 +4,15 @@
 
   width: 100%;
   max-width: var(--app-max-width);
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
 
   margin: 0 auto;
 
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 
-  overflow: hidden;
-}
-
-.app-layout::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(100vw, var(--app-max-width));
-  height: 100vh;
-  height: 100dvh;
-  pointer-events: none;
-  z-index: 0;
+  overflow: visible;
 
   background: radial-gradient(
     ellipse at top,
@@ -43,8 +30,8 @@
 
   width: 100%;
   max-width: var(--app-max-width);
-
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
 
   overflow: visible;
 
