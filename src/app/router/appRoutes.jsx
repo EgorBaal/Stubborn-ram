@@ -13,8 +13,8 @@ import TrainingBuilderPage from "@/modules/training/TrainingBuilderPage";
 import TrainingTemplateBuilderPage from "@/modules/training/TrainingTemplateBuilderPage";
 import TrainingExerciseBuilderPage from "@/modules/training/TrainingExerciseBuilderPage";
 import TrainingProgramsPage from "@/modules/training/TrainingProgramsPage";
+import CommentsPage from "@/modules/comments/CommentsPage";
 
-import CommentsPlaceholderPage from "@/pages/app/CommentsPlaceholderPage";
 import ReportPlaceholderPage from "@/modules/report/ReportPlaceholderPage";
 import ActivityPlaceholderPage from "@/modules/activity/ActivityPlaceholderPage";
 import NutritionPlaceholderPage from "@/modules/nutrition/NutritionPlaceholderPage";
@@ -36,7 +36,7 @@ const appRoutes = [
       { path: "/app/analytics", element: <AnalyticsPage /> },
       { path: "/app/profile", element: <ProfilePage /> },
 
-      { path: "/app/comments", element: <CommentsPlaceholderPage /> },
+      { path: "/app/comments", element: <CommentsPage /> },
       { path: "/app/report", element: <ReportPlaceholderPage /> },
       { path: "/app/activity", element: <ActivityPlaceholderPage /> },
       { path: "/app/training", element: <TrainingHistoryPage /> },

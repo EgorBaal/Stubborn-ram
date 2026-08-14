@@ -1,18 +1,8 @@
 .app-layout {
-  position: relative;
-  isolation: isolate;
-
   width: 100%;
   max-width: var(--app-max-width);
-  min-height: 100vh;
-  min-height: 100dvh;
 
   margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow: visible;
 
   background: radial-gradient(
     ellipse at top,
@@ -22,18 +12,4 @@
     #090909 75%,
     #080808 100%
   );
-}
-
-.app-layout__content {
-  position: relative;
-  z-index: 1;
-
-  width: 100%;
-  max-width: var(--app-max-width);
-  flex: 1 1 auto;
-  min-height: 0;
-
-  overflow: visible;
-
-  background: transparent;
 }

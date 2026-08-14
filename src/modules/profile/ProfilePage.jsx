@@ -12,7 +12,6 @@ import {
 
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/services/auth/authService";
-import PageScroll from "@/components/app/PageScroll";
 import { useLoading } from "@/loading";
 
 import "./ProfilePage.css";
@@ -64,105 +63,103 @@ export default function ProfilePage() {
   }
 
   return (
-    <PageScroll>
-      <main className="profile-page">
-        <div className="profile-page__content">
-          <section className="profile-card profile-card--hero">
-            <div className="profile-card__avatar" aria-hidden="true">
-              {displayName.charAt(0).toUpperCase()}
-            </div>
+    <main className="profile-page">
+      <div className="profile-page__content">
+        <section className="profile-card profile-card--hero">
+          <div className="profile-card__avatar" aria-hidden="true">
+            {displayName.charAt(0).toUpperCase()}
+          </div>
 
-            <div className="profile-card__info">
-              <h1 className="profile-card__name">{displayName}</h1>
-              <p className="profile-card__email">{email}</p>
-            </div>
-          </section>
+          <div className="profile-card__info">
+            <h1 className="profile-card__name">{displayName}</h1>
+            <p className="profile-card__email">{email}</p>
+          </div>
+        </section>
 
-          <section className="profile-section">
-            <h2 className="profile-section__title">Аккаунт</h2>
-            <ul className="profile-list">
-              {accountSections.map((item) => {
-                const Icon = item.icon;
+        <section className="profile-section">
+          <h2 className="profile-section__title">Аккаунт</h2>
+          <ul className="profile-list">
+            {accountSections.map((item) => {
+              const Icon = item.icon;
 
-                return (
-                  <li key={item.label} className="profile-list__item">
-                    <span className="profile-list__left">
-                      <span className="profile-list__icon" aria-hidden="true">
-                        <Icon size={16} strokeWidth={1.8} />
-                      </span>
-                      <span className="profile-list__label">{item.label}</span>
+              return (
+                <li key={item.label} className="profile-list__item">
+                  <span className="profile-list__left">
+                    <span className="profile-list__icon" aria-hidden="true">
+                      <Icon size={16} strokeWidth={1.8} />
                     </span>
-                    <span className="profile-list__arrow" aria-hidden="true">
-                      ›
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+                    <span className="profile-list__label">{item.label}</span>
+                  </span>
+                  <span className="profile-list__arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
-          <section className="profile-section">
-            <h2 className="profile-section__title">Поддержка</h2>
-            <ul className="profile-list">
-              {supportSections.map((item) => {
-                const Icon = item.icon;
+        <section className="profile-section">
+          <h2 className="profile-section__title">Поддержка</h2>
+          <ul className="profile-list">
+            {supportSections.map((item) => {
+              const Icon = item.icon;
 
-                return (
-                  <li key={item.label} className="profile-list__item">
-                    <span className="profile-list__left">
-                      <span className="profile-list__icon" aria-hidden="true">
-                        <Icon size={16} strokeWidth={1.8} />
-                      </span>
-                      <span className="profile-list__label">{item.label}</span>
+              return (
+                <li key={item.label} className="profile-list__item">
+                  <span className="profile-list__left">
+                    <span className="profile-list__icon" aria-hidden="true">
+                      <Icon size={16} strokeWidth={1.8} />
                     </span>
-                    <span className="profile-list__arrow" aria-hidden="true">
-                      ›
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+                    <span className="profile-list__label">{item.label}</span>
+                  </span>
+                  <span className="profile-list__arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
-          <section className="profile-section">
-            <h2 className="profile-section__title">О приложении</h2>
-            <ul className="profile-list">
-              {aboutSections.map((item) => {
-                const Icon = item.icon;
+        <section className="profile-section">
+          <h2 className="profile-section__title">О приложении</h2>
+          <ul className="profile-list">
+            {aboutSections.map((item) => {
+              const Icon = item.icon;
 
-                return (
-                  <li key={item.label} className="profile-list__item">
-                    <span className="profile-list__left">
-                      <span className="profile-list__icon" aria-hidden="true">
-                        <Icon size={16} strokeWidth={1.8} />
-                      </span>
-                      <span className="profile-list__label">{item.label}</span>
+              return (
+                <li key={item.label} className="profile-list__item">
+                  <span className="profile-list__left">
+                    <span className="profile-list__icon" aria-hidden="true">
+                      <Icon size={16} strokeWidth={1.8} />
                     </span>
-                    <span className="profile-list__arrow" aria-hidden="true">
-                      ›
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+                    <span className="profile-list__label">{item.label}</span>
+                  </span>
+                  <span className="profile-list__arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
-          <button
-            type="button"
-            className="profile-page__signout"
-            onClick={handleSignOut}
-          >
-            Выйти из аккаунта
-          </button>
-          <button
-            type="button"
-            className="profile-page__signout"
-            onClick={testLoadingOverlay}
-          >
-            Проверить Loading Overlay
-          </button>
-        </div>
-      </main>
-    </PageScroll>
+        <button
+          type="button"
+          className="profile-page__signout"
+          onClick={handleSignOut}
+        >
+          Выйти из аккаунта
+        </button>
+        <button
+          type="button"
+          className="profile-page__signout"
+          onClick={testLoadingOverlay}
+        >
+          Проверить Loading Overlay
+        </button>
+      </div>
+    </main>
   );
 }

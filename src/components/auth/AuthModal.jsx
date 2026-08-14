@@ -43,7 +43,7 @@ export default function AuthModal({
   }, [isClosing, isClosed]);
   async function handleSignIn() {
     setError("");
-    const { data, error } = await signIn(email, password);
+    const { error } = await signIn(email, password);
 
     if (error) {
       setError(getAuthErrorMessage(error));

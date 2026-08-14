@@ -1,12 +1,8 @@
-.page-scroll.training-page-scroll {
-  padding-bottom: var(--tabbar-height);
-}
-
 .training-view,
 .training-builder-view {
   --training-safe-top: max(12px, env(safe-area-inset-top));
   --training-horizontal-padding: 20px;
-  --training-safe-bottom: env(safe-area-inset-bottom);
+  --training-safe-bottom: calc(env(safe-area-inset-bottom) + 86px);
 
   min-height: 100%;
   height: 100%;

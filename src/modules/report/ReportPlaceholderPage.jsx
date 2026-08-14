@@ -1,7 +1,12 @@
-import SectionPlaceholderPage from "@/components/app/SectionPlaceholderPage";
-
 import "./ReportPlaceholderPage.css";
 
 export default function ReportPlaceholderPage() {
-  return <SectionPlaceholderPage title="Отчет" pageClassName="report-page" />;
+  return (
+    <main className="report-page">
+      <div>
+        <h1>Отчет</h1>
+        <p>Раздел находится в разработке.</p>
+      </div>
+    </main>
+  );
 }
