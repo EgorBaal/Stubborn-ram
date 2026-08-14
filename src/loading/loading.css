@@ -32,7 +32,7 @@
   min-width: min(30vw, 7rem);
   max-width: 58vw;
 
-  transform: translateY(-24px);
+  transform: translateY(-44px);
 }
 
 .loading-screen__logo {
