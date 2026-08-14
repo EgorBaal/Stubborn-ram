@@ -14,42 +14,53 @@ const MIN_VISIBLE_MS = 3500;
 const FADE_OUT_MS = 650;
 
 export default function StartupScreenGate({ children }) {
-  const { loading: isAuthLoading } = useAuth();
+  const { session, loading: isAuthLoading } = useAuth();
+
   const [phase, setPhase] = useState(PHASE.VISIBLE);
   const [isMounted, setIsMounted] = useState(true);
-  const shownAtRef = useRef(Date.now());
+
+  // Таймер начинается сразу при открытии приложения
+  const appStartedAtRef = useRef(Date.now());
+
+  // Не показываем Startup Screen неавторизованным пользователям
+  if (!isAuthLoading && !session) {
+    return children;
+  }
 
   useEffect(() => {
-    if (!isMounted || isAuthLoading || phase === PHASE.LEAVING) {
+    if (!isMounted || phase === PHASE.LEAVING) {
       return;
     }
 
-    const elapsed = Date.now() - shownAtRef.current;
-    const delay = Math.max(MIN_VISIBLE_MS - elapsed, 0);
+    // Пока авторизация не закончилась — просто ждем.
+    if (isAuthLoading) {
+      return;
+    }
 
-    let unmountTimer = null;
+    const elapsed = Date.now() - appStartedAtRef.current;
+    const remaining = Math.max(MIN_VISIBLE_MS - elapsed, 0);
 
-    const leaveTimer = window.setTimeout(() => {
+    let fadeTimer;
+    let unmountTimer;
+
+    fadeTimer = window.setTimeout(() => {
       setPhase(PHASE.LEAVING);
 
       unmountTimer = window.setTimeout(() => {
         setIsMounted(false);
       }, FADE_OUT_MS);
-    }, delay);
+    }, remaining);
 
     return () => {
-      window.clearTimeout(leaveTimer);
-
-      if (unmountTimer) {
-        window.clearTimeout(unmountTimer);
-      }
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(unmountTimer);
     };
   }, [isAuthLoading, isMounted, phase]);
 
   return (
     <>
       {children}
-      {isMounted ? <StartupScreen isLeaving={phase === PHASE.LEAVING} /> : null}
+      {isMounted && <StartupScreen isLeaving={phase === PHASE.LEAVING} />}
     </>
   );
 }
