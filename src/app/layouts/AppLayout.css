@@ -13,10 +13,19 @@
   justify-content: center;
 
   overflow: hidden;
+
+  background: radial-gradient(
+    ellipse at top,
+    #181818 0%,
+    #121212 18%,
+    #0d0d0d 45%,
+    #090909 75%,
+    #080808 100%
+  );
 }
 
 .app-layout::before {
-  content: "";
+  content: none;
   position: fixed;
   top: 0;
   left: 50%;
