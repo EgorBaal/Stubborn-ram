@@ -8,10 +8,13 @@ import "./AppLayout.css";
 export default function AppLayout() {
   return (
     <AuthGuard>
-      <>
-        <Outlet />
+      <div className="app-layout">
+        <div className="app-layout__content">
+          <Outlet />
+        </div>
+
         <BottomTabBar />
-      </>
+      </div>
     </AuthGuard>
   );
 }
