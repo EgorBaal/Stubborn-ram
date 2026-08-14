@@ -7,7 +7,7 @@
   margin: 0 auto;
   padding: max(12px, env(safe-area-inset-top)) 20px
     calc(var(--tabbar-height) + env(safe-area-inset-bottom));
-  background: #080808;
+  background: transparent;
   overflow: hidden;
   overscroll-behavior: none;
   display: flex;

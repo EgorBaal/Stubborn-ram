@@ -1,6 +1,6 @@
 .profile-page {
   min-height: 100%;
-  background: #080808;
+  background: transparent;
   color: #f4f4f4;
   padding: 20px 16px env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
