@@ -30,7 +30,7 @@ html {
 
 body {
   margin: 0;
-  background: red !important;
+  background: #050505;
   font-family: "Comfortaa";
   color: var(--text);
   overflow-x: hidden;
