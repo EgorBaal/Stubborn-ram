@@ -42,7 +42,7 @@
   max-height: 52vh;
   object-fit: contain;
 
-  animation: loading-logo-breathe 2200ms ease-in-out infinite;
+  animation: loading-logo-breathe 2600ms ease-in-out infinite;
 }
 
 @keyframes loading-logo-breathe {
@@ -51,7 +51,7 @@
   }
 
   50% {
-    transform: scale(1.018);
+    transform: scale(1.045);
   }
 
   100% {

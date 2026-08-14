@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
     setTimeout(() => {
       hide();
-    }, 3000);
+    }, 8000);
   }
 
   return (
