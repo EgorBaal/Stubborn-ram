@@ -1,5 +1,5 @@
 .page-scroll.training-page-scroll {
-  padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--tabbar-height);
 }
 
 .training-view,
@@ -83,7 +83,7 @@
 
   cursor: pointer;
   box-shadow:
-    0 10px 22px rgba(217, 72, 15, 0.24),
+    0 8px 14px rgba(217, 72, 15, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
 
   transition:
