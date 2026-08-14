@@ -11,8 +11,8 @@ const PHASE = {
   LEAVING: "leaving",
 };
 
-const SHOW_DELAY_MS = 350;
-const MIN_VISIBLE_MS = 600;
+const SHOW_DELAY_MS = 300;
+const MIN_VISIBLE_MS = 280;
 const ENTER_STEP_MS = 16;
 const LEAVE_MS = 280;
 

@@ -1,4 +1,4 @@
-import loadingVideoSrc from "@/assets/loading/stubborn-ram-loading.mp4";
+import logoSrc from "@/assets/obshee-logo.png";
 
 import "./loading.css";
 
@@ -10,16 +10,7 @@ export default function LoadingScreen() {
       aria-live="polite"
       aria-busy="true"
     >
-      <video
-        className="loading-screen__video"
-        src={loadingVideoSrc}
-        autoPlay
-        muted
-        playsInline
-        loop
-        preload="auto"
-      />
-      <span className="loading-screen__sr-only">Loading</span>
+      <img className="loading-screen__logo" src={logoSrc} alt="Stubborn Ram" />
     </div>
   );
 }

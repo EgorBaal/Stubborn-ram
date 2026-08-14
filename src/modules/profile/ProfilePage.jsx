@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/services/auth/authService";
 import PageScroll from "@/components/app/PageScroll";
+import { useLoading } from "@/loading";
 
 import "./ProfilePage.css";
 
@@ -36,6 +37,7 @@ const aboutSections = [
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { show, hide } = useLoading();
 
   const displayName =
     user?.user_metadata?.full_name ||
@@ -51,6 +53,14 @@ export default function ProfilePage() {
     if (!error) {
       navigate("/", { replace: true });
     }
+  }
+
+  function testLoadingOverlay() {
+    show();
+
+    setTimeout(() => {
+      hide();
+    }, 3000);
   }
 
   return (
@@ -143,6 +153,13 @@ export default function ProfilePage() {
             onClick={handleSignOut}
           >
             Выйти из аккаунта
+          </button>
+          <button
+            type="button"
+            className="profile-page__signout"
+            onClick={testLoadingOverlay}
+          >
+            Проверить Loading Overlay
           </button>
         </div>
       </main>
