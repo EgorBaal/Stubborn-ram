@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useAuth } from "@/contexts/AuthContext";
-
 import StartupScreen from "./StartupScreen";
 import "./startupScreen.css";
 
@@ -14,26 +12,14 @@ const MIN_VISIBLE_MS = 3500;
 const FADE_OUT_MS = 650;
 
 export default function StartupScreenGate({ children }) {
-  const { session, loading: isAuthLoading } = useAuth();
-
   const [phase, setPhase] = useState(PHASE.VISIBLE);
   const [isMounted, setIsMounted] = useState(true);
 
-  // Таймер начинается сразу при открытии приложения
+  // Таймер начинается при монтировании Gate.
   const appStartedAtRef = useRef(Date.now());
-
-  // Не показываем Startup Screen неавторизованным пользователям
-  if (!isAuthLoading && !session) {
-    return children;
-  }
 
   useEffect(() => {
     if (!isMounted || phase === PHASE.LEAVING) {
-      return;
-    }
-
-    // Пока авторизация не закончилась — просто ждем.
-    if (isAuthLoading) {
       return;
     }
 
@@ -55,7 +41,7 @@ export default function StartupScreenGate({ children }) {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(unmountTimer);
     };
-  }, [isAuthLoading, isMounted, phase]);
+  }, [isMounted, phase]);
 
   return (
     <>

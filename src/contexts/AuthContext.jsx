@@ -10,13 +10,21 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function initializeAuth() {
-      const {
-        data: { session },
-      } = await getSession();
+      try {
+        const {
+          data: { session },
+        } = await getSession();
 
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error("Ошибка восстановления сессии:", error);
+
+        setSession(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     }
 
     initializeAuth();
