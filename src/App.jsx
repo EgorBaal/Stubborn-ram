@@ -4,7 +4,6 @@ import router from "@/app/router/router";
 import { LoadingOverlay } from "@/loading";
 import StartupScreenGate from "@/app/splash/StartupScreenGate";
 import { useAuth } from "@/contexts/AuthContext";
-import TestOverlay from "@/components/TestOverlay";
 
 function App() {
   const { session, loading } = useAuth();
@@ -21,8 +20,6 @@ function App() {
   return (
     <>
       {contentWithOptionalStartup}
-
-      <TestOverlay />
 
       <LoadingOverlay />
     </>
