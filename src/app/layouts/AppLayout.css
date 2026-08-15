@@ -4,6 +4,8 @@
 
   margin: 0 auto;
 
+  min-height: 100dvh;
+
   background: radial-gradient(
     ellipse at top,
     #181818 0%,
