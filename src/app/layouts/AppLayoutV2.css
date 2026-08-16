@@ -1,0 +1,14 @@
+.app-v2 {
+  padding: 16px;
+}
+
+.page-v2 {
+  width: 100%;
+  max-width: 430px;
+
+  margin: 0 auto;
+
+  background: #080808;
+
+  min-height: calc(100vh - 32px);
+}
