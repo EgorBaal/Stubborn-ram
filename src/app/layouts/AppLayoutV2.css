@@ -1,14 +1,22 @@
 .app-v2 {
-  padding: 16px;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  padding: clamp(6px, 2vw, 12px);
+
+  box-sizing: border-box;
 }
 
 .page-v2 {
   width: 100%;
-  max-width: 430px;
+  max-width: 480px;
+
+  min-height: 100%;
 
   margin: 0 auto;
 
   background: #080808;
 
-  min-height: calc(100vh - 32px);
+  box-sizing: border-box;
 }
