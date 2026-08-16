@@ -1,5 +1,5 @@
 import AppLayoutV2 from "@/app/layouts/AppLayoutV2";
-import TestPage from "@/pages/TestPage";
+import AuthTestPage from "@/pages/AuthTestPage";
 
 const testRoutes = [
   {
@@ -7,7 +7,7 @@ const testRoutes = [
     children: [
       {
         path: "/test",
-        element: <TestPage />,
+        element: <AuthTestPage />,
       },
     ],
   },
