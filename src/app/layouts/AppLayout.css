@@ -1,10 +1,10 @@
 .app-layout {
+  position: relative;
+
   width: 100%;
-  max-width: var(--app-max-width);
+  max-width: 480px;
 
   margin: 0 auto;
-
-  min-height: 100dvh;
 
   background: radial-gradient(
     ellipse at top,
@@ -14,4 +14,8 @@
     #090909 75%,
     #080808 100%
   );
+}
+
+.app-layout__content {
+  width: 100%;
 }
