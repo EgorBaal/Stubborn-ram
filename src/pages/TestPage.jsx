@@ -3,14 +3,18 @@ export default function TestPage() {
     <main
       style={{
         minHeight: "3000px",
-        background: "#080808",
-        color: "#fff",
+        width: "100%",
+        background: "red",
+        color: "white",
         padding: "20px",
+        boxSizing: "border-box",
       }}
     >
       <h1>TEST</h1>
 
-      <p>Это тестовая страница AppLayoutV2.</p>
+      <div style={{ height: "2800px" }} />
+
+      <h2>НИЗ СТРАНИЦЫ</h2>
     </main>
   );
 }
