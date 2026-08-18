@@ -58,8 +58,10 @@ export default function TrainingTemplatesPage() {
       </div>
 
       <section className="training-content" aria-live="polite">
-        <div className="training-empty-state training-empty-state--compact">
-          <p>Раздел находится в разработке</p>
+        <div className="training-empty-state">
+          <h1>Шаблоны тренировок</h1>
+
+          <p>Создайте первый шаблон или выберите готовую программу.</p>
         </div>
       </section>
     </main>

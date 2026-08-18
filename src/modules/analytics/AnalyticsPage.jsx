@@ -4,7 +4,7 @@ export default function AnalyticsPage() {
   return (
     <main className="analytics-page">
       <div>
-        <h1>Analytics</h1>
+        <h1>Аналитика</h1>
         <p>Модуль находится в разработке.</p>
       </div>
     </main>

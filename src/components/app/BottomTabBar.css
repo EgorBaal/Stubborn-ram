@@ -76,14 +76,6 @@
   opacity: 1;
 }
 
-.bottom-tab-bar__indicator.is-chat-target {
-  transform: translateY(-50%) scale(0.82, 0.9);
-  border-radius: 999px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.33),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.09);
-}
-
 .bottom-tab-bar__item {
   display: flex;
   align-items: center;
@@ -229,4 +221,11 @@
     width: 18px;
     height: 18px;
   }
+}
+
+.bottom-tab-bar__indicator.is-instant {
+  transition:
+    opacity 0ms,
+    left 0ms,
+    width 0ms;
 }

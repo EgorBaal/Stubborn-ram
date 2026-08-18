@@ -16,8 +16,10 @@ function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export default function HomeHeader({ userName, avatarUrl }) {
-  const avatarInitials = getInitials(userName);
+export default function HomeHeader({ userName, avatarUrl, email }) {
+  const avatarInitials = userName
+    ? getInitials(userName)
+    : email?.charAt(0).toUpperCase() || "?";
 
   const now = new Date();
 
@@ -40,7 +42,10 @@ export default function HomeHeader({ userName, avatarUrl }) {
         <span className="home-header__current-date">{date}</span>
       </div>
 
-      <div className="home-header__avatar" aria-label={`Профиль: ${userName}`}>
+      <div
+        className="home-header__avatar"
+        aria-label={`Профиль: ${userName || email}`}
+      >
         {avatarUrl ? (
           <img src={avatarUrl} alt="" />
         ) : (

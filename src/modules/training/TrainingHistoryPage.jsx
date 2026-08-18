@@ -47,9 +47,8 @@ export default function TrainingHistoryPage() {
       <section className="training-content" aria-live="polite">
         <div className="training-empty-state">
           <h1>История тренировок</h1>
-          <p>
-            Пока здесь нет записей. Новые тренировки появятся в этом разделе.
-          </p>
+
+          <p>Создайте первую тренировку, чтобы начать вести историю.</p>
         </div>
       </section>
     </main>

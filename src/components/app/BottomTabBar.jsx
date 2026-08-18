@@ -49,16 +49,53 @@ export default function BottomTabBar() {
   const location = useLocation();
   const navRef = useRef(null);
   const tabRefs = useRef({});
-  const isChatActive = location.pathname === "/app/chat";
+  const isChatActive = location.pathname.startsWith("/app/chat");
   const [indicatorStyle, setIndicatorStyle] = useState({
     left: lastIndicatorState.left,
     width: lastIndicatorState.width,
     visible: lastIndicatorState.visible,
     ready: lastIndicatorState.ready,
+    instant: false,
   });
 
   const updateIndicatorPosition = () => {
     const activeTab = tabs.find((tab) => tab.path === location.pathname);
+
+    if (activeTab?.path === "/app/chat") {
+  const navNode = navRef.current;
+  const tabNode = tabRefs.current["/app/chat"];
+  const contentNode =
+    tabNode?.querySelector(".bottom-tab-bar__chat-button") || tabNode;
+
+  if (!navNode || !tabNode || !contentNode) return;
+
+  const navRect = navNode.getBoundingClientRect();
+  const tabRect = tabNode.getBoundingClientRect();
+  const contentRect = contentNode.getBoundingClientRect();
+
+  const left =
+    tabRect.left - navRect.left + (tabRect.width - contentRect.width) / 2;
+
+  // Сначала мгновенно скрываем
+  setIndicatorStyle((prev) => ({
+    ...prev,
+    visible: false,
+    instant: true,
+  }));
+
+  // Затем в следующем кадре переносим под чат
+  requestAnimationFrame(() => {
+    setIndicatorStyle({
+      left,
+      width: contentRect.width,
+      visible: false,
+      ready: true,
+      instant: false,
+    });
+  });
+
+  return;
+}
 
     if (!activeTab) {
       setIndicatorStyle((prev) => ({ ...prev, visible: false, ready: true }));
@@ -67,7 +104,6 @@ export default function BottomTabBar() {
 
     const navNode = navRef.current;
     const tabNode = tabRefs.current[activeTab.path];
-    const isChatTab = activeTab.path === "/app/chat";
     const contentNode =
       tabNode?.querySelector(".bottom-tab-bar__content") ||
       tabNode?.querySelector(".bottom-tab-bar__chat-button") ||
@@ -82,9 +118,7 @@ export default function BottomTabBar() {
     const contentRect = contentNode.getBoundingClientRect();
 
     const horizontalPadding = 16;
-    const desiredWidth = isChatTab
-      ? contentRect.width
-      : contentRect.width + horizontalPadding * 2;
+    const desiredWidth = contentRect.width + horizontalPadding * 2;
 
     const maxWidth = tabRect.width - 8;
 
@@ -97,6 +131,7 @@ export default function BottomTabBar() {
       width: finalWidth,
       visible: true,
       ready: true,
+      instant: false,
     });
   };
 
@@ -127,7 +162,11 @@ export default function BottomTabBar() {
       aria-label="Основная навигация приложения"
     >
       <span
-        className={`bottom-tab-bar__indicator ${indicatorStyle.visible ? "is-visible" : ""} ${indicatorStyle.ready ? "is-ready" : ""} ${isChatActive ? "is-chat-target" : ""}`}
+        className={`bottom-tab-bar__indicator
+  ${indicatorStyle.visible ? "is-visible" : ""}
+  ${indicatorStyle.ready ? "is-ready" : ""}
+  ${indicatorStyle.instant ? "is-instant" : ""}
+`}
         style={{
           left: `${indicatorStyle.left}px`,
           width: `${indicatorStyle.width}px`,
@@ -137,7 +176,7 @@ export default function BottomTabBar() {
       />
 
       {tabs.map((tab) => {
-        const isActive = location.pathname === tab.path;
+        const isActive = location.pathname.startsWith(tab.path);
         const isChat = tab.path === "/app/chat";
         const Icon = tab.icon;
 

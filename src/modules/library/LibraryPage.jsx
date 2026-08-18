@@ -4,7 +4,7 @@ export default function LibraryPage() {
   return (
     <main className="library-page">
       <div>
-        <h1>Library</h1>
+        <h1>Библиотека</h1>
         <p>Модуль находится в разработке.</p>
       </div>
     </main>

@@ -1,19 +1,22 @@
+import { useAuth } from "@/contexts/AuthContext";
+
 import HomeHeader from "@/modules/home/components/HomeHeader";
 import ModuleGrid from "@/modules/home/components/ModuleGrid";
 import NotificationSection from "@/modules/home/components/NotificationSection";
 
 import "./HomePage.css";
 
-const mockUser = {
-  userName: "Александр",
-  avatarUrl: null,
-  notificationsCount: 2,
-};
-
 export default function HomePage() {
+  const { user } = useAuth();
+
   return (
     <main className="home-page">
-      <HomeHeader {...mockUser} />
+      <HomeHeader
+        avatarUrl={user?.user_metadata?.avatar_url}
+        userName={user?.user_metadata?.full_name}
+        email={user?.email}
+      />
+
       <NotificationSection />
       <ModuleGrid />
     </main>

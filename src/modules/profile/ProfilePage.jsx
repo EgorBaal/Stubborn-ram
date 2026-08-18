@@ -46,6 +46,9 @@ export default function ProfilePage() {
 
   const email = user?.email || "example@mail.com";
 
+  const avatarUrl = user?.user_metadata?.avatar_url;
+  const avatarLetter = displayName.charAt(0).toUpperCase();
+
   async function handleSignOut() {
     const { error } = await signOut();
 
@@ -67,7 +70,11 @@ export default function ProfilePage() {
       <div className="profile-page__content">
         <section className="profile-card profile-card--hero">
           <div className="profile-card__avatar" aria-hidden="true">
-            {displayName.charAt(0).toUpperCase()}
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" />
+            ) : (
+              <span>{avatarLetter}</span>
+            )}
           </div>
 
           <div className="profile-card__info">
