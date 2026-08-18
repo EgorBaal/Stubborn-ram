@@ -1,5 +1,5 @@
 import AppLayout from "@/app/layouts/AppLayout";
-import AuthGuard from "@/components/auth/AuthGuard";
+import AuthGuard from "@/app/router/guards/AuthGuard";
 
 import HomePage from "@/modules/home/HomePage";
 import LibraryPage from "@/modules/library/LibraryPage";

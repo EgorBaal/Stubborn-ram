@@ -1,4 +1,4 @@
-import { PublicRoute } from "@/components/auth/AuthGuard";
+import { PublicRoute } from "@/app/router/guards/AuthGuard";
 import LoginPage from "@/pages/auth/LoginPage";
 import ConfirmEmailPage from "@/pages/auth/ConfirmEmailPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
