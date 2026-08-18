@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import "./LandingPage.css";
+
 import Hero from "@/components/landing/Hero";
 import HomeContent from "@/components/landing/HomeContent";
 import AuthModal from "@/components/auth/AuthModal";
