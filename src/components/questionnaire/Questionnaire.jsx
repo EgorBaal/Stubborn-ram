@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createLead } from "@/services/leadService";
+import { createLead } from "@/services/leads/leadService";
 import { useNavigate } from "react-router-dom";
 
 import QuestionnaireIntro from "./QuestionnaireIntro";
