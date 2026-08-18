@@ -2,38 +2,9 @@
    ОБЩИЕ СТИЛИ
 ========================== */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 button,
 a {
   -webkit-tap-highlight-color: transparent;
-}
-
-button:focus,
-button:focus-visible,
-a:focus,
-a:focus-visible {
-  outline: none;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: #050505;
-  color: #ffffff;
-  font-family: "Comfortaa";
-  overflow-x: hidden;
-  scrollbar-width: none;
-}
-
-body::-webkit-scrollbar {
-  display: none;
 }
 
 /* ==========================
@@ -172,8 +143,6 @@ body::-webkit-scrollbar {
     0 2px 6px rgba(255, 98, 0, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 -14px 22px rgba(0, 0, 0, 0.32);
-
-  -webkit-tap-highlight-color: transparent;
 
   overflow: hidden;
 }

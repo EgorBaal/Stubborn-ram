@@ -34,3 +34,9 @@ export async function resetPassword(email) {
     redirectTo: "https://stubbornram.ru/reset-password",
   });
 }
+
+export async function updatePassword(password) {
+  return await supabase.auth.updateUser({
+    password,
+  });
+}

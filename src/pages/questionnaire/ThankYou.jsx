@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "./ThankYou.css";
-import "../../styles/page-transition.css";
+import "@/styles/page-transition.css";
 
 export default function ThankYou() {
   return (

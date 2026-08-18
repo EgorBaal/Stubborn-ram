@@ -1,0 +1,40 @@
+.confirm-email-page {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 24px;
+
+  background: #080808;
+}
+
+.confirm-email-card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 36px;
+
+  text-align: center;
+
+  background: #111111;
+
+  border: 1px solid #242424;
+  border-radius: 22px;
+
+  color: #ffffff;
+}
+
+.confirm-email-icon {
+  font-size: 58px;
+  margin-bottom: 16px;
+}
+
+.confirm-email-title {
+  margin-bottom: 16px;
+}
+
+.confirm-email-text {
+  color: #b8b8b8;
+}

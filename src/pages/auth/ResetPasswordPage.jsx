@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { supabase } from "@/shared/lib/supabaseClient";
-
 import logo from "@/assets/obshee-logo.png";
 
 import "@/components/auth/AuthModal.css";
-import { getAuthErrorMessage } from "@/services/auth/authErrors";
+import { updatePassword } from "@/services/auth/authService";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -31,9 +29,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    const { error } = await supabase.auth.updateUser({
-      password,
-    });
+    const { error } = await updatePassword(password);
 
     if (error) {
       setError(getAuthErrorMessage(error));
