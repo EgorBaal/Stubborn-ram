@@ -3,7 +3,8 @@
 ========================== */
 
 :root {
-  --landing-safe-gap: 12px;
+  --landing-safe-top-gap: 8px;
+  --landing-safe-bottom-gap: 6px;
 }
 
 /* ==========================
@@ -34,8 +35,11 @@
   width: 100%;
   max-width: 480px;
 
-  margin-top: calc(env(safe-area-inset-top) + var(--landing-safe-gap));
-  margin-bottom: calc(env(safe-area-inset-bottom) + var(--landing-safe-gap));
+  margin-top: calc(env(safe-area-inset-top) + var(--landing-safe-top-gap));
+
+  margin-bottom: calc(
+    env(safe-area-inset-bottom) + var(--landing-safe-bottom-gap)
+  );
 
   background: #006dff;
 
