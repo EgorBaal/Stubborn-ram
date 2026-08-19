@@ -16,15 +16,20 @@
   min-height: 100vh;
   min-height: 100dvh;
 
-  display: flex;
-  justify-content: center;
-
   background: #c51313;
 
   box-sizing: border-box;
 
-  padding-left: max(6px, env(safe-area-inset-left));
+  padding-top: calc(env(safe-area-inset-top) + var(--landing-safe-top-gap));
+
   padding-right: max(6px, env(safe-area-inset-right));
+
+  padding-bottom: max(
+    var(--landing-safe-bottom-gap),
+    env(safe-area-inset-bottom)
+  );
+
+  padding-left: max(6px, env(safe-area-inset-left));
 }
 
 /* ==========================
@@ -35,11 +40,7 @@
   width: 100%;
   max-width: 480px;
 
-  margin-top: calc(env(safe-area-inset-top) + var(--landing-safe-top-gap));
-
-  margin-bottom: calc(
-    env(safe-area-inset-bottom) + var(--landing-safe-bottom-gap)
-  );
+  margin: 0 auto;
 
   background: #006dff;
 
