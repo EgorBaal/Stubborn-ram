@@ -1,4 +1,5 @@
 import LandingPage from "@/pages/landing/LandingPage";
+import "./LandingLayout.css";
 
 export default function LandingLayout() {
   return (

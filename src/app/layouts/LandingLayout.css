@@ -1,0 +1,35 @@
+/* ==========================
+   СТРАНИЦА
+========================== */
+.app {
+  width: 100%;
+  min-width: 0;
+  padding-top: max(6px, env(safe-area-inset-top));
+
+  padding-right: 6px;
+
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
+
+  padding-left: 6px;
+}
+
+.page {
+  width: 100%;
+  max-width: 480px;
+
+  margin: 0 auto;
+
+  background: #080808;
+
+  border: 2px solid transparent;
+
+  animation: borderGlow 1s ease forwards;
+
+  animation-delay: 2s;
+
+  box-shadow: none;
+
+  border-radius: 32px;
+
+  padding: 22px;
+}

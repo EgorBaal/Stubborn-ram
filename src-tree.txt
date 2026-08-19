@@ -1,0 +1,223 @@
+Структура папок тома Жесткий диск
+Серийный номер тома: 000000E5 0043:8024
+D:\CRM-PLATFORM STUBBORN RAM\SRC
+|   App.css
+|   App.jsx
+|   index.css
+|   main.jsx
+|   
++---app
+|   +---layouts
+|   |       AppLayout.css
+|   |       AppLayout.jsx
+|   |       AppLayoutV2.css
+|   |       AppLayoutV2.jsx
+|   |       LandingLayout.css
+|   |       LandingLayout.jsx
+|   |       
+|   +---router
+|   |   |   appRoutes.jsx
+|   |   |   authRoutes.jsx
+|   |   |   landingRoutes.jsx
+|   |   |   questionnaireRoutes.jsx
+|   |   |   router.jsx
+|   |   |   
+|   |   \---guards
+|   |           AuthGuard.jsx
+|   |           
+|   \---splash
+|           index.js
+|           startupScreen.css
+|           StartupScreen.jsx
+|           StartupScreenGate.jsx
+|           
++---assets
+|   |   obo-mne.png
+|   |   obshee-logo.png
+|   |   
+|   +---before-after
+|   |       Client-01-After.jpg
+|   |       Client-01-Before.jpg
+|   |       Client-02-After.jpg
+|   |       Client-02-Before.jpg
+|   |       Client-03-After.jpg
+|   |       Client-03-Before.jpg
+|   |       
+|   +---fonts
+|   |       Comfortaa.ttf
+|   |       
+|   +---icons
+|   +---images
+|   +---loading
+|   |       stubborn-ram-loading.mp4
+|   |       
+|   \---support
+|           analys_nedeli.png
+|           anketa.png
+|           obratnaya_svyaz.mp4
+|           pitanie.png
+|           programma.png
+|           
++---components
+|   +---app
+|   |       BottomTabBar.css
+|   |       BottomTabBar.jsx
+|   |       
+|   +---auth
+|   |       AuthModal.css
+|   |       AuthModal.jsx
+|   |       RegisterModal.jsx
+|   |       ResetPasswordModal.jsx
+|   |       
+|   +---client
+|   +---coach
+|   +---common
+|   +---landing
+|   |       BeforeAfter.jsx
+|   |       FAQ.css
+|   |       FAQ.jsx
+|   |       Hero.jsx
+|   |       HomeContent.jsx
+|   |       ImageViewer.jsx
+|   |       Pricing.jsx
+|   |       Reveal.jsx
+|   |       Socials.jsx
+|   |       SupportCarousel.css
+|   |       SupportCarousel.jsx
+|   |       
+|   +---questionnaire
+|   |       QuestionCard.jsx
+|   |       Questionnaire.css
+|   |       Questionnaire.jsx
+|   |       QuestionnaireIntro.jsx
+|   |       questions.js
+|   |       
+|   \---ui
+|           ConfirmModal.css
+|           ConfirmModal.jsx
+|           
++---contexts
+|       AuthContext.jsx
+|       
++---data
+|       supportSlides.js
+|       
++---debug
++---features
+|   +---auth
+|   +---chat
+|   +---fatsecret
+|   +---notifications
+|   +---nutrition
+|   +---programs
+|   +---progress
+|   +---questionnaire
+|   \---reports
++---hooks
++---loading
+|       index.js
+|       loading.css
+|       LoadingContext.jsx
+|       LoadingOverlay.jsx
+|       LoadingProvider.jsx
+|       LoadingScreen.jsx
+|       LoadingSpinner.jsx
+|       useLoading.js
+|       
++---modules
+|   +---activity
+|   |       ActivityPlaceholderPage.css
+|   |       ActivityPlaceholderPage.jsx
+|   |       
+|   +---analytics
+|   |       AnalyticsPage.css
+|   |       AnalyticsPage.jsx
+|   |       
+|   +---chat
+|   |       ChatPage.css
+|   |       ChatPage.jsx
+|   |       
+|   +---comments
+|   |       CommentsPage.css
+|   |       CommentsPage.jsx
+|   |       
+|   +---home
+|   |   |   HomePage.css
+|   |   |   HomePage.jsx
+|   |   |   
+|   |   \---components
+|   |           HomeHeader.css
+|   |           HomeHeader.jsx
+|   |           ModuleGrid.css
+|   |           ModuleGrid.jsx
+|   |           NotificationSection.css
+|   |           NotificationSection.jsx
+|   |           
+|   +---library
+|   |       LibraryPage.css
+|   |       LibraryPage.jsx
+|   |       
+|   +---nutrition
+|   |       NutritionPlaceholderPage.css
+|   |       NutritionPlaceholderPage.jsx
+|   |       
+|   +---photos
+|   |       PhotosPlaceholderPage.css
+|   |       PhotosPlaceholderPage.jsx
+|   |       
+|   +---profile
+|   |       ProfilePage.css
+|   |       ProfilePage.jsx
+|   |       
+|   +---report
+|   |       ReportPlaceholderPage.css
+|   |       ReportPlaceholderPage.jsx
+|   |       
+|   +---training
+|   |       TrainingBuilderPage.jsx
+|   |       TrainingExerciseBuilderPage.jsx
+|   |       TrainingExercisesPage.jsx
+|   |       TrainingHistoryPage.jsx
+|   |       TrainingPage.css
+|   |       TrainingProgramsPage.jsx
+|   |       TrainingTemplateBuilderPage.jsx
+|   |       TrainingTemplatesPage.jsx
+|   |       
+|   \---weight
+|           WeightPlaceholderPage.css
+|           WeightPlaceholderPage.jsx
+|           
++---pages
+|   +---auth
+|   |       ConfirmEmailPage.css
+|   |       ConfirmEmailPage.jsx
+|   |       ResetPasswordPage.jsx
+|   |       
+|   +---client
+|   +---coach
+|   +---landing
+|   |       LandingPage.css
+|   |       LandingPage.jsx
+|   |       
+|   \---questionnaire
+|           CoachingQuestionnaire.jsx
+|           ProgramQuestionnaire.jsx
+|           ThankYou.css
+|           ThankYou.jsx
+|           
++---services
+|   +---auth
+|   |       authErrors.js
+|   |       authService.js
+|   |       
+|   \---leads
+|           leadService.js
+|           
++---shared
+|   \---lib
+|           supabaseClient.js
+|           
++---styles
+|       page-transition.css
+|       
+\---utils
