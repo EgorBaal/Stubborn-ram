@@ -36,7 +36,7 @@
 
   padding-right: max(var(--app-side-gap), env(safe-area-inset-right));
 
-  padding-bottom: max(var(--app-safe-bottom-gap), env(safe-area-inset-bottom));
+  padding-bottom: var(--app-safe-bottom-gap);
 
   padding-left: max(var(--app-side-gap), env(safe-area-inset-left));
 }
