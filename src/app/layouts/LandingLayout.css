@@ -7,14 +7,12 @@
   min-height: 100vh;
   min-height: 100dvh;
 
-  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 
   background: #c51313;
 
-  padding-top: max(6px, env(safe-area-inset-top));
-  padding-right: 6px;
-  padding-bottom: max(6px, env(safe-area-inset-bottom));
-  padding-left: 6px;
+  box-sizing: border-box;
 }
 
 /* ==========================
@@ -25,9 +23,14 @@
   width: 100%;
   max-width: 480px;
 
-  margin: 0 auto;
+  background: #006dff;
 
-  background: transparent;
+  box-sizing: border-box;
+
+  padding-top: calc(env(safe-area-inset-top) + 22px);
+  padding-right: 22px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 22px);
+  padding-left: 22px;
 
   border: 2px solid transparent;
   border-radius: 32px;
@@ -36,8 +39,22 @@
   animation-delay: 2s;
 
   box-shadow: none;
+}
 
-  padding: 22px;
+/* ==========================
+   ANIMATIONS
+========================== */
 
-  box-sizing: border-box;
+@keyframes borderGlow {
+  from {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  to {
+    border-color: #ff6200;
+    box-shadow:
+      0 0 12px rgba(255, 98, 0, 0.7),
+      0 0 35px rgba(255, 98, 0, 0.15);
+  }
 }
