@@ -3,8 +3,8 @@
 ========================== */
 
 :root {
-  --landing-safe-top-gap: 8px;
-  --landing-safe-bottom-gap: 6px;
+  --landing-safe-top-gap: 4px;
+  --landing-safe-bottom-gap: 2px;
 }
 
 /* ==========================
