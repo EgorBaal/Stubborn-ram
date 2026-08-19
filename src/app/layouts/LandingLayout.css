@@ -1,4 +1,12 @@
 /* ==========================
+   LANDING VARIABLES
+========================== */
+
+:root {
+  --landing-safe-gap: 12px;
+}
+
+/* ==========================
    LANDING SHELL
 ========================== */
 
@@ -13,6 +21,9 @@
   background: #c51313;
 
   box-sizing: border-box;
+
+  padding-left: max(6px, env(safe-area-inset-left));
+  padding-right: max(6px, env(safe-area-inset-right));
 }
 
 /* ==========================
@@ -23,14 +34,14 @@
   width: 100%;
   max-width: 480px;
 
+  margin-top: calc(env(safe-area-inset-top) + var(--landing-safe-gap));
+  margin-bottom: calc(env(safe-area-inset-bottom) + var(--landing-safe-gap));
+
   background: #006dff;
 
   box-sizing: border-box;
 
-  padding-top: calc(env(safe-area-inset-top) + 22px);
-  padding-right: 22px;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 22px);
-  padding-left: 22px;
+  padding: 22px;
 
   border: 2px solid transparent;
   border-radius: 32px;
