@@ -9,13 +9,15 @@ export default function AppLayout() {
     <>
       <ScrollToTop />
 
-      <div className="app-layout">
-        <div className="app-layout__content">
+      <div className="app-shell">
+        <div className="app-page">
           <Outlet />
         </div>
-      </div>
 
-      <BottomTabBar />
+        <div className="app-tabbar">
+          <BottomTabBar />
+        </div>
+      </div>
     </>
   );
 }

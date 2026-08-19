@@ -1,21 +1,77 @@
-.app-layout {
-  position: relative;
+/* ==========================
+   APP VARIABLES
+========================== */
 
+:root {
+  --app-safe-top-gap: 4px;
+  --app-safe-bottom-gap: 6px;
+  --app-side-gap: 10px;
+  --app-max-width: 480px;
+
+  /* Пока временно */
+  --app-tabbar-gap: 12px;
+  --app-tabbar-height: 72px;
+}
+
+/* ==========================
+   APP SHELL
+========================== */
+
+.app-shell {
   width: 100%;
-  max-width: 480px;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: grid;
+
+  grid-template-rows:
+    minmax(0, 1fr)
+    auto;
+
+  background: #c51313;
+
+  box-sizing: border-box;
+
+  padding-top: calc(env(safe-area-inset-top) + var(--app-safe-top-gap));
+
+  padding-right: max(var(--app-side-gap), env(safe-area-inset-right));
+
+  padding-bottom: max(var(--app-safe-bottom-gap), env(safe-area-inset-bottom));
+
+  padding-left: max(var(--app-side-gap), env(safe-area-inset-left));
+}
+
+/* ==========================
+   APP PAGE
+========================== */
+
+.app-page {
+  width: 100%;
+  max-width: var(--app-max-width);
+
+  min-height: 0;
 
   margin: 0 auto;
 
-  background: radial-gradient(
-    ellipse at top,
-    #181818 0%,
-    #121212 18%,
-    #0d0d0d 45%,
-    #090909 75%,
-    #080808 100%
-  );
+  background: rgba(64, 8, 219, 0.25);
+
+  border-radius: 28px;
+
+  overflow: auto;
 }
 
-.app-layout__content {
+/* ==========================
+   TABBAR CONTAINER
+========================== */
+
+.app-tabbar {
   width: 100%;
+  max-width: var(--app-max-width);
+
+  min-height: var(--app-tabbar-height);
+
+  margin: var(--app-tabbar-gap) auto 0;
+
+  display: flex;
+  align-items: center;
 }
