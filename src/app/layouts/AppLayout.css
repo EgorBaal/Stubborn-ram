@@ -3,13 +3,13 @@
 ========================== */
 
 :root {
-  --app-safe-top-gap: 2px;
-  --app-safe-bottom-gap: 6px;
+  --app-safe-top-gap: 0px;
+  --app-safe-bottom-gap: 2px;
   --app-side-gap: 10px;
 
   --app-max-width: 480px;
 
-  --app-tabbar-gap: 8px;
+  --app-tabbar-gap: 4px;
   --app-tabbar-height: 72px;
 }
 
@@ -72,7 +72,7 @@
   width: 100%;
   max-width: var(--app-max-width);
 
-  margin: 8px auto 0;
+  margin: var(--app-tabbar-gap) auto 0;
 
   display: flex;
   align-items: center;
