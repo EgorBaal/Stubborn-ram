@@ -40,6 +40,11 @@
   width: 100%;
   max-width: 480px;
 
+  min-height: calc(
+    100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) -
+      var(--landing-safe-top-gap) - var(--landing-safe-bottom-gap)
+  );
+
   margin: 0 auto;
 
   background: #006dff;
