@@ -3,13 +3,13 @@
 ========================== */
 
 :root {
-  --app-safe-top-gap: 4px;
+  --app-safe-top-gap: 2px;
   --app-safe-bottom-gap: 6px;
   --app-side-gap: 10px;
+
   --app-max-width: 480px;
 
-  /* Пока временно */
-  --app-tabbar-gap: 12px;
+  --app-tabbar-gap: 8px;
   --app-tabbar-height: 72px;
 }
 
@@ -19,8 +19,8 @@
 
 .app-shell {
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
 
   display: grid;
 
@@ -50,6 +50,7 @@
   max-width: var(--app-max-width);
 
   min-height: 0;
+  flex: 1;
 
   margin: 0 auto;
 
@@ -57,7 +58,10 @@
 
   border-radius: 28px;
 
-  overflow: auto;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
 }
 
 /* ==========================
@@ -68,10 +72,35 @@
   width: 100%;
   max-width: var(--app-max-width);
 
-  min-height: var(--app-tabbar-height);
-
-  margin: var(--app-tabbar-gap) auto 0;
+  margin: 8px auto 0;
 
   display: flex;
   align-items: center;
+  justify-content: center;
+
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+}
+
+/* ==========================
+   APP SCROLL
+========================== */
+
+.app-scroll {
+  flex: 1;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.app-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }

@@ -11,7 +11,9 @@ export default function AppLayout() {
 
       <div className="app-shell">
         <div className="app-page">
-          <Outlet />
+          <div className="app-scroll">
+            <Outlet />
+          </div>
         </div>
 
         <div className="app-tabbar">
