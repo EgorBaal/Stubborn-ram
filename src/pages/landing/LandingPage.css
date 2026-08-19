@@ -7,14 +7,12 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
-
-
 /* ==========================
    HERO
 ========================== */
 
 .hero {
-  min-height: 100vh;
+  min-height: auto;
 
   display: flex;
 
