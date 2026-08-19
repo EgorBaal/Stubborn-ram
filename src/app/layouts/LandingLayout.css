@@ -16,18 +16,21 @@
   min-height: 100vh;
   min-height: 100dvh;
 
-  background: #c51313;
-
-  box-sizing: border-box;
-
-  padding-top: calc(env(safe-area-inset-top) + var(--landing-safe-top-gap));
-
-  padding-right: max(6px, env(safe-area-inset-right));
-
-  padding-bottom: max(
-    var(--landing-safe-bottom-gap),
-    env(safe-area-inset-bottom)
-  );
+  background:
+    radial-gradient(
+      ellipse 140% 70% at 50% 50%,
+      rgba(255, 255, 255, 0.045) 0%,
+      rgba(255, 255, 255, 0.025) 35%,
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      #050505 0%,
+      #070707 18%,
+      #111111 50%,
+      #070707 82%,
+      #050505 100%
+    );
 
   padding-left: max(6px, env(safe-area-inset-left));
 }
@@ -47,7 +50,7 @@
 
   margin: 0 auto;
 
-  background: #006dff;
+  background: transparent;
 
   box-sizing: border-box;
 
