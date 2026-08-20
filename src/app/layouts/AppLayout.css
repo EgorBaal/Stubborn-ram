@@ -10,12 +10,12 @@
   --app-max-width: 480px;
 
   --app-tabbar-height: 72px;
-  --app-tabbar-bottom: 8px;
+  --app-bottom-offset: 12px;
   --app-page-tabbar-visual-gap: calc(
-    var(--app-tabbar-height) + var(--app-tabbar-bottom) + 8px
+    var(--app-tabbar-height) + var(--app-bottom-offset) + 8px
   );
   --app-reserved-space-under-tabbar: calc(
-    (var(--app-tabbar-height) * 2) + var(--app-tabbar-bottom) + 28px
+    (var(--app-tabbar-height) * 2) + var(--app-bottom-offset) + 28px
   );
 }
 
@@ -79,7 +79,7 @@
   left: 50%;
   transform: translateX(-50%);
 
-  bottom: 8px;
+  bottom: var(--app-bottom-offset);
 
   width: calc(100% - (var(--app-side-gap) * 2));
   max-width: var(--app-max-width);
