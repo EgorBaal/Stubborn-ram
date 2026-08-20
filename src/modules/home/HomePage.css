@@ -6,22 +6,30 @@
 
   margin: 0 auto;
 
-  padding: 12px 20px 86px;
+  padding: 0;
 
   background: transparent;
 
-  display: flex;
-  flex-direction: column;
+  display: grid;
 
-  gap: 10px;
+  grid-template-rows:
+    auto
+    auto
+    1fr;
+
+  row-gap: 10px;
+
+  height: 100%;
 
   box-sizing: border-box;
+
+  overflow: hidden;
 }
 
 @media (max-width: 340px) {
   .home-page {
     gap: 9px;
 
-    padding: 10px 14px 86px;
+    padding: 10px 14px;
   }
 }
