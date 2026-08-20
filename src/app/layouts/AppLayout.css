@@ -9,8 +9,14 @@
 
   --app-max-width: 480px;
 
-  --app-tabbar-gap: 4px;
   --app-tabbar-height: 72px;
+  --app-tabbar-bottom: 8px;
+  --app-page-tabbar-visual-gap: calc(
+    var(--app-tabbar-height) + var(--app-tabbar-bottom) + 8px
+  );
+  --app-reserved-space-under-tabbar: calc(
+    (var(--app-tabbar-height) * 2) + var(--app-tabbar-bottom) + 28px
+  );
 }
 
 /* ==========================
@@ -24,9 +30,7 @@
 
   display: grid;
 
-  grid-template-rows:
-    minmax(0, 1fr)
-    auto;
+  grid-template-rows: minmax(0, 1fr);
 
   background: #c51313;
 
@@ -62,6 +66,7 @@
 
   display: flex;
   flex-direction: column;
+  margin-bottom: var(--app-page-tabbar-visual-gap);
 }
 
 /* ==========================
@@ -69,17 +74,16 @@
 ========================== */
 
 .app-tabbar {
-  width: 100%;
+  position: fixed;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  bottom: 8px;
+
+  width: calc(100% - (var(--app-side-gap) * 2));
   max-width: var(--app-max-width);
 
-  margin: var(--app-tabbar-gap) auto 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: sticky;
-  bottom: 0;
   z-index: 100;
 }
 
@@ -97,6 +101,7 @@
 
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-bottom: var(--app-reserved-space-under-tabbar);
 }
 
 .app-scroll::-webkit-scrollbar {

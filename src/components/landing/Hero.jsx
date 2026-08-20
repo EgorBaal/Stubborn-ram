@@ -13,22 +13,6 @@ function Hero({ onOpenAuth, onOpenRegister }) {
         </button>
       </div>
 
-      <div className="topBar">
-        <button
-          className="topButton"
-          onClick={() => (window.location.href = "/register2")}
-        >
-          Регистрация 2
-        </button>
-
-        <button
-          className="topButton"
-          onClick={() => (window.location.href = "/test")}
-        >
-          Вход 2
-        </button>
-      </div>
-
       <img src={logo} alt="Stubborn Ram" className="logo hero-logo" />
 
       <h2 className="heroTitle hero-title">

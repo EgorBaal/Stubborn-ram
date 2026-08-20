@@ -49,7 +49,6 @@ export default function BottomTabBar() {
   const location = useLocation();
   const navRef = useRef(null);
   const tabRefs = useRef({});
-  const isChatActive = location.pathname.startsWith("/app/chat");
   const [indicatorStyle, setIndicatorStyle] = useState({
     left: lastIndicatorState.left,
     width: lastIndicatorState.width,
@@ -62,40 +61,40 @@ export default function BottomTabBar() {
     const activeTab = tabs.find((tab) => tab.path === location.pathname);
 
     if (activeTab?.path === "/app/chat") {
-  const navNode = navRef.current;
-  const tabNode = tabRefs.current["/app/chat"];
-  const contentNode =
-    tabNode?.querySelector(".bottom-tab-bar__chat-button") || tabNode;
+      const navNode = navRef.current;
+      const tabNode = tabRefs.current["/app/chat"];
+      const contentNode =
+        tabNode?.querySelector(".bottom-tab-bar__chat-button") || tabNode;
 
-  if (!navNode || !tabNode || !contentNode) return;
+      if (!navNode || !tabNode || !contentNode) return;
 
-  const navRect = navNode.getBoundingClientRect();
-  const tabRect = tabNode.getBoundingClientRect();
-  const contentRect = contentNode.getBoundingClientRect();
+      const navRect = navNode.getBoundingClientRect();
+      const tabRect = tabNode.getBoundingClientRect();
+      const contentRect = contentNode.getBoundingClientRect();
 
-  const left =
-    tabRect.left - navRect.left + (tabRect.width - contentRect.width) / 2;
+      const left =
+        tabRect.left - navRect.left + (tabRect.width - contentRect.width) / 2;
 
-  // Сначала мгновенно скрываем
-  setIndicatorStyle((prev) => ({
-    ...prev,
-    visible: false,
-    instant: true,
-  }));
+      // Сначала мгновенно скрываем
+      setIndicatorStyle((prev) => ({
+        ...prev,
+        visible: false,
+        instant: true,
+      }));
 
-  // Затем в следующем кадре переносим под чат
-  requestAnimationFrame(() => {
-    setIndicatorStyle({
-      left,
-      width: contentRect.width,
-      visible: false,
-      ready: true,
-      instant: false,
-    });
-  });
+      // Затем в следующем кадре переносим под чат
+      requestAnimationFrame(() => {
+        setIndicatorStyle({
+          left,
+          width: contentRect.width,
+          visible: false,
+          ready: true,
+          instant: false,
+        });
+      });
 
-  return;
-}
+      return;
+    }
 
     if (!activeTab) {
       setIndicatorStyle((prev) => ({ ...prev, visible: false, ready: true }));
