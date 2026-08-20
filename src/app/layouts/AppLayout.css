@@ -3,24 +3,39 @@
 ========================== */
 
 :root {
+  /* Дополнительные safe-area отступы */
   --app-safe-top-gap: 0px;
   --app-safe-bottom-gap: 2px;
+
+  /* Боковые поля приложения */
   --app-side-gap: 10px;
 
+  /* Максимальная ширина рабочей области */
   --app-max-width: 480px;
 
+  /* Высота нижней панели навигации */
   --app-tabbar-height: 72px;
+
+  /* Отступ TabBar от нижнего края экрана */
   --app-bottom-offset: 12px;
+
+  /* Визуальный зазор между app-page и TabBar */
   --app-page-tabbar-visual-gap: calc(
-    var(--app-tabbar-height) + var(--app-bottom-offset) + 8px
+    var(--app-tabbar-height) + var(--app-bottom-offset) + 4px
   );
+
+  /* Резерв под TabBar для прокручиваемых страниц */
   --app-reserved-space-under-tabbar: calc(
-  var(--app-tabbar-height) + var(--app-bottom-offset)
-);
+    var(--app-tabbar-height) + var(--app-bottom-offset)
+  );
 }
 
 /* ==========================
    APP SHELL
+   Общий контейнер приложения.
+   Отвечает за размер экрана,
+   safe-area, общий фон и
+   размещение app-page + TabBar.
 ========================== */
 
 .app-shell {
@@ -29,24 +44,25 @@
   height: 100dvh;
 
   display: grid;
-
   grid-template-rows: minmax(0, 1fr);
 
-  background: #c51313;
+  /* Общий фон приложения */
+  background: #080808;
 
   box-sizing: border-box;
 
   padding-top: calc(env(safe-area-inset-top) + var(--app-safe-top-gap));
-
   padding-right: max(var(--app-side-gap), env(safe-area-inset-right));
-
   padding-bottom: var(--app-safe-bottom-gap);
-
   padding-left: max(var(--app-side-gap), env(safe-area-inset-left));
 }
 
 /* ==========================
    APP PAGE
+   Контейнер геометрии страницы.
+   Ограничивает ширину,
+   задаёт скругления и положение.
+   Фон наследуется от app-shell.
 ========================== */
 
 .app-page {
@@ -58,19 +74,26 @@
 
   margin: 0 auto;
 
-  background: rgba(64, 8, 219, 0.25);
+  background: transparent;
 
-  border-radius: 28px;
+  border-radius: 0px;
 
-  overflow: hidden;
+  overflow: visible;
 
   display: flex;
   flex-direction: column;
+
+  padding: 0px;
+
+  /* Визуальный зазор между страницей и TabBar */
   margin-bottom: var(--app-page-tabbar-visual-gap);
 }
 
 /* ==========================
    TABBAR CONTAINER
+   Контейнер нижней панели.
+   Фиксируется относительно
+   нижней части экрана.
 ========================== */
 
 .app-tabbar {
@@ -89,6 +112,11 @@
 
 /* ==========================
    APP SCROLL
+   Используется только для
+   прокручиваемых страниц.
+   Статические страницы
+   (например Home)
+   рендерятся без app-scroll.
 ========================== */
 
 .app-scroll {
@@ -105,6 +133,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 
+  /* Резерв под TabBar только для прокручиваемых страниц */
   padding-bottom: var(--app-reserved-space-under-tabbar);
 }
 
