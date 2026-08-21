@@ -9,7 +9,7 @@ export default function TrainingExerciseBuilderPage() {
   return (
     <main className="training-builder-view">
       <header className="training-builder-topbar">
-        <div className="training-builder-side training-builder-side--left">
+        <div className="training-builder-side">
           <button
             type="button"
             className="training-builder-back"
@@ -22,7 +22,7 @@ export default function TrainingExerciseBuilderPage() {
 
         <h1 className="training-builder-title">Создание упражнения</h1>
 
-        <div className="training-builder-side training-builder-side--right">
+        <div className="training-builder-side">
           <button type="button" className="training-builder-edit">
             Изменить
           </button>

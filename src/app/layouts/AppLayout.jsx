@@ -6,7 +6,18 @@ import "./AppLayout.css";
 
 // Страницы, которые всегда помещаются на один экран.
 // Для них не используется app-scroll и резерв под TabBar.
-const STATIC_PAGES = ["/app/home"];
+const STATIC_PAGES = [
+  "/app/home",
+
+  "/app/training",
+  "/app/training/templates",
+  "/app/training/exercises",
+
+  "/app/training/create",
+  "/app/training/templates/create",
+  "/app/training/exercises/create",
+  "/app/training/programs",
+];
 
 export default function AppLayout() {
   const location = useLocation();

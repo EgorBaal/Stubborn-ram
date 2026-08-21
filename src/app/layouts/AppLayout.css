@@ -46,8 +46,8 @@
   display: grid;
   grid-template-rows: minmax(0, 1fr);
 
-  /* Общий фон приложения */
-  background: #080808;
+  /* Технический фон приложения (для разработки) */
+  background: #c51313;
 
   box-sizing: border-box;
 
@@ -61,8 +61,10 @@
    APP PAGE
    Контейнер геометрии страницы.
    Ограничивает ширину,
-   задаёт скругления и положение.
-   Фон наследуется от app-shell.
+   задаёт положение.
+   Фон используется только
+   как техническая подсветка
+   во время разработки.
 ========================== */
 
 .app-page {
@@ -74,16 +76,17 @@
 
   margin: 0 auto;
 
-  background: transparent;
+  /* Техническая подсветка рабочей области (для разработки) */
+  background: rgba(64, 8, 219, 0.25);
 
-  border-radius: 0px;
+  border-radius: 0;
 
   overflow: visible;
 
   display: flex;
   flex-direction: column;
 
-  padding: 0px;
+  padding: 0;
 
   /* Визуальный зазор между страницей и TabBar */
   margin-bottom: var(--app-page-tabbar-visual-gap);
