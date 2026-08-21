@@ -1,0 +1,43 @@
+.training-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+}
+
+.training-tabs__item {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 8px;
+  min-height: 42px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.training-tabs__item.is-active {
+  color: #ffffff;
+  background: rgba(255, 98, 0, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 6px 14px rgba(255, 98, 0, 0.16);
+}

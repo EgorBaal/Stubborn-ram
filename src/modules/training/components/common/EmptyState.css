@@ -1,0 +1,41 @@
+.training-empty-state {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  gap: 10px;
+
+  width: 100%;
+
+  min-height: 100%;
+}
+
+.training-empty-state h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.training-empty-state p {
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.5;
+  font-size: 14px;
+  color: #bfc3c8;
+}
+
+.training-empty-state--compact {
+  justify-content: center;
+}
+
+.training-empty-state--compact p {
+  font-size: 15px;
+  color: #d0d0d0;
+}

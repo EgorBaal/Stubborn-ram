@@ -1,9 +1,9 @@
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import "./TrainingPage.css";
+import "../styles/TrainingPage.css";
 
-export default function TrainingBuilderPage() {
+export default function TrainingTemplateBuilderPage() {
   const navigate = useNavigate();
 
   return (
@@ -20,7 +20,7 @@ export default function TrainingBuilderPage() {
           </button>
         </div>
 
-        <h1 className="training-builder-title">Создание тренировки</h1>
+        <h1 className="training-builder-title">Создание шаблона</h1>
 
         <div className="training-builder-side">
           <button type="button" className="training-builder-edit">
@@ -31,7 +31,7 @@ export default function TrainingBuilderPage() {
 
       <section
         className="training-builder-content"
-        aria-label="Создание тренировки"
+        aria-label="Создание шаблона"
       >
         <div className="training-builder-empty" />
       </section>

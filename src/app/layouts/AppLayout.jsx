@@ -4,25 +4,28 @@ import ScrollToTop from "@/components/common/ScrollToTop";
 
 import "./AppLayout.css";
 
-// Страницы, которые всегда помещаются на один экран.
-// Для них не используется app-scroll и резерв под TabBar.
-const STATIC_PAGES = [
+// Модули, которые используют локальную прокрутку контейнеров.
+// Все вложенные страницы автоматически наследуют это поведение.
+const STATIC_PREFIXES = [
   "/app/home",
-
   "/app/training",
-  "/app/training/templates",
-  "/app/training/exercises",
+];
 
-  "/app/training/create",
-  "/app/training/templates/create",
-  "/app/training/exercises/create",
-  "/app/training/programs",
+// Исключения: если когда-нибудь понадобится,
+// сюда можно добавить страницу, которая должна
+// использовать app-scroll.
+const SCROLL_EXCEPTIONS = [
+  // "/app/training/some-page",
 ];
 
 export default function AppLayout() {
   const location = useLocation();
 
-  const isStaticPage = STATIC_PAGES.includes(location.pathname);
+  const isStaticPage =
+    STATIC_PREFIXES.some((prefix) =>
+      location.pathname.startsWith(prefix)
+    ) &&
+    !SCROLL_EXCEPTIONS.includes(location.pathname);
 
   return (
     <>
@@ -30,11 +33,6 @@ export default function AppLayout() {
 
       <div className="app-shell">
         <div className="app-page">
-          {/* 
-            Статические страницы рендерятся напрямую внутри app-page.
-            Все остальные страницы оборачиваются в app-scroll
-            и получают стандартную систему прокрутки.
-          */}
           {isStaticPage ? (
             <Outlet />
           ) : (

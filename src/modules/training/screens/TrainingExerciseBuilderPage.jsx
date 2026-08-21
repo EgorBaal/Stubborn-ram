@@ -1,7 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import "./TrainingPage.css";
+import "../styles/TrainingPage.css";
 
 export default function TrainingExerciseBuilderPage() {
   const navigate = useNavigate();

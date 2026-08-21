@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import "./TrainingPage.css";
+import "../styles/TrainingPage.css";
 
 export default function TrainingExercisesPage() {
   const navigate = useNavigate();
