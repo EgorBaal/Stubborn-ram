@@ -9,10 +9,11 @@ import ProfilePage from "@/modules/profile/ProfilePage";
 import TrainingHistoryPage from "@/modules/training/screens/TrainingHistoryPage";
 import TrainingTemplatesPage from "@/modules/training/screens/TrainingTemplatesPage";
 import TrainingExercisesPage from "@/modules/training/screens/TrainingExercisesPage";
-import TrainingBuilderPage from "@/modules/training/screens/TrainingBuilderPage";
+import TrainingPage from "@/modules/training/screens/TrainingPage";
 import TrainingTemplateBuilderPage from "@/modules/training/screens/TrainingTemplateBuilderPage";
 import TrainingExerciseBuilderPage from "@/modules/training/screens/TrainingExerciseBuilderPage";
 import TrainingProgramsPage from "@/modules/training/screens/TrainingProgramsPage";
+import TrainingCreatePage from "@/modules/training/screens/TrainingCreatePage";
 import CommentsPage from "@/modules/comments/CommentsPage";
 
 import ReportPlaceholderPage from "@/modules/report/ReportPlaceholderPage";
@@ -42,7 +43,8 @@ const appRoutes = [
       { path: "/app/training", element: <TrainingHistoryPage /> },
       { path: "/app/training/templates", element: <TrainingTemplatesPage /> },
       { path: "/app/training/exercises", element: <TrainingExercisesPage /> },
-      { path: "/app/training/create", element: <TrainingBuilderPage /> },
+      { path: "/app/training/create", element: <TrainingCreatePage /> },
+      { path: "/app/training/new", element: <TrainingPage /> },
       {
         path: "/app/training/templates/create",
         element: <TrainingTemplateBuilderPage />,

@@ -1,10 +1,14 @@
 import { ChevronLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import "../styles/TrainingPage.css";
 
-export default function TrainingBuilderPage() {
+export default function TrainingPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const isCreateMode = !id;
+  const isViewMode = Boolean(id);
 
   return (
     <main className="training-builder-view">
@@ -20,12 +24,14 @@ export default function TrainingBuilderPage() {
           </button>
         </div>
 
-        <h1 className="training-builder-title">Создание тренировки</h1>
+        <h1 className="training-builder-title">Тренировка</h1>
 
         <div className="training-builder-side">
-          <button type="button" className="training-builder-edit">
-            Изменить
-          </button>
+          {isViewMode && (
+            <button type="button" className="training-builder-edit">
+              Изменить
+            </button>
+          )}
         </div>
       </header>
 
