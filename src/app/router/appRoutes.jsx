@@ -46,6 +46,10 @@ const appRoutes = [
       { path: "/app/training/create", element: <TrainingCreatePage /> },
       { path: "/app/training/new", element: <TrainingPage /> },
       {
+        path: "/app/training/template/:id",
+        element: <TrainingPage />,
+      },
+      {
         path: "/app/training/templates/create",
         element: <TrainingTemplateBuilderPage />,
       },

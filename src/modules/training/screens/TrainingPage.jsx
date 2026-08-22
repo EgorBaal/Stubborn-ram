@@ -1,14 +1,20 @@
 import { ChevronLeft } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import "../styles/TrainingPage.css";
 
 export default function TrainingPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
 
-  const isCreateMode = !id;
-  const isViewMode = Boolean(id);
+  const isNewTraining = location.pathname === "/app/training/new";
+
+  const isTemplateTraining = location.pathname.startsWith(
+    "/app/training/template/",
+  );
+
+  const isHistoryTraining = Boolean(id) && !isTemplateTraining;
 
   return (
     <main className="training-builder-view">
@@ -27,7 +33,7 @@ export default function TrainingPage() {
         <h1 className="training-builder-title">Тренировка</h1>
 
         <div className="training-builder-side">
-          {isViewMode && (
+          {isHistoryTraining && (
             <button type="button" className="training-builder-edit">
               Изменить
             </button>

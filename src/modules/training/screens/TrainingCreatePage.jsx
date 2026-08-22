@@ -3,16 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import "../styles/TrainingPage.css";
 
+import TrainingContent from "../components/common/TrainingContent";
+import TrainingCreateList from "../components/create/TrainingCreateList";
+
 export default function TrainingCreatePage() {
   const navigate = useNavigate();
-  const templates = [
-    { id: 1, title: "Фулбади" },
-    { id: 2, title: "Верх тела" },
-    { id: 3, title: "Ноги" },
-  ];
 
   return (
-    <main className="training-builder-view">
+    <main className="training-view">
       <header className="training-builder-topbar">
         <div className="training-builder-side">
           <button
@@ -25,27 +23,20 @@ export default function TrainingCreatePage() {
           </button>
         </div>
 
-        <h1 className="training-builder-title">Новая тренировка</h1>
-
         <div className="training-builder-side" />
       </header>
 
-      <section className="training-builder-content">
-        <TrainingCreateCard
-          title="Новая тренировка"
-          onClick={() => navigate("/app/training/new")}
-        />
+      <button
+        type="button"
+        className="training-primary-action"
+        onClick={() => navigate("/app/training/new")}
+      >
+        Новая тренировка
+      </button>
 
-        <h2 className="training-create-title">Шаблоны</h2>
-
-        {templates.map((template) => (
-          <TrainingCreateCard
-            key={template.id}
-            title={template.title}
-            onClick={() => {}}
-          />
-        ))}
-      </section>
+      <TrainingContent>
+        <TrainingCreateList />
+      </TrainingContent>
     </main>
   );
 }

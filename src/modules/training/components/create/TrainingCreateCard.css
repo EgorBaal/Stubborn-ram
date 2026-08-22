@@ -1,0 +1,72 @@
+.training-create-card {
+  box-sizing: border-box;
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 12px 10px 12px 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0) 24%
+    ),
+    linear-gradient(180deg, #131313 0%, #090909 100%);
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.training-create-card__title {
+  flex: 1;
+  min-width: 0;
+
+  margin: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: clamp(14px, 3.4vw, 17px);
+  font-weight: 700;
+
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.training-create-card__right {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+
+  margin-left: auto;
+}
+
+.training-create-card__arrow {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-create-card:hover {
+    border-color: rgba(255, 98, 0, 0.35);
+    transform: translateY(-1px);
+  }
+}

@@ -1,0 +1,28 @@
+.training-create-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.training-create-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.training-create-group:not(:first-child) {
+  margin-top: 22px;
+}
+
+.training-create-title {
+  margin: 0 0 8px;
+
+  text-align: center;
+
+  color: rgba(255, 255, 255, 0.58);
+
+  font-size: 16px;
+  font-weight: 700;
+}
