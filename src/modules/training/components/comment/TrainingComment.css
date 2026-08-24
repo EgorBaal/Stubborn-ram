@@ -1,0 +1,65 @@
+.training-comment {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+  margin-top: 24px;
+
+  font-family: inherit;
+}
+
+.training-comment__title {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.68);
+
+  font-size: 18px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.training-comment__field {
+  width: 100%;
+  min-height: 116px;
+
+  padding: 14px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0) 24%
+    ),
+    linear-gradient(180deg, #131313 0%, #090909 100%);
+
+  color: rgba(255, 255, 255, 0.92);
+  caret-color: #ff6200;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+
+  box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+}
+
+.training-comment__field::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.training-comment__field:focus-visible {
+  outline: none;
+  border-color: #ff6200;
+}
+
+@media (max-width: 430px) {
+  .training-comment__field {
+    padding: 12px 14px;
+  }
+}

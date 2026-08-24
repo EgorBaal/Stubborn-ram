@@ -50,6 +50,8 @@ export default function TrainingInfo({
 
   const [isTrainingTypeButtonOpen, setIsTrainingTypeButtonOpen] =
     useState(false);
+  const [isStartTimeButtonOpen, setIsStartTimeButtonOpen] = useState(false);
+  const [isEndTimeButtonOpen, setIsEndTimeButtonOpen] = useState(false);
 
   useEffect(() => {
     if (!isDatePickerOpen) {
@@ -66,6 +68,8 @@ export default function TrainingInfo({
   const handleDateToggle = () => {
     setIsTrainingTypePickerOpen(false);
     setIsTrainingTypeButtonOpen(false);
+    setIsStartTimeButtonOpen(false);
+    setIsEndTimeButtonOpen(false);
     setIsStartTimePickerOpen(false);
     setIsEndTimePickerOpen(false);
 
@@ -81,7 +85,12 @@ export default function TrainingInfo({
     setIsDatePickerOpen(false);
     setIsDateButtonOpen(false);
     setIsEndTimePickerOpen(false);
-    setIsStartTimePickerOpen((prev) => !prev);
+
+    const nextIsStartTimePickerOpen = !isStartTimePickerOpen;
+
+    setIsEndTimeButtonOpen(false);
+    setIsStartTimeButtonOpen(nextIsStartTimePickerOpen);
+    setIsStartTimePickerOpen(nextIsStartTimePickerOpen);
   };
 
   const handleEndTimeToggle = () => {
@@ -90,12 +99,19 @@ export default function TrainingInfo({
     setIsDatePickerOpen(false);
     setIsDateButtonOpen(false);
     setIsStartTimePickerOpen(false);
-    setIsEndTimePickerOpen((prev) => !prev);
+
+    const nextIsEndTimePickerOpen = !isEndTimePickerOpen;
+
+    setIsStartTimeButtonOpen(false);
+    setIsEndTimeButtonOpen(nextIsEndTimePickerOpen);
+    setIsEndTimePickerOpen(nextIsEndTimePickerOpen);
   };
 
   const handleTrainingTypeToggle = () => {
     setIsDatePickerOpen(false);
     setIsDateButtonOpen(false);
+    setIsStartTimeButtonOpen(false);
+    setIsEndTimeButtonOpen(false);
     setIsStartTimePickerOpen(false);
     setIsEndTimePickerOpen(false);
 
@@ -230,8 +246,9 @@ export default function TrainingInfo({
             <button
               ref={startTimeButtonRef}
               type="button"
-              className="training-info__button training-info__button--time"
+              className={`training-info__button training-info__button--time${isStartTimeButtonOpen ? " training-info__button--open" : ""}`}
               onClick={handleStartTimeToggle}
+              aria-expanded={isStartTimeButtonOpen}
             >
               {startTime}
             </button>
@@ -241,8 +258,9 @@ export default function TrainingInfo({
             <button
               ref={endTimeButtonRef}
               type="button"
-              className="training-info__button training-info__button--time"
+              className={`training-info__button training-info__button--time${isEndTimeButtonOpen ? " training-info__button--open" : ""}`}
               onClick={handleEndTimeToggle}
+              aria-expanded={isEndTimeButtonOpen}
             >
               {endTime || "--:--"}
             </button>
@@ -254,7 +272,11 @@ export default function TrainingInfo({
             anchorRef={startTimeButtonRef}
             value={startTime}
             onChange={setStartTime}
-            onClose={() => setIsStartTimePickerOpen(false)}
+            onCloseStart={() => setIsStartTimeButtonOpen(false)}
+            onClose={() => {
+              setIsStartTimeButtonOpen(false);
+              setIsStartTimePickerOpen(false);
+            }}
           />
         )}
 
@@ -263,7 +285,11 @@ export default function TrainingInfo({
             anchorRef={endTimeButtonRef}
             value={endTime}
             onChange={setEndTime}
-            onClose={() => setIsEndTimePickerOpen(false)}
+            onCloseStart={() => setIsEndTimeButtonOpen(false)}
+            onClose={() => {
+              setIsEndTimeButtonOpen(false);
+              setIsEndTimePickerOpen(false);
+            }}
           />
         )}
 
@@ -273,7 +299,7 @@ export default function TrainingInfo({
           <span className="training-info__value">{trainingDuration}</span>
         </div>
 
-        <div className="training-info__row">
+        <div className="training-info__row training-info__row--type">
           <span className="training-info__label">Тип тренировки</span>
 
           <button

@@ -26,6 +26,7 @@ export default function TrainingPage() {
   );
   const [endTime, setEndTime] = useState("");
   const [trainingType, setTrainingType] = useState("Силовая");
+  const [trainingComment, setTrainingComment] = useState("");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isStartTimePickerOpen, setIsStartTimePickerOpen] = useState(false);
   const [isEndTimePickerOpen, setIsEndTimePickerOpen] = useState(false);
@@ -74,7 +75,10 @@ export default function TrainingPage() {
           setIsEndTimePickerOpen={setIsEndTimePickerOpen}
         />
 
-        <TrainingComment />
+        <TrainingComment
+          value={trainingComment}
+          onChange={setTrainingComment}
+        />
       </section>
     </main>
   );
