@@ -1,0 +1,154 @@
+.training-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.training-info__title {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.68);
+
+  font-size: 18px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.training-info__card {
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0) 24%
+    ),
+    linear-gradient(180deg, #131313 0%, #090909 100%);
+}
+
+.training-info__row {
+  position: relative;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  min-height: 54px;
+
+  padding: 0 18px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.training-info__row:last-child {
+  border-bottom: none;
+}
+
+.training-info__label {
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 14px;
+}
+
+.training-info__value {
+  color: rgba(255, 255, 255, 0.92);
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.training-info__input {
+  width: 170px;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  text-align: right;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.training-info__input::selection {
+  background: rgba(255, 98, 0, 0.35);
+}
+
+.training-info__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 40px;
+
+  padding: 0 18px;
+
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.training-info__button--date {
+  min-width: 145px;
+}
+
+.training-info__button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 98, 0, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 98, 0, 0.15);
+}
+
+.training-info__button:active {
+  transform: scale(0.98);
+}
+
+.training-info__button:focus-visible {
+  outline: none;
+  border-color: #ff6200;
+}
+
+.training-info__time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.training-info__button--time {
+  min-width: 70px;
+  height: 36px;
+
+  padding: 0 14px;
+}
+
+.training-info__dash {
+  color: rgba(255, 255, 255, 0.55);
+
+  font-size: 18px;
+  line-height: 1;
+}

@@ -45,7 +45,7 @@ export default function TrainingExercisesPage() {
       </button>
 
       <section className="training-content" aria-live="polite">
-        <div className="training-empty-state training-empty-state--compact">
+        <div className="training-empty-state">
           <p>Раздел находится в разработке</p>
         </div>
       </section>
