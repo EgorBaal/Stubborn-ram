@@ -32,10 +32,10 @@
 
 /* ==========================
    APP SHELL
+
    Общий контейнер приложения.
-   Отвечает за размер экрана,
-   safe-area, общий фон и
-   размещение app-page + TabBar.
+   Чёрный сверху с мягким переходом
+   в тёмно-серый снизу.
 ========================== */
 
 .app-shell {
@@ -46,25 +46,26 @@
   display: grid;
   grid-template-rows: minmax(0, 1fr);
 
-  /* Технический фон приложения (для разработки) */
-  background: #c51313;
-
   box-sizing: border-box;
 
+  background: #080808;
+
   padding-top: calc(env(safe-area-inset-top) + var(--app-safe-top-gap));
+
   padding-right: max(var(--app-side-gap), env(safe-area-inset-right));
+
   padding-bottom: var(--app-safe-bottom-gap);
+
   padding-left: max(var(--app-side-gap), env(safe-area-inset-left));
 }
 
 /* ==========================
    APP PAGE
-   Контейнер геометрии страницы.
-   Ограничивает ширину,
-   задаёт положение.
-   Фон используется только
-   как техническая подсветка
-   во время разработки.
+
+   Основная рабочая область.
+   Полностью прозрачная, чтобы
+   не создавать дополнительный
+   цветной слой поверх app-shell.
 ========================== */
 
 .app-page {
@@ -76,11 +77,9 @@
 
   margin: 0 auto;
 
-  /* Техническая подсветка рабочей области (для разработки) */
-  background: rgba(64, 8, 219, 0.25);
+  background: transparent;
 
   border-radius: 0;
-
   overflow: visible;
 
   display: flex;
@@ -94,6 +93,7 @@
 
 /* ==========================
    TABBAR CONTAINER
+
    Контейнер нижней панели.
    Фиксируется относительно
    нижней части экрана.
@@ -108,6 +108,7 @@
   bottom: var(--app-bottom-offset);
 
   width: calc(100% - (var(--app-side-gap) * 2));
+
   max-width: var(--app-max-width);
 
   z-index: 100;
@@ -115,11 +116,9 @@
 
 /* ==========================
    APP SCROLL
+
    Используется только для
    прокручиваемых страниц.
-   Статические страницы
-   (например Home)
-   рендерятся без app-scroll.
 ========================== */
 
 .app-scroll {
@@ -136,7 +135,8 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 
-  /* Резерв под TabBar только для прокручиваемых страниц */
+  /* Резерв под TabBar только
+     для прокручиваемых страниц */
   padding-bottom: var(--app-reserved-space-under-tabbar);
 }
 

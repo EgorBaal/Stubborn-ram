@@ -25,6 +25,7 @@ export default function TrainingPage() {
     }),
   );
   const [endTime, setEndTime] = useState("");
+  const [trainingType, setTrainingType] = useState("Силовая");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isStartTimePickerOpen, setIsStartTimePickerOpen] = useState(false);
   const [isEndTimePickerOpen, setIsEndTimePickerOpen] = useState(false);
@@ -63,6 +64,8 @@ export default function TrainingPage() {
           setStartTime={setStartTime}
           endTime={endTime}
           setEndTime={setEndTime}
+          trainingType={trainingType}
+          setTrainingType={setTrainingType}
           isDatePickerOpen={isDatePickerOpen}
           setIsDatePickerOpen={setIsDatePickerOpen}
           isStartTimePickerOpen={isStartTimePickerOpen}

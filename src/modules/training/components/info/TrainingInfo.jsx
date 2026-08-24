@@ -4,6 +4,16 @@ import "./TrainingInfo.css";
 
 import DatePopover from "../popovers/DatePopover";
 import TrainingTimePopover from "../popovers/TrainingTimePopover";
+import TrainingTypePopover from "../popovers/TrainingTypePopover";
+
+const trainingTypes = [
+  "Силовая",
+  "Интервальная",
+  "Растяжка",
+  "Реабилитация",
+  "Йога",
+  "Кардио",
+];
 
 export default function TrainingInfo({
   trainingTitle,
@@ -18,6 +28,9 @@ export default function TrainingInfo({
   endTime,
   setEndTime,
 
+  trainingType,
+  setTrainingType,
+
   isDatePickerOpen,
   setIsDatePickerOpen,
 
@@ -30,7 +43,13 @@ export default function TrainingInfo({
   const dateButtonRef = useRef(null);
   const startTimeButtonRef = useRef(null);
   const endTimeButtonRef = useRef(null);
+  const trainingTypeButtonRef = useRef(null);
   const [isDateButtonOpen, setIsDateButtonOpen] = useState(false);
+  const [isTrainingTypePickerOpen, setIsTrainingTypePickerOpen] =
+    useState(false);
+
+  const [isTrainingTypeButtonOpen, setIsTrainingTypeButtonOpen] =
+    useState(false);
 
   useEffect(() => {
     if (!isDatePickerOpen) {
@@ -38,7 +57,15 @@ export default function TrainingInfo({
     }
   }, [isDatePickerOpen]);
 
+  useEffect(() => {
+    if (!isTrainingTypePickerOpen) {
+      setIsTrainingTypeButtonOpen(false);
+    }
+  }, [isTrainingTypePickerOpen]);
+
   const handleDateToggle = () => {
+    setIsTrainingTypePickerOpen(false);
+    setIsTrainingTypeButtonOpen(false);
     setIsStartTimePickerOpen(false);
     setIsEndTimePickerOpen(false);
 
@@ -49,6 +76,8 @@ export default function TrainingInfo({
   };
 
   const handleStartTimeToggle = () => {
+    setIsTrainingTypePickerOpen(false);
+    setIsTrainingTypeButtonOpen(false);
     setIsDatePickerOpen(false);
     setIsDateButtonOpen(false);
     setIsEndTimePickerOpen(false);
@@ -56,10 +85,24 @@ export default function TrainingInfo({
   };
 
   const handleEndTimeToggle = () => {
+    setIsTrainingTypePickerOpen(false);
+    setIsTrainingTypeButtonOpen(false);
     setIsDatePickerOpen(false);
     setIsDateButtonOpen(false);
     setIsStartTimePickerOpen(false);
     setIsEndTimePickerOpen((prev) => !prev);
+  };
+
+  const handleTrainingTypeToggle = () => {
+    setIsDatePickerOpen(false);
+    setIsDateButtonOpen(false);
+    setIsStartTimePickerOpen(false);
+    setIsEndTimePickerOpen(false);
+
+    const nextIsTrainingTypePickerOpen = !isTrainingTypePickerOpen;
+
+    setIsTrainingTypeButtonOpen(nextIsTrainingTypePickerOpen);
+    setIsTrainingTypePickerOpen(nextIsTrainingTypePickerOpen);
   };
 
   const formattedTrainingDate = new Intl.DateTimeFormat("ru-RU", {
@@ -233,8 +276,30 @@ export default function TrainingInfo({
         <div className="training-info__row">
           <span className="training-info__label">Тип тренировки</span>
 
-          <span className="training-info__value">Силовая</span>
+          <button
+            ref={trainingTypeButtonRef}
+            type="button"
+            className={`training-info__button training-info__button--type${isTrainingTypeButtonOpen ? " training-info__button--open" : ""}`}
+            onClick={handleTrainingTypeToggle}
+            aria-expanded={isTrainingTypeButtonOpen}
+          >
+            {trainingType}
+          </button>
         </div>
+
+        {isTrainingTypePickerOpen && (
+          <TrainingTypePopover
+            anchorRef={trainingTypeButtonRef}
+            options={trainingTypes}
+            value={trainingType}
+            onChange={setTrainingType}
+            onCloseStart={() => setIsTrainingTypeButtonOpen(false)}
+            onClose={() => {
+              setIsTrainingTypeButtonOpen(false);
+              setIsTrainingTypePickerOpen(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );

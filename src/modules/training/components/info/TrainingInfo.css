@@ -155,6 +155,12 @@
   padding: 0 14px;
 }
 
+.training-info__button--type {
+  min-width: 145px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
 .training-info__dash {
   color: rgba(255, 255, 255, 0.55);
 
