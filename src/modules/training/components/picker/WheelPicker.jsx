@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import "./WheelPicker.css";
 
 const ITEM_HEIGHT = 30;
-const SNAP_DELAY_MS = 100;
+const SNAP_DELAY_MS = 180;
 const VISIBLE_RADIUS = 3;
 
 function clamp(value, min, max) {

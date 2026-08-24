@@ -13,21 +13,30 @@ export default function DatePopover({
   trainingDate,
   setTrainingDate,
   onClose,
+  onCloseStart,
   anchorRef,
 }) {
   const popoverRef = useRef(null);
   const anchorNodeRef = useRef(null);
   const onCloseRef = useRef(onClose);
+  const onCloseStartRef = useRef(onCloseStart);
   const closeTimeoutRef = useRef(null);
   const animationStateRef = useRef("entering");
+
   const [positionStyle, setPositionStyle] = useState(null);
-  const lastPositionRef = useRef({ top: null, right: null });
+  const lastPositionRef = useRef({
+    top: null,
+    left: null,
+  });
+
   const [animationState, setAnimationState] = useState("entering");
+
   const anchorNode = anchorRef?.current ?? null;
   const isPositioned = positionStyle != null;
 
   useLayoutEffect(() => {
     anchorNodeRef.current = anchorNode;
+
     if (!anchorNode) {
       setPositionStyle(null);
       return;
@@ -35,23 +44,54 @@ export default function DatePopover({
 
     const updatePosition = () => {
       const rect = anchorNode.getBoundingClientRect();
-      const nextTop = Math.round(rect.bottom + 4);
-      const nextRight = Math.round(window.innerWidth - rect.right);
+
+      const popupWidth =
+        popoverRef.current?.getBoundingClientRect().width ?? 390;
+
+      const gap = 8;
+      const viewportGap = 10;
+
+      const isMobile = window.innerWidth <= 430;
+
+      const nextTop = Math.round(rect.bottom + gap);
+
+      if (isMobile) {
+        setPositionStyle({
+          position: "fixed",
+          top: `${nextTop}px`,
+          left: `${viewportGap * 2}px`,
+          right: "auto",
+        });
+
+        return;
+      }
+
+      const desiredLeft = rect.right - popupWidth;
+      const nextLeft = Math.round(desiredLeft);
 
       if (
         lastPositionRef.current.top === nextTop &&
-        lastPositionRef.current.right === nextRight
+        lastPositionRef.current.left === nextLeft
       ) {
         return;
       }
 
-      lastPositionRef.current = { top: nextTop, right: nextRight };
+      lastPositionRef.current = {
+        top: nextTop,
+        left: nextLeft,
+      };
+
       setPositionStyle({
         position: "fixed",
         top: `${nextTop}px`,
-        right: `${nextRight}px`,
+        left: `${nextLeft}px`,
+        right: "auto",
       });
     };
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
 
     const handleScroll = (event) => {
       const target = event.target;
@@ -63,8 +103,6 @@ export default function DatePopover({
       updatePosition();
     };
 
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
     window.addEventListener("scroll", handleScroll, true);
 
     return () => {
@@ -78,6 +116,10 @@ export default function DatePopover({
   }, [onClose]);
 
   useEffect(() => {
+    onCloseStartRef.current = onCloseStart;
+  }, [onCloseStart]);
+
+  useEffect(() => {
     animationStateRef.current = animationState;
   }, [animationState]);
 
@@ -87,12 +129,14 @@ export default function DatePopover({
     }
 
     setAnimationState("entering");
+
     const enterRaf = requestAnimationFrame(() => {
       setAnimationState("entered");
     });
 
     return () => {
       cancelAnimationFrame(enterRaf);
+
       if (closeTimeoutRef.current) {
         clearTimeout(closeTimeoutRef.current);
       }
@@ -104,6 +148,7 @@ export default function DatePopover({
       return;
     }
 
+    onCloseStartRef.current?.();
     setAnimationState("leaving");
 
     closeTimeoutRef.current = setTimeout(() => {
@@ -123,6 +168,7 @@ export default function DatePopover({
         return;
       }
 
+      anchorNodeRef.current?.blur();
       requestClose();
     };
 
@@ -153,7 +199,16 @@ export default function DatePopover({
         return;
       }
 
-      monthNode.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+      const capitalized = text.charAt(0).toUpperCase() + text.slice(1);
+
+      // ВАЖНО:
+      // не записываем textContent, если он уже правильный.
+      // Иначе MutationObserver запускает сам себя бесконечно.
+      if (monthNode.textContent.trim() === capitalized) {
+        return;
+      }
+
+      monthNode.textContent = capitalized;
     };
 
     capitalizeMonthTitle();
@@ -191,6 +246,8 @@ export default function DatePopover({
         inline
         locale="ru"
         selected={trainingDate}
+        showPreviousMonths={false}
+        fixedHeight
         onChange={(date) => {
           if (date) {
             setTrainingDate(date);

@@ -66,6 +66,7 @@
 }
 
 .training-info__input {
+  caret-color: #ff6200;
   width: 170px;
 
   padding: 0;
@@ -118,10 +119,18 @@
   min-width: 145px;
 }
 
-.training-info__button:hover {
+.training-info__button--open {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 98, 0, 0.45);
   box-shadow: 0 0 0 1px rgba(255, 98, 0, 0.15);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-info__button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 98, 0, 0.45);
+    box-shadow: 0 0 0 1px rgba(255, 98, 0, 0.15);
+  }
 }
 
 .training-info__button:active {
