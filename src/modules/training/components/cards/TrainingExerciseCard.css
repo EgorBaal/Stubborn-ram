@@ -1,0 +1,228 @@
+.training-exercise-card {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0) 24%
+    ),
+    linear-gradient(180deg, #131313 0%, #090909 100%);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.training-exercise-card__row,
+.training-exercise-card__action-text,
+.training-exercise-card__comment-mock,
+.training-exercise-card__history-icon,
+.training-exercise-card__chevron {
+  font-family: inherit;
+}
+
+.training-exercise-card__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 60px;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
+}
+
+.training-exercise-card__row:last-child {
+  border-bottom: none;
+}
+
+.training-exercise-card__row--title {
+  min-height: 60px;
+}
+
+.training-exercise-card__name-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: #ffffff;
+  caret-color: #ff6200;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.training-exercise-card__name-input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 1;
+}
+
+.training-exercise-card__toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #ff6200;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.training-exercise-card__chevron {
+  width: 22px;
+  height: 22px;
+  color: inherit;
+  transform: rotate(90deg);
+  transition: transform 270ms ease;
+}
+
+.training-exercise-card--collapsed .training-exercise-card__chevron {
+  transform: rotate(0deg);
+}
+
+.training-exercise-card__row--accent {
+  color: rgba(255, 98, 0, 0.92);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.training-exercise-card__row--danger {
+  color: #dc3a3a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.training-exercise-card__row--comment {
+  min-height: 100px;
+  align-items: stretch;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.training-exercise-card__comment-mock {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 76px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.training-exercise-card__row--history {
+  gap: 12px;
+}
+
+.training-exercise-card__row--params {
+  gap: 12px;
+}
+
+.training-exercise-card__history-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.training-exercise-card__params-chevron {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.training-exercise-card__sets {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px;
+  gap: 10px;
+}
+
+.training-exercise-card__set-headings,
+.training-exercise-card__set-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+  align-items: center;
+}
+
+.training-exercise-card__set-headings,
+.training-exercise-card__set-row {
+  column-gap: 0;
+}
+
+.training-exercise-card__set-headings span,
+.training-exercise-card__set-row span {
+  min-width: 0;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+.training-exercise-card__set-headings span:not(:last-child),
+.training-exercise-card__set-row span:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.training-exercise-card__set-headings {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.training-exercise-card__set-row {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.training-exercise-card__set-row span:last-child {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.training-exercise-card__row--footer {
+  min-height: 60px;
+  color: #ff6200;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.training-exercise-card__body {
+  display: flex;
+  flex-direction: column;
+  max-height: 1000px;
+  opacity: 1;
+  overflow: hidden;
+  transform: translateY(0);
+  transition:
+    max-height 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 220ms ease,
+    transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.training-exercise-card__body--collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}

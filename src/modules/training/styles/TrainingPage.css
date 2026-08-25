@@ -110,6 +110,10 @@
   overscroll-behavior: contain;
 }
 
+.training-builder-content > * {
+  flex-shrink: 0;
+}
+
 .training-builder-content::-webkit-scrollbar {
   display: none;
 }

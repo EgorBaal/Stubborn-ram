@@ -3,6 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import "../styles/TrainingPage.css";
+import TrainingExerciseCard from "../components/cards/TrainingExerciseCard";
 import TrainingComment from "../components/comment/TrainingComment";
 import TrainingInfo from "../components/info/TrainingInfo";
 
@@ -77,6 +78,8 @@ export default function TrainingPage() {
           value={trainingComment}
           onChange={setTrainingComment}
         />
+
+        <TrainingExerciseCard />
       </section>
     </main>
   );
