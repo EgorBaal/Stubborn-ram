@@ -1,5 +1,8 @@
 .training-view,
 .training-builder-view {
+  --training-technical-row-height: 56px;
+  --training-toolbar-control-height: 42px;
+
   display: flex;
   flex-direction: column;
 
@@ -113,12 +116,13 @@
 
 .training-builder-topbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns:
+    var(--training-toolbar-control-height) minmax(0, 1fr)
+    auto;
   align-items: center;
-
   gap: 12px;
-
-  min-height: 42px;
+  height: var(--training-technical-row-height);
+  min-height: var(--training-technical-row-height);
 }
 
 .training-builder-side {
@@ -127,8 +131,8 @@
 }
 
 .training-builder-back {
-  width: 42px;
-  height: 42px;
+  width: var(--training-toolbar-control-height);
+  height: var(--training-technical-row-height);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   background:
@@ -144,6 +148,7 @@
   display: grid;
   place-items: center;
   padding: 0;
+  box-sizing: border-box;
 }
 
 .training-builder-back svg {
@@ -158,10 +163,12 @@
 
 .training-builder-title {
   margin: 0;
+  min-width: 0;
+  width: 100%;
 
   text-align: center;
 
-  font-size: 19px;
+  font-size: clamp(16px, 4.8vw, 19px);
   font-weight: 700;
 
   line-height: 1.2;
@@ -175,7 +182,7 @@
 }
 
 .training-builder-edit {
-  height: 42px;
+  height: var(--training-technical-row-height);
   padding: 0 12px;
 
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -245,10 +252,6 @@
 
   .training-secondary-action {
     font-size: 13px;
-  }
-
-  .training-builder-title {
-    font-size: 18px;
   }
 
   .training-builder-edit {

@@ -47,11 +47,9 @@ export default function TrainingPage() {
         <h1 className="training-builder-title">{trainingTitle}</h1>
 
         <div className="training-builder-side">
-          {isHistoryTraining && (
-            <button type="button" className="training-builder-edit">
-              Изменить
-            </button>
-          )}
+          <button type="button" className="training-builder-edit">
+            Завершить
+          </button>
         </div>
       </header>
 

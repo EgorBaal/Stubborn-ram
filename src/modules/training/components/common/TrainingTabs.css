@@ -19,7 +19,7 @@
   border: 0;
   border-radius: 12px;
   padding: 10px 8px;
-  min-height: 42px;
+  min-height: var(--training-toolbar-control-height, 42px);
 
   background: transparent;
   color: rgba(255, 255, 255, 0.72);
