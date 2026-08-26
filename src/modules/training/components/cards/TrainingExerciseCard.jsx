@@ -1,9 +1,12 @@
 import { useState } from "react";
 
+import ExercisePickerOverlay from "../exercises/ExercisePickerOverlay";
 import "./TrainingExerciseCard.css";
 
 export default function TrainingExerciseCard() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
+  const [exerciseName, setExerciseName] = useState("");
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
@@ -16,6 +19,8 @@ export default function TrainingExerciseCard() {
           type="text"
           className="training-exercise-card__name-input"
           placeholder="Название упражнения"
+          value={exerciseName}
+          onChange={(event) => setExerciseName(event.target.value)}
         />
 
         <button
@@ -28,7 +33,9 @@ export default function TrainingExerciseCard() {
           aria-expanded={!isCollapsed}
         >
           <svg
-            className="training-exercise-card__chevron"
+            className={`training-exercise-card__chevron${
+              isCollapsed ? " training-exercise-card__chevron--collapsed" : ""
+            }`}
             viewBox="0 0 24 24"
             fill="none"
             aria-hidden="true"
@@ -49,11 +56,15 @@ export default function TrainingExerciseCard() {
           isCollapsed ? " training-exercise-card__body--collapsed" : ""
         }`}
       >
-        <div className="training-exercise-card__row training-exercise-card__row--accent">
+        <button
+          type="button"
+          className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__select-existing"
+          onClick={() => setIsExercisePickerOpen(true)}
+        >
           <span className="training-exercise-card__action-text">
             Выбрать существующее
           </span>
-        </div>
+        </button>
 
         <div className="training-exercise-card__row training-exercise-card__row--comment">
           <div
@@ -128,6 +139,15 @@ export default function TrainingExerciseCard() {
           </span>
         </div>
       </div>
+      {isExercisePickerOpen && (
+        <ExercisePickerOverlay
+          onClose={() => setIsExercisePickerOpen(false)}
+          onSelect={(exercise) => {
+            setExerciseName(exercise.name);
+            setIsExercisePickerOpen(false);
+          }}
+        />
+      )}
     </article>
   );
 }

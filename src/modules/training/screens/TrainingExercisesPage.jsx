@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
+import ExerciseList from "../components/exercises/ExerciseList";
 import "../styles/TrainingPage.css";
+import "../components/common/TrainingTabs.css";
+import "../components/common/TrainingContent.css";
 
 export default function TrainingExercisesPage() {
   const navigate = useNavigate();
@@ -45,9 +48,7 @@ export default function TrainingExercisesPage() {
       </button>
 
       <section className="training-content" aria-live="polite">
-        <div className="training-empty-state">
-          <p>Раздел находится в разработке</p>
-        </div>
+        <ExerciseList />
       </section>
     </main>
   );

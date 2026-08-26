@@ -1,0 +1,267 @@
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* =========================
+   ГРУППЫ
+   ========================= */
+
+.exercise-list__groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  background: #101010;
+}
+
+.exercise-list__group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+
+  padding: 7px 4px;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 255, 255, 0.65);
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
+
+  text-align: center;
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.exercise-list__group-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+
+  line-height: 1.15;
+}
+
+.exercise-list__group--active {
+  border-color: rgba(255, 98, 0, 0.45);
+  background: rgba(255, 98, 0, 0.13);
+  color: #ff6200;
+}
+
+/* =========================
+   ПОИСК
+   ========================= */
+
+.exercise-list__search {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 12px;
+
+  background: #101010;
+
+  box-sizing: border-box;
+}
+
+.exercise-list__search-input {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  height: 42px;
+
+  padding: 0 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+
+  outline: none;
+
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  box-sizing: border-box;
+
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.exercise-list__search-input::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.exercise-list__search-input:focus {
+  border-color: rgba(255, 98, 0, 0.45);
+}
+
+/* =========================
+   СПИСОК
+   ========================= */
+
+.exercise-list__items {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+}
+
+.exercise-list__item {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+
+  min-height: 56px;
+
+  padding: 14px 18px;
+
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+
+  text-align: left;
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  overflow: visible;
+}
+
+.exercise-list__item:last-child {
+  border-bottom: none;
+}
+
+.exercise-list__item span {
+  display: block;
+
+  flex: 1 1 0;
+
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  line-height: 1.4;
+}
+
+/* =========================
+   EMPTY
+   ========================= */
+
+.exercise-list__empty {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 32px 18px;
+
+  box-sizing: border-box;
+
+  color: rgba(255, 255, 255, 0.42);
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+/* =========================
+   DESKTOP HOVER
+   ========================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .exercise-list__group:hover {
+    border-color: rgba(255, 98, 0, 0.25);
+    background: rgba(255, 98, 0, 0.07);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .exercise-list__group--active:hover {
+    border-color: rgba(255, 98, 0, 0.45);
+    background: rgba(255, 98, 0, 0.15);
+    color: #ff6200;
+  }
+
+  .exercise-list__item:hover {
+    background: rgba(255, 98, 0, 0.04);
+    color: #ff6200;
+  }
+}
+
+.exercise-list {
+  animation: exercise-list-appear 0.28s ease-out both;
+}
+
+@keyframes exercise-list-appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
