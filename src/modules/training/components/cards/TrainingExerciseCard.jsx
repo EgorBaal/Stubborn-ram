@@ -7,6 +7,7 @@ export default function TrainingExerciseCard() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
+  const [exerciseComment, setExerciseComment] = useState("");
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
@@ -67,12 +68,13 @@ export default function TrainingExerciseCard() {
         </button>
 
         <div className="training-exercise-card__row training-exercise-card__row--comment">
-          <div
-            className="training-exercise-card__comment-mock"
-            aria-hidden="true"
-          >
-            Введите комментарий к упражнению...
-          </div>
+          <textarea
+            className="training-exercise-card__comment-input"
+            placeholder="Введите комментарий к упражнению"
+            value={exerciseComment}
+            onChange={(event) => setExerciseComment(event.target.value)}
+            rows={3}
+          />
         </div>
 
         <div className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__row--history">
@@ -139,6 +141,7 @@ export default function TrainingExerciseCard() {
           </span>
         </div>
       </div>
+
       {isExercisePickerOpen && (
         <ExercisePickerOverlay
           onClose={() => setIsExercisePickerOpen(false)}

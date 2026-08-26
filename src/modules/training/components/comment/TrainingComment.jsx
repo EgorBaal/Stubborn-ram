@@ -23,7 +23,7 @@ export default function TrainingComment({ value, onChange }) {
       <textarea
         ref={fieldRef}
         className="training-comment__field"
-        placeholder="Введите комментарий..."
+        placeholder="Введите комментарий"
         value={value}
         onChange={(event) => {
           onChange(event.target.value);

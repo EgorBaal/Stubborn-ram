@@ -8,33 +8,40 @@
 
   width: 100%;
   height: 100%;
-
   min-width: 0;
 
   gap: 10px;
-
   padding: 1px;
 
   box-sizing: border-box;
+
   color: #f4f4f4;
   font-family: "Comfortaa", sans-serif;
 }
 
 .training-primary-action {
   width: auto;
+
   border: none;
   border-radius: 16px;
 
   padding: 14px 16px;
   min-height: 52px;
 
-  background: linear-gradient(180deg, #ff7a1f 0%, #d9480f 100%);
+  background: linear-gradient(
+    180deg,
+    #ff7a1f 0%,
+    #d9480f 100%
+  );
+
   color: #ffffff;
+
   font-size: 15px;
   font-weight: 700;
   font-family: inherit;
 
   cursor: pointer;
+
   box-shadow:
     0 8px 14px rgba(217, 72, 15, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
@@ -47,8 +54,10 @@
 
 .training-secondary-actions {
   width: auto;
+
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 10px;
 }
 
@@ -65,8 +74,14 @@
       rgba(255, 255, 255, 0.04) 0%,
       rgba(255, 255, 255, 0) 22%
     ),
-    linear-gradient(180deg, #141414 0%, #090909 100%);
+    linear-gradient(
+      180deg,
+      #141414 0%,
+      #090909 100%
+    );
+
   color: #ffffff;
+
   font-size: 14px;
   font-weight: 700;
   font-family: inherit;
@@ -84,30 +99,43 @@
 
 .training-builder-content {
   flex: 1;
-
   min-height: 0;
 
   display: flex;
   flex-direction: column;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
+  border: none;
+  border-radius: 0;
 
-  padding: 20px 16px;
+  padding: 20px 0;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0) 24%
-    ),
-    linear-gradient(180deg, #131313 0%, #090909 100%);
+  background: transparent;
 
   overflow-y: auto;
   overflow-x: hidden;
 
   scrollbar-width: none;
   overscroll-behavior: contain;
+
+  /*
+    Плавное исчезновение контента
+    сверху и снизу.
+  */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 36px,
+    #000 calc(100% - 36px),
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 36px,
+    #000 calc(100% - 36px),
+    transparent 100%
+  );
 }
 
 .training-builder-content > * {
@@ -120,11 +148,16 @@
 
 .training-builder-topbar {
   display: grid;
+
   grid-template-columns:
-    var(--training-toolbar-control-height) minmax(0, 1fr)
+    var(--training-toolbar-control-height)
+    minmax(0, 1fr)
     auto;
+
   align-items: center;
+
   gap: 12px;
+
   height: var(--training-technical-row-height);
   min-height: var(--training-technical-row-height);
 }
@@ -137,21 +170,33 @@
 .training-builder-back {
   width: var(--training-toolbar-control-height);
   height: var(--training-technical-row-height);
+
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
+
   background:
     linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.04) 0%,
       rgba(255, 255, 255, 0) 22%
     ),
-    linear-gradient(180deg, #141414 0%, #090909 100%);
+    linear-gradient(
+      180deg,
+      #141414 0%,
+      #090909 100%
+    );
+
   color: #ffffff;
+
   line-height: 0;
+
   cursor: pointer;
+
   display: grid;
   place-items: center;
+
   padding: 0;
+
   box-sizing: border-box;
 }
 
@@ -160,13 +205,13 @@
   height: 22px;
 
   stroke-width: 2.8;
-
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .training-builder-title {
   margin: 0;
+
   min-width: 0;
   width: 100%;
 
@@ -174,19 +219,18 @@
 
   font-size: clamp(16px, 4.8vw, 19px);
   font-weight: 700;
-
   line-height: 1.2;
 
   color: #fff;
 
   white-space: nowrap;
-
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .training-builder-edit {
   height: var(--training-technical-row-height);
+
   padding: 0 12px;
 
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -198,7 +242,11 @@
       rgba(255, 255, 255, 0.04) 0%,
       rgba(255, 255, 255, 0) 22%
     ),
-    linear-gradient(180deg, #141414 0%, #090909 100%);
+    linear-gradient(
+      180deg,
+      #141414 0%,
+      #090909 100%
+    );
 
   display: flex;
   align-items: center;
@@ -224,14 +272,17 @@
 @media (hover: hover) and (pointer: fine) {
   .training-primary-action:hover {
     filter: brightness(1.04);
+
     box-shadow:
       0 14px 24px rgba(217, 72, 15, 0.28),
       inset 0 1px 0 rgba(255, 255, 255, 0.24);
+
     transform: translateY(-1px);
   }
 
   .training-secondary-action:hover {
     border-color: rgba(255, 98, 0, 0.44);
+
     box-shadow:
       0 0 14px rgba(255, 98, 0, 0.18),
       0 8px 16px rgba(0, 0, 0, 0.32),

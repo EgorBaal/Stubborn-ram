@@ -18,7 +18,7 @@
 
 .training-exercise-card__row,
 .training-exercise-card__action-text,
-.training-exercise-card__comment-mock,
+.training-exercise-card__comment-input,
 .training-exercise-card__history-icon,
 .training-exercise-card__chevron {
   font-family: inherit;
@@ -82,23 +82,54 @@
   font-weight: 700;
 }
 
+/* =========================
+   КОММЕНТАРИЙ К УПРАЖНЕНИЮ
+   ========================= */
+
 .training-exercise-card__row--comment {
   min-height: 100px;
   align-items: stretch;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding: 12px 14px;
 }
 
-.training-exercise-card__comment-mock {
-  display: flex;
-  align-items: flex-start;
+.training-exercise-card__comment-input {
+  display: block;
   width: 100%;
   min-height: 76px;
-  color: rgba(255, 255, 255, 0.45);
+  padding: 14px 12px;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  outline: none;
+  resize: vertical;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.9);
+  caret-color: #ff6200;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
+
+.training-exercise-card__comment-input::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+  opacity: 1;
+}
+
+.training-exercise-card__comment-input:focus {
+  border-color: #ff6200;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* =========================
+   ИСТОРИЯ / ПАРАМЕТРЫ
+   ========================= */
 
 .training-exercise-card__row--history {
   gap: 12px;
@@ -121,6 +152,10 @@
   line-height: 1;
   flex-shrink: 0;
 }
+
+/* =========================
+   ПОДХОДЫ
+   ========================= */
 
 .training-exercise-card__sets {
   display: flex;
@@ -172,12 +207,20 @@
   color: rgba(255, 255, 255, 0.58);
 }
 
+/* =========================
+   FOOTER
+   ========================= */
+
 .training-exercise-card__row--footer {
   min-height: 60px;
   color: #ff6200;
   font-size: 15px;
   font-weight: 700;
 }
+
+/* =========================
+   СВОРАЧИВАНИЕ
+   ========================= */
 
 .training-exercise-card__body {
   display: flex;
@@ -198,6 +241,10 @@
   transform: translateY(-8px);
   pointer-events: none;
 }
+
+/* =========================
+   КНОПКА СВОРАЧИВАНИЯ
+   ========================= */
 
 .training-exercise-card__toggle {
   display: grid;
@@ -224,6 +271,10 @@
 .training-exercise-card__chevron--collapsed {
   transform: rotate(0deg);
 }
+
+/* =========================
+   ВЫБОР УПРАЖНЕНИЯ
+   ========================= */
 
 .training-exercise-card__select-existing {
   width: 100%;
