@@ -292,3 +292,120 @@
 .training-exercise-card__select-existing:hover {
   background: rgba(255, 98, 0, 0.04);
 }
+
+/* =========================
+   ДОБАВИТЬ УПРАЖНЕНИЕ
+   ========================= */
+
+.training-exercise-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100%;
+  min-height: 60px;
+
+  margin-top: 24px;
+  padding: 0 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0) 24%
+    ),
+    linear-gradient(180deg, #131313 0%, #090909 100%);
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  text-align: left;
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.training-exercise-add-button:active {
+  transform: scale(0.99);
+
+  border-color: rgba(255, 98, 0, 0.45);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 98, 0, 0.08) 0%,
+      rgba(255, 98, 0, 0.02) 100%
+    ),
+    #0d0d0d;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-exercise-add-button:hover {
+    border-color: rgba(255, 98, 0, 0.35);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 98, 0, 0.05) 0%,
+        rgba(255, 98, 0, 0.01) 100%
+      ),
+      #0d0d0d;
+  }
+}
+
+/* =========================
+   RIPPLE — ДОБАВИТЬ УПРАЖНЕНИЕ
+   ========================= */
+
+.training-exercise-add-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.training-exercise-add-button__text {
+  position: relative;
+  z-index: 2;
+}
+
+.training-exercise-add-button__ripple {
+  position: absolute;
+  z-index: 1;
+
+  width: 24px;
+  height: 24px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 98, 0, 0.38);
+
+  transform: translate(-50%, -50%) scale(0);
+
+  pointer-events: none;
+
+  animation: training-add-ripple 180ms ease-out forwards;
+}
+
+@keyframes training-add-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(14);
+    opacity: 0;
+  }
+}

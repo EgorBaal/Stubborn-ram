@@ -17,20 +17,53 @@ export default function TrainingPage() {
   );
 
   const isHistoryTraining = Boolean(id) && !isTemplateTraining;
+
   const [trainingTitle, setTrainingTitle] = useState("Новая тренировка");
   const [trainingDate, setTrainingDate] = useState(new Date());
+
   const [startTime, setStartTime] = useState(() =>
     new Date().toLocaleTimeString("ru-RU", {
       hour: "2-digit",
       minute: "2-digit",
     }),
   );
+
   const [endTime, setEndTime] = useState("");
   const [trainingType, setTrainingType] = useState("Силовая");
   const [trainingComment, setTrainingComment] = useState("");
+
+  const [exerciseCards, setExerciseCards] = useState([]);
+  const [addButtonRipple, setAddButtonRipple] = useState(null);
+
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isStartTimePickerOpen, setIsStartTimePickerOpen] = useState(false);
   const [isEndTimePickerOpen, setIsEndTimePickerOpen] = useState(false);
+
+  const handleAddExercise = (event) => {
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    setAddButtonRipple({
+      x,
+      y,
+      id: Date.now(),
+    });
+
+    setTimeout(() => {
+      setExerciseCards((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+        },
+      ]);
+
+      setAddButtonRipple(null);
+    }, 180);
+  };
+
   return (
     <main className="training-builder-view">
       <header className="training-builder-topbar">
@@ -79,7 +112,30 @@ export default function TrainingPage() {
           onChange={setTrainingComment}
         />
 
-        <TrainingExerciseCard />
+        {exerciseCards.map((exercise) => (
+          <TrainingExerciseCard key={exercise.id} />
+        ))}
+
+        <button
+          type="button"
+          className="training-exercise-add-button"
+          onClick={handleAddExercise}
+        >
+          {addButtonRipple && (
+            <span
+              key={addButtonRipple.id}
+              className="training-exercise-add-button__ripple"
+              style={{
+                left: `${addButtonRipple.x}px`,
+                top: `${addButtonRipple.y}px`,
+              }}
+            />
+          )}
+
+          <span className="training-exercise-add-button__text">
+            Добавить упражнение
+          </span>
+        </button>
       </section>
     </main>
   );
