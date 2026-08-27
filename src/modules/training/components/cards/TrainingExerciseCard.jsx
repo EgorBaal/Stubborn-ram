@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Settings } from "lucide-react";
 import DifficultyPopover from "../popovers/DifficultyPopover";
@@ -14,6 +14,19 @@ export default function TrainingExerciseCard() {
   const [sets, setSets] = useState([]);
   const difficultyButtonRefs = useRef({});
   const [openDifficultySetId, setOpenDifficultySetId] = useState(null);
+
+  const exerciseNameInputRef = useRef(null);
+
+  useEffect(() => {
+    const textarea = exerciseNameInputRef.current;
+
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = "0px";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [exerciseName]);
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
@@ -78,13 +91,14 @@ export default function TrainingExerciseCard() {
   return (
     <article className="training-exercise-card">
       <div className="training-exercise-card__row training-exercise-card__row--title">
-        <input
-          type="text"
+        <textarea
+          ref={exerciseNameInputRef}
           className="training-exercise-card__name-input"
           placeholder="Название упражнения"
           value={exerciseName}
           onChange={(event) => setExerciseName(event.target.value)}
-        />
+          rows={1}
+        ></textarea>
 
         <button
           type="button"
