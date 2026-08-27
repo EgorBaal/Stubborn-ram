@@ -189,7 +189,7 @@ export default function TrainingExerciseCard() {
                     className="training-exercise-card__set-input"
                     inputMode="decimal"
                     value={set.weight === 0 ? "" : set.weight}
-                    placeholder="X"
+                    placeholder="x"
                     onChange={(event) =>
                       updateSet(set.id, "weight", event.target.value)
                     }
@@ -205,7 +205,7 @@ export default function TrainingExerciseCard() {
                     className="training-exercise-card__set-input"
                     inputMode="decimal"
                     value={set.repetitions === 0 ? "" : set.repetitions}
-                    placeholder="X"
+                    placeholder="x"
                     onChange={(event) =>
                       updateSet(set.id, "repetitions", event.target.value)
                     }
