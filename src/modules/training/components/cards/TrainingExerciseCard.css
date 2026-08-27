@@ -128,14 +128,10 @@
 }
 
 /* =========================
-   ИСТОРИЯ / ПАРАМЕТРЫ
+   ИСТОРИЯ
    ========================= */
 
 .training-exercise-card__row--history {
-  gap: 12px;
-}
-
-.training-exercise-card__row--params {
   gap: 12px;
 }
 
@@ -145,79 +141,380 @@
   flex-shrink: 0;
 }
 
-.training-exercise-card__params-chevron {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
 /* =========================
-   ПОДХОДЫ
+   ПОДХОД
    ========================= */
 
-.training-exercise-card__sets {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 18px;
-  gap: 10px;
+.training-exercise-card__set {
+  position: relative;
+  width: 100%;
+  padding: 14px 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
 }
 
-.training-exercise-card__set-headings,
-.training-exercise-card__set-row {
+.training-exercise-card__set-title {
+  margin-bottom: 12px;
+
+  color: rgba(255, 255, 255, 0.88);
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.training-exercise-card__set-values {
   display: grid;
   grid-template-columns:
     minmax(0, 1fr)
     minmax(0, 1fr)
     minmax(0, 1fr);
-  align-items: center;
+
+  align-items: stretch;
+  width: 100%;
 }
 
-.training-exercise-card__set-headings,
-.training-exercise-card__set-row {
-  column-gap: 0;
-}
-
-.training-exercise-card__set-headings span,
-.training-exercise-card__set-row span {
+.training-exercise-card__set-value {
   min-width: 0;
-  padding-right: 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 0 12px;
+
   box-sizing: border-box;
 }
 
-.training-exercise-card__set-headings span:not(:last-child),
-.training-exercise-card__set-row span:not(:last-child) {
+.training-exercise-card__set-value:first-child {
+  padding-left: 0;
+}
+
+.training-exercise-card__set-value:last-child {
+  padding-right: 0;
+}
+
+.training-exercise-card__set-value:not(:last-child) {
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.training-exercise-card__set-headings {
+.training-exercise-card__set-value > span {
+  min-width: 0;
+
   color: rgba(255, 255, 255, 0.55);
-  font-size: 14px;
+
+  font-family: inherit;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1.25;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.training-exercise-card__set-row {
-  color: rgba(255, 255, 255, 0.88);
+.training-exercise-card__set-input {
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.9);
+
+  font-family: inherit;
   font-size: 14px;
   font-weight: 700;
+  line-height: 1.25;
+
+  box-sizing: border-box;
+  appearance: textfield;
+  -moz-appearance: textfield;
 }
 
-.training-exercise-card__set-row span:last-child {
-  color: rgba(255, 255, 255, 0.58);
+.training-exercise-card__set-input::-webkit-inner-spin-button,
+.training-exercise-card__set-input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.training-exercise-card__set-input:focus {
+  color: #ffffff;
 }
 
 /* =========================
-   FOOTER
+   СЛОЖНОСТЬ
    ========================= */
 
-.training-exercise-card__row--footer {
-  min-height: 60px;
-  color: #ff6200;
-  font-size: 15px;
-  font-weight: 700;
+.training-exercise-card__difficulty-wrap {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 22px;
+
+  flex-shrink: 0;
 }
 
+.training-exercise-card__difficulty-dot {
+  width: 16px;
+  height: 16px;
+
+  padding: 0;
+  margin: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 0 0 0 rgba(255, 98, 0, 0);
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.training-exercise-card__difficulty-dot--easy {
+  background: #38b86b;
+  border-color: rgba(56, 184, 107, 0.9);
+}
+
+.training-exercise-card__difficulty-dot--medium {
+  background: #e2b93b;
+  border-color: rgba(226, 185, 59, 0.9);
+}
+
+.training-exercise-card__difficulty-dot--hard {
+  background: #dc3a3a;
+  border-color: rgba(220, 58, 58, 0.9);
+}
+
+/* =========================
+   ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ ПОДХОДА
+   ========================= */
+
+.training-exercise-card__set-extra {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  width: calc(100% + 36px);
+
+  margin-left: -18px;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  transition:
+    grid-template-rows 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 180ms ease;
+}
+
+.training-exercise-card__set-extra--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.training-exercise-card__set-extra-grid {
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 10px;
+
+  padding: 0 18px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  transition:
+    padding-top 280ms ease,
+    padding-bottom 280ms ease;
+}
+
+.training-exercise-card__set-extra--open
+  .training-exercise-card__set-extra-grid {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* =========================
+   ПОЛЯ ДОПОЛНИТЕЛЬНЫХ ПАРАМЕТРОВ
+   ========================= */
+
+.training-exercise-card__extra-field {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 6px;
+}
+
+.training-exercise-card__extra-field > span {
+  color: rgba(255, 255, 255, 0.5);
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.training-exercise-card__extra-field > input {
+  width: 100%;
+  min-height: 38px;
+
+  padding: 0 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+
+  outline: none;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  color: rgba(255, 255, 255, 0.9);
+
+  caret-color: #ff6200;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  box-sizing: border-box;
+
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.training-exercise-card__extra-field > input::-webkit-inner-spin-button,
+.training-exercise-card__extra-field > input::-webkit-outer-spin-button {
+  margin: 0;
+
+  -webkit-appearance: none;
+}
+
+.training-exercise-card__extra-field > input:focus {
+  border-color: rgba(255, 98, 0, 0.55);
+}
+
+/* =========================
+   ШЕСТЕРЁНКА ПОДХОДА
+   ========================= */
+
+.training-exercise-card__set-settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: calc(100% + 36px);
+  height: 34px;
+
+  margin: 0 -18px;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #ff6200;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    transform 160ms ease;
+}
+
+.training-exercise-card__set-settings:hover {
+  color: rgba(255, 98, 0, 0.9);
+}
+
+.training-exercise-card__set-settings:active {
+  transform: scale(0.9);
+
+  color: #ff6200;
+}
+
+.training-exercise-card__set-settings-icon {
+  width: 17px;
+  height: 17px;
+
+  display: block;
+
+  color: #ff6200;
+}
+
+/* =========================
+   ДОБАВИТЬ ПОДХОД
+   ========================= */
+
+.training-exercise-card__add-set {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100%;
+  min-height: 60px;
+
+  margin: 0;
+  padding: 0 18px;
+
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  background: transparent;
+
+  color: rgba(255, 98, 0, 0.92);
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  text-align: left;
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.training-exercise-card__add-set:active {
+  background: rgba(255, 98, 0, 0.06);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-exercise-card__add-set:hover {
+    background: rgba(255, 98, 0, 0.04);
+  }
+}
 /* =========================
    СВОРАЧИВАНИЕ
    ========================= */
@@ -225,7 +522,7 @@
 .training-exercise-card__body {
   display: flex;
   flex-direction: column;
-  max-height: 1000px;
+  max-height: 100000px;
   opacity: 1;
   overflow: hidden;
   transform: translateY(0);
@@ -249,22 +546,30 @@
 .training-exercise-card__toggle {
   display: grid;
   place-items: center;
+
   width: 32px;
   height: 32px;
+
   flex-shrink: 0;
+
   padding: 0;
   border: none;
+
   background: transparent;
   color: #ff6200;
+
   cursor: pointer;
 }
 
 .training-exercise-card__chevron {
   width: 20px;
   height: 20px;
+
   color: #ff6200;
+
   transform: rotate(90deg);
   transform-origin: center;
+
   transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -278,19 +583,73 @@
 
 .training-exercise-card__select-existing {
   width: 100%;
+
   margin: 0;
+
   border-left: none;
   border-right: none;
   border-top: none;
+
   border-radius: 0;
+
   background: transparent;
+
   text-align: left;
+
   font-family: inherit;
+
   cursor: pointer;
 }
 
 .training-exercise-card__select-existing:hover {
   background: rgba(255, 98, 0, 0.04);
+}
+
+/* =========================
+   ДОБАВИТЬ ПОДХОД
+   ========================= */
+
+.training-exercise-card__add-set {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100%;
+  min-height: 60px;
+
+  margin: 0;
+  padding: 0 18px;
+
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  background: transparent;
+
+  color: rgba(255, 98, 0, 0.92);
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  text-align: left;
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.training-exercise-card__add-set:active {
+  background: rgba(255, 98, 0, 0.06);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-exercise-card__add-set:hover {
+    background: rgba(255, 98, 0, 0.04);
+  }
 }
 
 /* =========================
