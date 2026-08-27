@@ -7,7 +7,7 @@
   border-radius: 24px;
 
   /* Одно матовое стекло */
-  background: rgba(23, 23, 23, 0.55);
+  background: rgba(23, 23, 23, 1);
 
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);

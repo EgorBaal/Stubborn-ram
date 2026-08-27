@@ -148,7 +148,7 @@
 .training-exercise-card__set {
   position: relative;
   width: 100%;
-  padding: 14px 18px 0;
+  padding: 18px 18px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   box-sizing: border-box;
 }
@@ -180,7 +180,7 @@
 
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 9px;
 
   padding: 0 12px;
 
@@ -515,27 +515,33 @@
     background: rgba(255, 98, 0, 0.04);
   }
 }
+
 /* =========================
    СВОРАЧИВАНИЕ
    ========================= */
 
 .training-exercise-card__body {
-  display: flex;
-  flex-direction: column;
-  max-height: 100000px;
+  display: grid;
+  grid-template-rows: 1fr;
+
+  min-height: 0;
+
   opacity: 1;
   overflow: hidden;
-  transform: translateY(0);
+
   transition:
-    max-height 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity 220ms ease,
-    transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    grid-template-rows 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 260ms ease;
+}
+
+.training-exercise-card__body-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .training-exercise-card__body--collapsed {
-  max-height: 0;
+  grid-template-rows: 0fr;
   opacity: 0;
-  transform: translateY(-8px);
   pointer-events: none;
 }
 
