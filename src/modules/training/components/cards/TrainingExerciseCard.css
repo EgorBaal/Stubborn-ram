@@ -1,10 +1,11 @@
 .training-exercise-card {
   display: flex;
+  position: relative;
   flex-direction: column;
-  margin-top: 24px;
+  margin-top: 36px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  overflow: hidden;
+  overflow: visible;
   background:
     linear-gradient(
       180deg,
@@ -41,7 +42,9 @@
 }
 
 .training-exercise-card__row--title {
+  padding: 18px 18px 14px;
   min-height: 60px;
+  border-bottom: none;
 }
 
 .training-exercise-card__name-input {
@@ -107,6 +110,7 @@
   min-height: 100px;
   align-items: stretch;
   padding: 12px 14px;
+  border-bottom: none;
 }
 
 .training-exercise-card__comment-input {
@@ -118,7 +122,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   outline: none;
-  resize: vertical;
+  resize: none;
   background: rgba(255, 255, 255, 0.02);
   color: rgba(255, 255, 255, 0.9);
   caret-color: #ff6200;
@@ -145,17 +149,88 @@
 }
 
 /* =========================
-   ИСТОРИЯ
+   ИСТОРИЯ / ПАРАМЕТРЫ
    ========================= */
 
-.training-exercise-card__row--history {
-  gap: 12px;
+.training-exercise-card__row--tools {
+  width: 100%;
+  min-height: 60px;
+
+  padding: 0;
+
+  gap: 0;
+
+  box-sizing: border-box;
+}
+
+.training-exercise-card__tool {
+  flex: 1;
+  min-width: 0;
+
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 18px;
+
+  border: none;
+
+  background: transparent;
+
+  color: rgba(255, 98, 0, 0.92);
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.training-exercise-card__tool--history {
+  justify-content: flex-start;
+  gap: 60px;
+
+  text-align: left;
+}
+
+.training-exercise-card__tool--parameters {
+  justify-content: flex-start;
+
+  text-align: left;
 }
 
 .training-exercise-card__history-icon {
   width: 18px;
   height: 18px;
+
   flex-shrink: 0;
+}
+
+.training-exercise-card__tools-divider {
+  width: 1px;
+  height: 24px;
+
+  flex-shrink: 0;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.training-exercise-card__tool:active {
+  background: rgba(255, 98, 0, 0.06);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .training-exercise-card__tool:hover {
+    background: rgba(255, 98, 0, 0.04);
+  }
 }
 
 /* =========================
@@ -184,52 +259,86 @@
 
 .training-exercise-card__set-values {
   display: grid;
+
   grid-template-columns:
     minmax(0, 1fr)
     minmax(0, 1fr)
     minmax(0, 1fr);
 
-  align-items: stretch;
   width: 100%;
-}
-
-.training-exercise-card__set-value {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  padding: 0 12px;
 
   box-sizing: border-box;
 }
 
-.training-exercise-card__set-value:first-child {
-  padding-left: 0;
+.training-exercise-card__set-value {
+  position: relative;
+
+  min-width: 0;
+  min-height: 72px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  padding: 12px 13px 16px;
+
+  box-sizing: border-box;
 }
 
-.training-exercise-card__set-value:last-child {
-  padding-right: 0;
+.training-exercise-card__set-value:nth-child(3n + 1) {
+  padding-left: 6px;
 }
 
-.training-exercise-card__set-value:not(:last-child) {
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+.training-exercise-card__set-value:nth-child(3n) {
+  padding-right: 6px;
+}
+
+/* Вертикальные разделители */
+.training-exercise-card__set-value:nth-child(3n + 2)::before,
+.training-exercise-card__set-value:nth-child(3n)::before {
+  content: "";
+
+  position: absolute;
+
+  top: 12px;
+  bottom: 12px;
+  left: 0;
+
+  width: 1px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Горизонтальные разделители */
+.training-exercise-card__set-value:nth-child(n + 4)::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 32px;
+  right: 32px;
+
+  height: 1px;
+
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .training-exercise-card__set-value > span {
   min-width: 0;
   width: 100%;
 
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.52);
 
   font-family: inherit;
-  font-size: clamp(10px, 3.2vw, 14px);
+  font-size: clamp(9px, 2.8vw, 13px);
+  letter-spacing: 0px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
 
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
   text-overflow: clip;
 
   box-sizing: border-box;
@@ -238,6 +347,7 @@
 .training-exercise-card__set-input {
   width: 100%;
   min-width: 0;
+  height: 18px;
 
   padding: 0;
   margin: 0;
@@ -248,15 +358,22 @@
   background: transparent;
 
   color: rgba(255, 255, 255, 0.9);
+  caret-color: #ff6200;
 
   font-family: inherit;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 18px;
 
   box-sizing: border-box;
+
   appearance: textfield;
   -moz-appearance: textfield;
+}
+
+.training-exercise-card__set-input::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+  opacity: 1;
 }
 
 .training-exercise-card__set-input::-webkit-inner-spin-button,
@@ -634,53 +751,6 @@
 }
 
 /* =========================
-   ДОБАВИТЬ ПОДХОД
-   ========================= */
-
-.training-exercise-card__add-set {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  width: 100%;
-  min-height: 60px;
-
-  margin: 0;
-  padding: 0 18px;
-
-  border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-  background: transparent;
-
-  color: rgba(255, 98, 0, 0.92);
-
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.2;
-
-  text-align: left;
-  box-sizing: border-box;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.training-exercise-card__add-set:active {
-  background: rgba(255, 98, 0, 0.06);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .training-exercise-card__add-set:hover {
-    background: rgba(255, 98, 0, 0.04);
-  }
-}
-
-/* =========================
    ДОБАВИТЬ УПРАЖНЕНИЕ
    ========================= */
 
@@ -795,4 +865,63 @@
     transform: translate(-50%, -50%) scale(14);
     opacity: 0;
   }
+}
+
+.training-exercise-card__number {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  min-width: 54px;
+  height: 26px;
+  padding: 0 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(255, 98, 0, 0.7);
+  border-radius: 999px;
+
+  background: #111111;
+
+  color: #ff6200;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+.training-exercise-card__select {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 4px;
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  color: #ff6200;
+
+  font-family: inherit;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+  box-sizing: border-box;
 }

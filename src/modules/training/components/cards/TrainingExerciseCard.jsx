@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { Settings } from "lucide-react";
 import DifficultyPopover from "../popovers/DifficultyPopover";
+import ParametersPopover from "../popovers/ParametersPopover";
 
 import ExercisePickerOverlay from "../exercises/ExercisePickerOverlay";
 import "./TrainingExerciseCard.css";
 
-export default function TrainingExerciseCard() {
+export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
@@ -14,6 +15,16 @@ export default function TrainingExerciseCard() {
   const [sets, setSets] = useState([]);
   const difficultyButtonRefs = useRef({});
   const [openDifficultySetId, setOpenDifficultySetId] = useState(null);
+
+  const [isParametersPopoverOpen, setIsParametersPopoverOpen] = useState(false);
+
+  const [selectedParameters, setSelectedParameters] = useState([
+    "weight",
+    "repetitions",
+    "difficulty",
+  ]);
+
+  const parametersButtonRef = useRef(null);
 
   const exerciseNameInputRef = useRef(null);
 
@@ -37,13 +48,18 @@ export default function TrainingExerciseCard() {
       ...prev,
       {
         id: crypto.randomUUID(),
-        weight: 0,
-        repetitions: 0,
+        weight: "",
+        repetitions: "",
         difficulty: null,
-        rir: 0,
-        rpe: 0,
+        distance: "",
+        calories: "",
+        speed: "",
+        power: "",
+        incline: "",
+        time: "",
+        rir: "",
+        rpe: "",
         rest: 0,
-        time: 0,
         isExtraOpen: false,
       },
     ]);
@@ -90,6 +106,10 @@ export default function TrainingExerciseCard() {
 
   return (
     <article className="training-exercise-card">
+      <div className="training-exercise-card__number" aria-hidden="true">
+        {exerciseNumber}
+      </div>
+
       <div className="training-exercise-card__row training-exercise-card__row--title">
         <textarea
           ref={exerciseNameInputRef}
@@ -99,6 +119,17 @@ export default function TrainingExerciseCard() {
           onChange={(event) => setExerciseName(event.target.value)}
           rows={1}
         ></textarea>
+
+        {!isCollapsed && (
+          <button
+            type="button"
+            className="training-exercise-card__select"
+            onClick={() => setIsExercisePickerOpen(true)}
+            aria-label="Выбрать упражнение"
+          >
+            +
+          </button>
+        )}
 
         <button
           type="button"
@@ -134,16 +165,6 @@ export default function TrainingExerciseCard() {
         }`}
       >
         <div className="training-exercise-card__body-inner">
-          <button
-            type="button"
-            className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__select-existing"
-            onClick={() => setIsExercisePickerOpen(true)}
-          >
-            <span className="training-exercise-card__action-text">
-              Выбрать существующее
-            </span>
-          </button>
-
           <div className="training-exercise-card__row training-exercise-card__row--comment">
             <textarea
               className="training-exercise-card__comment-input"
@@ -154,30 +175,53 @@ export default function TrainingExerciseCard() {
             />
           </div>
 
-          <div className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__row--history">
-            <span>История упражнения</span>
-
-            <svg
-              className="training-exercise-card__history-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
+          <div className="training-exercise-card__row training-exercise-card__row--tools">
+            <button
+              type="button"
+              className="training-exercise-card__tool training-exercise-card__tool--history"
             >
-              <path
-                d="M12 8V12L15 14"
-                stroke="currentColor"
-                strokeWidth="2.1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <span>История</span>
 
-              <path
-                d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12"
-                stroke="currentColor"
-                strokeWidth="2.1"
-                strokeLinecap="round"
-              />
-            </svg>
+              <svg
+                className="training-exercise-card__history-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 8V12L15 14"
+                  stroke="currentColor"
+                  strokeWidth="2.1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+
+                <path
+                  d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12"
+                  stroke="currentColor"
+                  strokeWidth="2.1"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+
+            <span
+              className="training-exercise-card__tools-divider"
+              aria-hidden="true"
+            />
+
+            <button
+              ref={parametersButtonRef}
+              type="button"
+              className="training-exercise-card__tool training-exercise-card__tool--parameters"
+              onClick={() => {
+                setIsParametersPopoverOpen((isOpen) => !isOpen);
+              }}
+              aria-label="Открыть параметры упражнения"
+              aria-expanded={isParametersPopoverOpen}
+            >
+              <span>Параметры</span>
+            </button>
           </div>
 
           {sets.map((set, index) => (
@@ -195,64 +239,75 @@ export default function TrainingExerciseCard() {
               </div>
 
               <div className="training-exercise-card__set-values">
-                <div className="training-exercise-card__set-value">
-                  <span>Вес</span>
+                {selectedParameters.map((parameterId) => {
+                  if (parameterId === "difficulty") {
+                    return (
+                      <div
+                        key={parameterId}
+                        className="training-exercise-card__set-value training-exercise-card__set-value--difficulty"
+                      >
+                        <span>Сложность</span>
 
-                  <input
-                    type="text"
-                    className="training-exercise-card__set-input"
-                    inputMode="decimal"
-                    value={set.weight === 0 ? "" : set.weight}
-                    placeholder="x"
-                    onChange={(event) =>
-                      updateSet(set.id, "weight", event.target.value)
-                    }
-                    aria-label={`Вес, подход ${index + 1}`}
-                  />
-                </div>
+                        <div className="training-exercise-card__difficulty-wrap">
+                          <button
+                            ref={(element) => {
+                              if (element) {
+                                difficultyButtonRefs.current[set.id] = element;
+                              }
+                            }}
+                            type="button"
+                            className={`training-exercise-card__difficulty-dot${
+                              set.difficulty
+                                ? ` training-exercise-card__difficulty-dot--${set.difficulty}`
+                                : ""
+                            }`}
+                            aria-label={`Выбрать сложность, подход ${index + 1}`}
+                            aria-expanded={openDifficultySetId === set.id}
+                            onClick={() => {
+                              setOpenDifficultySetId((currentId) =>
+                                currentId === set.id ? null : set.id,
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
 
-                <div className="training-exercise-card__set-value">
-                  <span>Повторения</span>
+                  const parameterLabels = {
+                    weight: "Вес",
+                    repetitions: "Повторения",
+                    distance: "Расстояние",
+                    calories: "Калории",
+                    speed: "Скорость",
+                    power: "Мощность",
+                    incline: "Наклон",
+                    time: "Время",
+                    rir: "RIR",
+                    rpe: "RPE",
+                  };
 
-                  <input
-                    type="text"
-                    className="training-exercise-card__set-input"
-                    inputMode="decimal"
-                    value={set.repetitions === 0 ? "" : set.repetitions}
-                    placeholder="x"
-                    onChange={(event) =>
-                      updateSet(set.id, "repetitions", event.target.value)
-                    }
-                    aria-label={`Повторения, подход ${index + 1}`}
-                  />
-                </div>
+                  return (
+                    <div
+                      key={parameterId}
+                      className="training-exercise-card__set-value"
+                    >
+                      <span>{parameterLabels[parameterId]}</span>
 
-                <div className="training-exercise-card__set-value training-exercise-card__set-value--difficulty">
-                  <span>Сложность</span>
-
-                  <div className="training-exercise-card__difficulty-wrap">
-                    <button
-                      ref={(element) => {
-                        if (element) {
-                          difficultyButtonRefs.current[set.id] = element;
+                      <input
+                        type="text"
+                        className="training-exercise-card__set-input"
+                        inputMode="decimal"
+                        value={set[parameterId] ?? ""}
+                        placeholder="x"
+                        onChange={(event) =>
+                          updateSet(set.id, parameterId, event.target.value)
                         }
-                      }}
-                      type="button"
-                      className={`training-exercise-card__difficulty-dot${
-                        set.difficulty
-                          ? ` training-exercise-card__difficulty-dot--${set.difficulty}`
-                          : ""
-                      }`}
-                      aria-label="Выбрать сложность"
-                      aria-expanded={openDifficultySetId === set.id}
-                      onClick={() => {
-                        setOpenDifficultySetId((currentId) =>
-                          currentId === set.id ? null : set.id,
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
+                        aria-label={`${parameterLabels[parameterId]}, подход ${index + 1}`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
 
               <div
@@ -356,6 +411,17 @@ export default function TrainingExerciseCard() {
               }}
               onClose={() => {
                 setOpenDifficultySetId(null);
+              }}
+            />
+          )}
+
+          {isParametersPopoverOpen && (
+            <ParametersPopover
+              anchorRef={parametersButtonRef}
+              selectedParameters={selectedParameters}
+              onChange={setSelectedParameters}
+              onClose={() => {
+                setIsParametersPopoverOpen(false);
               }}
             />
           )}

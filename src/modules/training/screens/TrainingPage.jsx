@@ -112,8 +112,8 @@ export default function TrainingPage() {
           onChange={setTrainingComment}
         />
 
-        {exerciseCards.map((exercise) => (
-          <TrainingExerciseCard key={exercise.id} />
+        {exerciseCards.map((exercise, index) => (
+          <TrainingExerciseCard key={exercise.id} exerciseNumber={index + 1} />
         ))}
 
         <button
