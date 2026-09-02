@@ -7,6 +7,33 @@ import ParametersPopover from "../popovers/ParametersPopover";
 import ExercisePickerOverlay from "../exercises/ExercisePickerOverlay";
 import "./TrainingExerciseCard.css";
 
+const intensityMethods = [
+  {
+    id: "drop-set",
+    label: "Drop-set",
+  },
+  {
+    id: "isometrics",
+    label: "Изометрия",
+  },
+  {
+    id: "cluster",
+    label: "Cluster",
+  },
+  {
+    id: "rest-pause",
+    label: "Rest-pause",
+  },
+  {
+    id: "tempo-superset",
+    label: "Темповый суперсет",
+  },
+  {
+    id: "partial-reps",
+    label: "Частичные повторения",
+  },
+];
+
 export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
@@ -60,6 +87,7 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
         rir: "",
         rpe: "",
         rest: 0,
+        intensityMethods: [],
         isExtraOpen: false,
       },
     ]);
@@ -88,6 +116,27 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
             }
           : set,
       ),
+    );
+  };
+
+  const toggleIntensityMethod = (setId, methodId) => {
+    setSets((prev) =>
+      prev.map((set) => {
+        if (set.id !== setId) {
+          return set;
+        }
+
+        const isSelected = set.intensityMethods.includes(methodId);
+
+        return {
+          ...set,
+          intensityMethods: isSelected
+            ? set.intensityMethods.filter(
+                (selectedMethodId) => selectedMethodId !== methodId,
+              )
+            : [...set.intensityMethods, methodId],
+        };
+      }),
     );
   };
 
@@ -310,6 +359,29 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
                 })}
               </div>
 
+              {set.intensityMethods.length > 0 && (
+                <div className="training-exercise-card__selected-intensity-methods">
+                  {set.intensityMethods.map((methodId) => {
+                    const method = intensityMethods.find(
+                      (item) => item.id === methodId,
+                    );
+
+                    if (!method) {
+                      return null;
+                    }
+
+                    return (
+                      <div
+                        key={method.id}
+                        className="training-exercise-card__selected-intensity-method"
+                      >
+                        {method.label}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               <div
                 className={`training-exercise-card__set-extra${
                   set.isExtraOpen
@@ -317,57 +389,35 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
                     : ""
                 }`}
               >
-                <div className="training-exercise-card__set-extra-grid">
-                  <div className="training-exercise-card__extra-field">
-                    <span>RIR</span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      value={set.rir}
-                      onChange={(event) =>
-                        updateSet(set.id, "rir", event.target.value)
-                      }
-                    />
+                <div className="training-exercise-card__set-extra-content">
+                  <div className="training-exercise-card__intensity-divider">
+                    <span />
                   </div>
 
-                  <div className="training-exercise-card__extra-field">
-                    <span>RPE</span>
+                  <div className="training-exercise-card__intensity-methods">
+                    {intensityMethods.map((method) => {
+                      const isSelected = set.intensityMethods.includes(
+                        method.id,
+                      );
 
-                    <input
-                      type="number"
-                      min="0"
-                      value={set.rpe}
-                      onChange={(event) =>
-                        updateSet(set.id, "rpe", event.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="training-exercise-card__extra-field">
-                    <span>Отдых, сек.</span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      value={set.rest}
-                      onChange={(event) =>
-                        updateSet(set.id, "rest", event.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="training-exercise-card__extra-field">
-                    <span>Время, сек.</span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      value={set.time}
-                      onChange={(event) =>
-                        updateSet(set.id, "time", event.target.value)
-                      }
-                    />
+                      return (
+                        <button
+                          key={method.id}
+                          type="button"
+                          className={`training-exercise-card__intensity-method${
+                            isSelected
+                              ? " training-exercise-card__intensity-method--selected"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            toggleIntensityMethod(set.id, method.id)
+                          }
+                          aria-pressed={isSelected}
+                        >
+                          {method.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
