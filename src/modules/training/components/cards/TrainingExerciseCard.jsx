@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-
 import { Settings } from "lucide-react";
 import DifficultyPopover from "../popovers/DifficultyPopover";
 import ParametersPopover from "../popovers/ParametersPopover";
+import ConfirmDeletePopover from "../popovers/ConfirmDeletePopover";
 
 import ExercisePickerOverlay from "../exercises/ExercisePickerOverlay";
 import "./TrainingExerciseCard.css";
@@ -34,7 +34,14 @@ const intensityMethods = [
   },
 ];
 
-export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
+export default function TrainingExerciseCard({
+  exerciseId,
+  exerciseNumber = 1,
+  isSupersetActionSelected = false,
+  isSupersetMember = false,
+  onToggleSuperset,
+  onRemoveExercise,
+}) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
@@ -44,6 +51,7 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
   const [openDifficultySetId, setOpenDifficultySetId] = useState(null);
 
   const [isParametersPopoverOpen, setIsParametersPopoverOpen] = useState(false);
+  const [isDeletePopoverOpen, setIsDeletePopoverOpen] = useState(false);
 
   const [selectedParameters, setSelectedParameters] = useState([
     "weight",
@@ -52,8 +60,10 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
   ]);
 
   const parametersButtonRef = useRef(null);
+  const deleteButtonRef = useRef(null);
 
   const exerciseNameInputRef = useRef(null);
+  const exerciseCommentInputRef = useRef(null);
 
   useEffect(() => {
     const textarea = exerciseNameInputRef.current;
@@ -65,6 +75,17 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
     textarea.style.height = "0px";
     textarea.style.height = `${textarea.scrollHeight}px`;
   }, [exerciseName]);
+
+  useEffect(() => {
+    const textarea = exerciseCommentInputRef.current;
+
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = "0px";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [exerciseComment]);
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
@@ -154,7 +175,13 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
   };
 
   return (
-    <article className="training-exercise-card">
+    <article
+      className={`training-exercise-card${
+        isSupersetActionSelected
+          ? " training-exercise-card--superset-active"
+          : ""
+      }${isSupersetMember ? " training-exercise-card--superset-member" : ""}`}
+    >
       <div className="training-exercise-card__number" aria-hidden="true">
         {exerciseNumber}
       </div>
@@ -216,11 +243,12 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
         <div className="training-exercise-card__body-inner">
           <div className="training-exercise-card__row training-exercise-card__row--comment">
             <textarea
+              ref={exerciseCommentInputRef}
               className="training-exercise-card__comment-input"
               placeholder="Введите комментарий к упражнению"
               value={exerciseComment}
               onChange={(event) => setExerciseComment(event.target.value)}
-              rows={3}
+              rows={1}
             />
           </div>
 
@@ -470,6 +498,10 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
               anchorRef={parametersButtonRef}
               selectedParameters={selectedParameters}
               onChange={setSelectedParameters}
+              isSupersetSelected={isSupersetActionSelected}
+              onSupersetToggle={() => {
+                onToggleSuperset?.(exerciseId);
+              }}
               onClose={() => {
                 setIsParametersPopoverOpen(false);
               }}
@@ -486,10 +518,31 @@ export default function TrainingExerciseCard({ exerciseNumber = 1 }) {
             </span>
           </button>
 
-          <div className="training-exercise-card__row training-exercise-card__row--danger">
-            <span className="training-exercise-card__action-text">
-              Убрать упражнение
-            </span>
+          <div className="training-exercise-card__delete-wrapper">
+            <button
+              ref={deleteButtonRef}
+              type="button"
+              className="training-exercise-card__row training-exercise-card__row--danger"
+              onClick={() => {
+                setIsDeletePopoverOpen(true);
+              }}
+            >
+              <span className="training-exercise-card__action-text">
+                Удалить упражнение
+              </span>
+            </button>
+
+            <ConfirmDeletePopover
+              anchorRef={deleteButtonRef}
+              open={isDeletePopoverOpen}
+              onConfirm={() => {
+                onRemoveExercise?.(exerciseId);
+                setIsDeletePopoverOpen(false);
+              }}
+              onCancel={() => {
+                setIsDeletePopoverOpen(false);
+              }}
+            />
           </div>
         </div>
       </div>

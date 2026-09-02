@@ -96,10 +96,43 @@
   font-weight: 700;
 }
 
+.training-exercise-card__delete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
 .training-exercise-card__row--danger {
-  color: #dc3a3a;
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  margin: 0;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: #ff3b30;
+  font-family: inherit;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: left;
+  box-sizing: border-box;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.training-exercise-card__row--danger:focus,
+.training-exercise-card__row--danger:focus-visible {
+  outline: none;
+  background: transparent;
+}
+
+.training-exercise-card__row--danger:active {
+  background: rgba(255, 59, 48, 0.05);
 }
 
 /* =========================
@@ -107,45 +140,48 @@
    ========================= */
 
 .training-exercise-card__row--comment {
-  min-height: 100px;
+  min-height: 76px;
   align-items: stretch;
-  padding: 12px 14px;
+  padding: 0 18px;
   border-bottom: none;
 }
 
 .training-exercise-card__comment-input {
   display: block;
+
   width: 100%;
   min-height: 76px;
-  padding: 14px 12px;
+
+  padding: 0;
   margin: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+
+  border: none;
+  border-radius: 0;
+
   outline: none;
+
   resize: none;
-  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+
+  background: transparent;
+
   color: rgba(255, 255, 255, 0.9);
   caret-color: #ff6200;
+
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
+
   box-sizing: border-box;
+
   appearance: none;
   -webkit-appearance: none;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
 }
 
 .training-exercise-card__comment-input::placeholder {
   color: rgba(255, 255, 255, 0.42);
   opacity: 1;
-}
-
-.training-exercise-card__comment-input:focus {
-  border-color: #ff6200;
-  background: rgba(255, 255, 255, 0.02);
 }
 
 /* =========================
@@ -960,4 +996,59 @@
 
   cursor: pointer;
   box-sizing: border-box;
+}
+
+/* =========================
+   СУПЕРСЕТ
+   ========================= */
+
+.training-exercise-card--superset-active {
+  border-color: rgba(255, 98, 0, 0.82);
+
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+
+  margin-bottom: 0;
+}
+
+.training-exercise-card--superset-member {
+  position: relative;
+
+  border-color: rgba(255, 98, 0, 0.82);
+
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+
+  margin-top: 28px;
+
+  z-index: 1;
+}
+
+.training-exercise-card--superset-member::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: -28px;
+
+  width: 2px;
+  height: 28px;
+
+  transform: translateX(-50%);
+
+  background: rgba(255, 98, 0, 0.82);
+
+  pointer-events: none;
+
+  z-index: -1;
+}
+
+.training-exercise-card--superset-active .training-exercise-card__number,
+.training-exercise-card--superset-member .training-exercise-card__number {
+  border-color: rgba(255, 98, 0, 0.82);
+
+  background: #111111;
+
+  color: #ff6200;
 }

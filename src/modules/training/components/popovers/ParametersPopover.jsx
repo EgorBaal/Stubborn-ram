@@ -67,6 +67,8 @@ export default function ParametersPopover({
   anchorRef,
   selectedParameters,
   onChange,
+  isSupersetSelected = false,
+  onSupersetToggle,
   onClose,
 }) {
   const popoverRef = useRef(null);
@@ -278,6 +280,20 @@ export default function ParametersPopover({
               </button>
             );
           })}
+          <button
+            type="button"
+            className={`training-parameters-popover__option${
+              isSupersetSelected
+                ? " training-parameters-popover__option--selected"
+                : ""
+            }`}
+            onClick={() => {
+              onSupersetToggle?.();
+            }}
+            aria-pressed={isSupersetSelected}
+          >
+            Суперсет
+          </button>
         </div>
       </div>
     </div>

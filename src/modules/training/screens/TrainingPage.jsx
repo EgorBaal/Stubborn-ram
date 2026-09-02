@@ -57,12 +57,93 @@ export default function TrainingPage() {
         ...prev,
         {
           id: crypto.randomUUID(),
+          supersetAfter: false,
         },
       ]);
 
       setAddButtonRipple(null);
     }, 180);
   };
+
+  const handleToggleSuperset = (exerciseId) => {
+    setExerciseCards((prev) =>
+      prev.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              supersetAfter: !exercise.supersetAfter,
+            }
+          : exercise,
+      ),
+    );
+  };
+
+  const handleRemoveExercise = (exerciseId) => {
+    setExerciseCards((prev) => {
+      const index = prev.findIndex((exercise) => exercise.id === exerciseId);
+
+      if (index === -1) {
+        return prev;
+      }
+
+      const next = [...prev];
+
+      next.splice(index, 1);
+
+      if (index > 0 && index < prev.length) {
+        const previousExercise = prev[index - 1];
+        const removedExercise = prev[index];
+
+        if (previousExercise.supersetAfter && removedExercise.supersetAfter) {
+          next[index - 1] = {
+            ...next[index - 1],
+            supersetAfter: false,
+          };
+        }
+      }
+
+      return next;
+    });
+  };
+
+  const getExerciseNumbers = (exercises) => {
+    let groupNumber = 0;
+    let supersetLetterIndex = 0;
+
+    return exercises.map((exercise, index) => {
+      const previousExercise = exercises[index - 1];
+
+      if (index === 0) {
+        groupNumber = 1;
+
+        if (exercise.supersetAfter) {
+          supersetLetterIndex = 0;
+          return `${groupNumber}A`;
+        }
+
+        return String(groupNumber);
+      }
+
+      if (previousExercise?.supersetAfter) {
+        supersetLetterIndex += 1;
+
+        return `${groupNumber}${String.fromCharCode(65 + supersetLetterIndex)}`;
+      }
+
+      groupNumber += 1;
+
+      if (exercise.supersetAfter) {
+        supersetLetterIndex = 0;
+        return `${groupNumber}A`;
+      }
+
+      supersetLetterIndex = 0;
+
+      return String(groupNumber);
+    });
+  };
+
+  const exerciseNumbers = getExerciseNumbers(exerciseCards);
 
   return (
     <main className="training-builder-view">
@@ -112,9 +193,23 @@ export default function TrainingPage() {
           onChange={setTrainingComment}
         />
 
-        {exerciseCards.map((exercise, index) => (
-          <TrainingExerciseCard key={exercise.id} exerciseNumber={index + 1} />
-        ))}
+        {exerciseCards.map((exercise, index) => {
+          const previousExercise = exerciseCards[index - 1];
+
+          const isSupersetMember = Boolean(previousExercise?.supersetAfter);
+
+          return (
+            <TrainingExerciseCard
+              key={exercise.id}
+              exerciseId={exercise.id}
+              exerciseNumber={exerciseNumbers[index]}
+              isSupersetActionSelected={exercise.supersetAfter}
+              isSupersetMember={isSupersetMember}
+              onToggleSuperset={handleToggleSuperset}
+              onRemoveExercise={handleRemoveExercise}
+            />
+          );
+        })}
 
         <button
           type="button"
