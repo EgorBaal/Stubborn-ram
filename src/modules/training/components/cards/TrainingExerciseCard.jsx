@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Settings } from "lucide-react";
+import { Image, MessageSquare, Settings, Video } from "lucide-react";
 import DifficultyPopover from "../popovers/DifficultyPopover";
 import ParametersPopover from "../popovers/ParametersPopover";
 import ConfirmDeletePopover from "../popovers/ConfirmDeletePopover";
@@ -47,6 +47,17 @@ export default function TrainingExerciseCard({
   const [exerciseName, setExerciseName] = useState("");
   const [exerciseComment, setExerciseComment] = useState("");
   const [sets, setSets] = useState([]);
+  const [swipedSetId, setSwipedSetId] = useState(null);
+  const [swipedSetSide, setSwipedSetSide] = useState(null);
+
+  const swipeTouchRef = useRef({
+    setId: null,
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+    directionLocked: false,
+  });
   const difficultyButtonRefs = useRef({});
   const [openDifficultySetId, setOpenDifficultySetId] = useState(null);
 
@@ -161,6 +172,126 @@ export default function TrainingExerciseCard({
     );
   };
 
+  const handleSetTouchStart = (setId, event) => {
+    const touch = event.touches[0];
+
+    swipeTouchRef.current = {
+      setId,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      currentX: touch.clientX,
+      currentY: touch.clientY,
+      directionLocked: false,
+    };
+  };
+
+  const handleSetTouchMove = (setId, event) => {
+    const swipe = swipeTouchRef.current;
+
+    if (swipe.setId !== setId) {
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    const deltaX = touch.clientX - swipe.startX;
+    const deltaY = touch.clientY - swipe.startY;
+
+    if (!swipe.directionLocked) {
+      if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) {
+        return;
+      }
+
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        swipeTouchRef.current = {
+          ...swipe,
+          directionLocked: true,
+          currentX: touch.clientX,
+          currentY: touch.clientY,
+        };
+
+        return;
+      }
+
+      swipeTouchRef.current = {
+        ...swipe,
+        directionLocked: true,
+        currentX: touch.clientX,
+        currentY: touch.clientY,
+      };
+    }
+
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      return;
+    }
+
+    swipeTouchRef.current.currentX = touch.clientX;
+    swipeTouchRef.current.currentY = touch.clientY;
+  };
+
+  const handleSetTouchEnd = (setId) => {
+    const swipe = swipeTouchRef.current;
+
+    if (swipe.setId !== setId) {
+      return;
+    }
+
+    const deltaX = swipe.currentX - swipe.startX;
+    const deltaY = swipe.currentY - swipe.startY;
+
+    if (
+      swipe.directionLocked &&
+      Math.abs(deltaX) >= 45 &&
+      Math.abs(deltaX) > Math.abs(deltaY)
+    ) {
+      const currentSide = swipedSetId === setId ? swipedSetSide : null;
+
+      if (deltaX < 0) {
+        // Свайп влево
+        if (currentSide === "left") {
+          // Из левого состояния возвращаемся в центр
+          setSwipedSetId(null);
+          setSwipedSetSide(null);
+        } else if (currentSide === null) {
+          // Из центра открываем правое меню
+          setSwipedSetId(setId);
+          setSwipedSetSide("right");
+        }
+      } else {
+        // Свайп вправо
+        if (currentSide === "right") {
+          // Из правого состояния возвращаемся в центр
+          setSwipedSetId(null);
+          setSwipedSetSide(null);
+        } else if (currentSide === null) {
+          // Из центра открываем левое меню
+          setSwipedSetId(setId);
+          setSwipedSetSide("left");
+        }
+      }
+    }
+
+    swipeTouchRef.current = {
+      setId: null,
+      startX: 0,
+      startY: 0,
+      currentX: 0,
+      currentY: 0,
+      directionLocked: false,
+    };
+  };
+
+  const handleSetTouchCancel = () => {
+    swipeTouchRef.current = {
+      setId: null,
+      startX: 0,
+      startY: 0,
+      currentX: 0,
+      currentY: 0,
+      directionLocked: false,
+    };
+  };
+
   const setDifficulty = (setId, difficulty) => {
     setSets((prev) =>
       prev.map((set) =>
@@ -186,363 +317,458 @@ export default function TrainingExerciseCard({
         {exerciseNumber}
       </div>
 
-      <div className="training-exercise-card__row training-exercise-card__row--title">
-        <textarea
-          ref={exerciseNameInputRef}
-          className="training-exercise-card__name-input"
-          placeholder="Название упражнения"
-          value={exerciseName}
-          onChange={(event) => setExerciseName(event.target.value)}
-          rows={1}
-        ></textarea>
+      <div className="training-exercise-card__exercise-content">
+        <div className="training-exercise-card__row training-exercise-card__row--title">
+          <textarea
+            ref={exerciseNameInputRef}
+            className="training-exercise-card__name-input"
+            placeholder="Название упражнения"
+            value={exerciseName}
+            onChange={(event) => setExerciseName(event.target.value)}
+            rows={1}
+          ></textarea>
 
-        {!isCollapsed && (
+          {!isCollapsed && (
+            <button
+              type="button"
+              className="training-exercise-card__select"
+              onClick={() => setIsExercisePickerOpen(true)}
+              aria-label="Выбрать упражнение"
+            >
+              +
+            </button>
+          )}
+
           <button
             type="button"
-            className="training-exercise-card__select"
-            onClick={() => setIsExercisePickerOpen(true)}
-            aria-label="Выбрать упражнение"
+            className="training-exercise-card__toggle"
+            onClick={handleToggle}
+            aria-label={
+              isCollapsed ? "Развернуть упражнение" : "Свернуть упражнение"
+            }
+            aria-expanded={!isCollapsed}
           >
-            +
-          </button>
-        )}
-
-        <button
-          type="button"
-          className="training-exercise-card__toggle"
-          onClick={handleToggle}
-          aria-label={
-            isCollapsed ? "Развернуть упражнение" : "Свернуть упражнение"
-          }
-          aria-expanded={!isCollapsed}
-        >
-          <svg
-            className={`training-exercise-card__chevron${
-              isCollapsed ? " training-exercise-card__chevron--collapsed" : ""
-            }`}
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M9 6L15 12L9 18"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div
-        className={`training-exercise-card__body${
-          isCollapsed ? " training-exercise-card__body--collapsed" : ""
-        }`}
-      >
-        <div className="training-exercise-card__body-inner">
-          <div className="training-exercise-card__row training-exercise-card__row--comment">
-            <textarea
-              ref={exerciseCommentInputRef}
-              className="training-exercise-card__comment-input"
-              placeholder="Введите комментарий к упражнению"
-              value={exerciseComment}
-              onChange={(event) => setExerciseComment(event.target.value)}
-              rows={1}
-            />
-          </div>
-
-          <div className="training-exercise-card__row training-exercise-card__row--tools">
-            <button
-              type="button"
-              className="training-exercise-card__tool training-exercise-card__tool--history"
-            >
-              <span>История</span>
-
-              <svg
-                className="training-exercise-card__history-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M12 8V12L15 14"
-                  stroke="currentColor"
-                  strokeWidth="2.1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-
-                <path
-                  d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12"
-                  stroke="currentColor"
-                  strokeWidth="2.1"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-
-            <span
-              className="training-exercise-card__tools-divider"
-              aria-hidden="true"
-            />
-
-            <button
-              ref={parametersButtonRef}
-              type="button"
-              className="training-exercise-card__tool training-exercise-card__tool--parameters"
-              onClick={() => {
-                setIsParametersPopoverOpen((isOpen) => !isOpen);
-              }}
-              aria-label="Открыть параметры упражнения"
-              aria-expanded={isParametersPopoverOpen}
-            >
-              <span>Параметры</span>
-            </button>
-          </div>
-
-          {sets.map((set, index) => (
-            <section
-              key={set.id}
-              className={`training-exercise-card__set${
-                set.isExtraOpen
-                  ? " training-exercise-card__set--extra-open"
-                  : ""
+            <svg
+              className={`training-exercise-card__chevron${
+                isCollapsed ? " training-exercise-card__chevron--collapsed" : ""
               }`}
-              aria-label={`Подход ${index + 1}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
             >
-              <div className="training-exercise-card__set-title">
-                Подход {index + 1}
-              </div>
+              <path
+                d="M9 6L15 12L9 18"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
 
-              <div className="training-exercise-card__set-values">
-                {selectedParameters.map((parameterId) => {
-                  if (parameterId === "difficulty") {
-                    return (
-                      <div
-                        key={parameterId}
-                        className="training-exercise-card__set-value training-exercise-card__set-value--difficulty"
-                      >
-                        <span>Сложность</span>
+        <div
+          className={`training-exercise-card__body${
+            isCollapsed ? " training-exercise-card__body--collapsed" : ""
+          }`}
+        >
+          <div className="training-exercise-card__body-inner">
+            <div className="training-exercise-card__row training-exercise-card__row--comment">
+              <textarea
+                ref={exerciseCommentInputRef}
+                className="training-exercise-card__comment-input"
+                placeholder="Введите комментарий к упражнению"
+                value={exerciseComment}
+                onChange={(event) => setExerciseComment(event.target.value)}
+                rows={1}
+              />
+            </div>
 
-                        <div className="training-exercise-card__difficulty-wrap">
-                          <button
-                            ref={(element) => {
-                              if (element) {
-                                difficultyButtonRefs.current[set.id] = element;
-                              }
-                            }}
-                            type="button"
-                            className={`training-exercise-card__difficulty-dot${
-                              set.difficulty
-                                ? ` training-exercise-card__difficulty-dot--${set.difficulty}`
-                                : ""
-                            }`}
-                            aria-label={`Выбрать сложность, подход ${index + 1}`}
-                            aria-expanded={openDifficultySetId === set.id}
-                            onClick={() => {
-                              setOpenDifficultySetId((currentId) =>
-                                currentId === set.id ? null : set.id,
-                              );
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  }
+            <div className="training-exercise-card__row training-exercise-card__row--tools">
+              <button
+                type="button"
+                className="training-exercise-card__tool training-exercise-card__tool--history"
+              >
+                <span>История</span>
 
-                  const parameterLabels = {
-                    weight: "Вес",
-                    repetitions: "Повторения",
-                    distance: "Расстояние",
-                    calories: "Калории",
-                    speed: "Скорость",
-                    power: "Мощность",
-                    incline: "Наклон",
-                    time: "Время",
-                    rir: "RIR",
-                    rpe: "RPE",
-                  };
+                <svg
+                  className="training-exercise-card__history-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 8V12L15 14"
+                    stroke="currentColor"
+                    strokeWidth="2.1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
 
-                  return (
-                    <div
-                      key={parameterId}
-                      className="training-exercise-card__set-value"
-                    >
-                      <span>{parameterLabels[parameterId]}</span>
+                  <path
+                    d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12"
+                    stroke="currentColor"
+                    strokeWidth="2.1"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
 
-                      <input
-                        type="text"
-                        className="training-exercise-card__set-input"
-                        inputMode="decimal"
-                        value={set[parameterId] ?? ""}
-                        placeholder="x"
-                        onChange={(event) =>
-                          updateSet(set.id, parameterId, event.target.value)
-                        }
-                        aria-label={`${parameterLabels[parameterId]}, подход ${index + 1}`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+              <span
+                className="training-exercise-card__tools-divider"
+                aria-hidden="true"
+              />
 
-              {set.intensityMethods.length > 0 && (
-                <div className="training-exercise-card__selected-intensity-methods">
-                  {set.intensityMethods.map((methodId) => {
-                    const method = intensityMethods.find(
-                      (item) => item.id === methodId,
-                    );
+              <button
+                ref={parametersButtonRef}
+                type="button"
+                className="training-exercise-card__tool training-exercise-card__tool--parameters"
+                onClick={() => {
+                  setIsParametersPopoverOpen((isOpen) => !isOpen);
+                }}
+                aria-label="Открыть параметры упражнения"
+                aria-expanded={isParametersPopoverOpen}
+              >
+                <span>Параметры</span>
+              </button>
+            </div>
 
-                    if (!method) {
-                      return null;
-                    }
-
-                    return (
-                      <div
-                        key={method.id}
-                        className="training-exercise-card__selected-intensity-method"
-                      >
-                        {method.label}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              <div
-                className={`training-exercise-card__set-extra${
+            {sets.map((set, index) => (
+              <section
+                key={set.id}
+                className={`training-exercise-card__set${
                   set.isExtraOpen
-                    ? " training-exercise-card__set-extra--open"
+                    ? " training-exercise-card__set--extra-open"
+                    : ""
+                }${
+                  swipedSetId === set.id && swipedSetSide === "left"
+                    ? " training-exercise-card__set--swiped-left"
+                    : ""
+                }${
+                  swipedSetId === set.id && swipedSetSide === "right"
+                    ? " training-exercise-card__set--swiped-right"
                     : ""
                 }`}
+                aria-label={`Подход ${index + 1}`}
+                onTouchStart={(event) => handleSetTouchStart(set.id, event)}
+                onTouchMove={(event) => handleSetTouchMove(set.id, event)}
+                onTouchEnd={() => handleSetTouchEnd(set.id)}
+                onTouchCancel={handleSetTouchCancel}
               >
-                <div className="training-exercise-card__set-extra-content">
-                  <div className="training-exercise-card__intensity-divider">
-                    <span />
+                <div
+                  className="training-exercise-card__set-actions training-exercise-card__set-actions--left"
+                  aria-hidden={
+                    swipedSetId !== set.id || swipedSetSide !== "left"
+                  }
+                >
+                  <button
+                    type="button"
+                    className="training-exercise-card__set-action"
+                    aria-label="Скопировать подход"
+                    onClick={() => {
+                      setSwipedSetId(null);
+                      setSwipedSetSide(null);
+                    }}
+                  >
+                    Скопировать
+                  </button>
+
+                  <button
+                    type="button"
+                    className="training-exercise-card__set-action training-exercise-card__set-action--delete"
+                    aria-label="Удалить подход"
+                    onClick={() => {
+                      setSwipedSetId(null);
+                      setSwipedSetSide(null);
+                    }}
+                  >
+                    Удалить
+                  </button>
+                </div>
+                <div
+                  className={`training-exercise-card__set-content${
+                    swipedSetId === set.id
+                      ? " training-exercise-card__set-content--swiped"
+                      : ""
+                  }`}
+                >
+                  <div className="training-exercise-card__set-title">
+                    Подход {index + 1}
                   </div>
 
-                  <div className="training-exercise-card__intensity-methods">
-                    {intensityMethods.map((method) => {
-                      const isSelected = set.intensityMethods.includes(
-                        method.id,
-                      );
+                  <div className="training-exercise-card__set-values">
+                    {selectedParameters.map((parameterId) => {
+                      if (parameterId === "difficulty") {
+                        return (
+                          <div
+                            key={parameterId}
+                            className="training-exercise-card__set-value training-exercise-card__set-value--difficulty"
+                          >
+                            <span>Сложность</span>
+
+                            <div className="training-exercise-card__difficulty-wrap">
+                              <button
+                                ref={(element) => {
+                                  if (element) {
+                                    difficultyButtonRefs.current[set.id] =
+                                      element;
+                                  }
+                                }}
+                                type="button"
+                                className={`training-exercise-card__difficulty-dot${
+                                  set.difficulty
+                                    ? ` training-exercise-card__difficulty-dot--${set.difficulty}`
+                                    : ""
+                                }`}
+                                aria-label={`Выбрать сложность, подход ${index + 1}`}
+                                aria-expanded={openDifficultySetId === set.id}
+                                onClick={() => {
+                                  setOpenDifficultySetId((currentId) =>
+                                    currentId === set.id ? null : set.id,
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      const parameterLabels = {
+                        weight: "Вес",
+                        repetitions: "Повторения",
+                        distance: "Расстояние",
+                        calories: "Калории",
+                        speed: "Скорость",
+                        power: "Мощность",
+                        incline: "Наклон",
+                        time: "Время",
+                        rir: "RIR",
+                        rpe: "RPE",
+                      };
 
                       return (
-                        <button
-                          key={method.id}
-                          type="button"
-                          className={`training-exercise-card__intensity-method${
-                            isSelected
-                              ? " training-exercise-card__intensity-method--selected"
-                              : ""
-                          }`}
-                          onClick={() =>
-                            toggleIntensityMethod(set.id, method.id)
-                          }
-                          aria-pressed={isSelected}
+                        <div
+                          key={parameterId}
+                          className="training-exercise-card__set-value"
                         >
-                          {method.label}
-                        </button>
+                          <span>{parameterLabels[parameterId]}</span>
+
+                          <input
+                            type="text"
+                            className="training-exercise-card__set-input"
+                            inputMode="decimal"
+                            value={set[parameterId] ?? ""}
+                            placeholder="x"
+                            onChange={(event) =>
+                              updateSet(set.id, parameterId, event.target.value)
+                            }
+                            aria-label={`${parameterLabels[parameterId]}, подход ${index + 1}`}
+                          />
+                        </div>
                       );
                     })}
                   </div>
+
+                  {set.intensityMethods.length > 0 && (
+                    <div className="training-exercise-card__selected-intensity-methods">
+                      {set.intensityMethods.map((methodId) => {
+                        const method = intensityMethods.find(
+                          (item) => item.id === methodId,
+                        );
+
+                        if (!method) {
+                          return null;
+                        }
+
+                        return (
+                          <div
+                            key={method.id}
+                            className="training-exercise-card__selected-intensity-method"
+                          >
+                            {method.label}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div
+                    className={`training-exercise-card__set-extra${
+                      set.isExtraOpen
+                        ? " training-exercise-card__set-extra--open"
+                        : ""
+                    }`}
+                  >
+                    <div className="training-exercise-card__set-extra-content">
+                      <div className="training-exercise-card__intensity-divider">
+                        <span />
+                      </div>
+
+                      <div className="training-exercise-card__intensity-methods">
+                        {intensityMethods.map((method) => {
+                          const isSelected = set.intensityMethods.includes(
+                            method.id,
+                          );
+
+                          return (
+                            <button
+                              key={method.id}
+                              type="button"
+                              className={`training-exercise-card__intensity-method${
+                                isSelected
+                                  ? " training-exercise-card__intensity-method--selected"
+                                  : ""
+                              }`}
+                              onClick={() =>
+                                toggleIntensityMethod(set.id, method.id)
+                              }
+                              aria-pressed={isSelected}
+                            >
+                              {method.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className={`training-exercise-card__set-settings${
+                      set.isExtraOpen
+                        ? " training-exercise-card__set-settings--open"
+                        : ""
+                    }`}
+                    onClick={() => toggleSetExtra(set.id)}
+                    aria-label={
+                      set.isExtraOpen
+                        ? "Скрыть дополнительные параметры"
+                        : "Показать дополнительные параметры"
+                    }
+                    aria-expanded={set.isExtraOpen}
+                  >
+                    <Settings
+                      className="training-exercise-card__set-settings-icon"
+                      size={18}
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
+                  </button>
                 </div>
-              </div>
+                <div
+                  className="training-exercise-card__set-actions"
+                  aria-hidden={
+                    swipedSetId !== set.id || swipedSetSide !== "right"
+                  }
+                >
+                  <button
+                    type="button"
+                    className="training-exercise-card__set-action"
+                    aria-label="Добавить фото"
+                    onClick={() => {
+                      setSwipedSetId(null);
+                      setSwipedSetSide(null);
+                    }}
+                  >
+                    <Image size={20} strokeWidth={1.8} />
+                  </button>
 
-              <button
-                type="button"
-                className={`training-exercise-card__set-settings${
-                  set.isExtraOpen
-                    ? " training-exercise-card__set-settings--open"
-                    : ""
-                }`}
-                onClick={() => toggleSetExtra(set.id)}
-                aria-label={
-                  set.isExtraOpen
-                    ? "Скрыть дополнительные параметры"
-                    : "Показать дополнительные параметры"
+                  <button
+                    type="button"
+                    className="training-exercise-card__set-action"
+                    aria-label="Добавить видео"
+                    onClick={() => {
+                      setSwipedSetId(null);
+                      setSwipedSetSide(null);
+                    }}
+                  >
+                    <Video size={20} strokeWidth={1.8} />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="training-exercise-card__set-action"
+                    aria-label="Добавить комментарий"
+                    onClick={() => {
+                      setSwipedSetId(null);
+                      setSwipedSetSide(null);
+                    }}
+                  >
+                    <MessageSquare size={20} strokeWidth={1.8} />
+                  </button>
+                </div>
+              </section>
+            ))}
+
+            {openDifficultySetId && (
+              <DifficultyPopover
+                anchorRef={{
+                  current: difficultyButtonRefs.current[openDifficultySetId],
+                }}
+                value={
+                  sets.find((set) => set.id === openDifficultySetId)
+                    ?.difficulty || null
                 }
-                aria-expanded={set.isExtraOpen}
-              >
-                <Settings
-                  className="training-exercise-card__set-settings-icon"
-                  size={18}
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                />
-              </button>
-            </section>
-          ))}
+                onChange={(difficulty) => {
+                  setDifficulty(openDifficultySetId, difficulty);
+                }}
+                onClose={() => {
+                  setOpenDifficultySetId(null);
+                }}
+              />
+            )}
 
-          {openDifficultySetId && (
-            <DifficultyPopover
-              anchorRef={{
-                current: difficultyButtonRefs.current[openDifficultySetId],
-              }}
-              value={
-                sets.find((set) => set.id === openDifficultySetId)
-                  ?.difficulty || null
-              }
-              onChange={(difficulty) => {
-                setDifficulty(openDifficultySetId, difficulty);
-              }}
-              onClose={() => {
-                setOpenDifficultySetId(null);
-              }}
-            />
-          )}
+            {isParametersPopoverOpen && (
+              <ParametersPopover
+                anchorRef={parametersButtonRef}
+                selectedParameters={selectedParameters}
+                onChange={setSelectedParameters}
+                isSupersetSelected={isSupersetActionSelected}
+                onSupersetToggle={() => {
+                  onToggleSuperset?.(exerciseId);
+                }}
+                onClose={() => {
+                  setIsParametersPopoverOpen(false);
+                }}
+              />
+            )}
 
-          {isParametersPopoverOpen && (
-            <ParametersPopover
-              anchorRef={parametersButtonRef}
-              selectedParameters={selectedParameters}
-              onChange={setSelectedParameters}
-              isSupersetSelected={isSupersetActionSelected}
-              onSupersetToggle={() => {
-                onToggleSuperset?.(exerciseId);
-              }}
-              onClose={() => {
-                setIsParametersPopoverOpen(false);
-              }}
-            />
-          )}
-
-          <button
-            type="button"
-            className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__add-set"
-            onClick={handleAddSet}
-          >
-            <span className="training-exercise-card__action-text">
-              Добавить подход
-            </span>
-          </button>
-
-          <div className="training-exercise-card__delete-wrapper">
             <button
-              ref={deleteButtonRef}
               type="button"
-              className="training-exercise-card__row training-exercise-card__row--danger"
-              onClick={() => {
-                setIsDeletePopoverOpen(true);
-              }}
+              className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__add-set"
+              onClick={handleAddSet}
             >
               <span className="training-exercise-card__action-text">
-                Удалить упражнение
+                Добавить подход
               </span>
             </button>
 
-            <ConfirmDeletePopover
-              anchorRef={deleteButtonRef}
-              open={isDeletePopoverOpen}
-              onConfirm={() => {
-                onRemoveExercise?.(exerciseId);
-                setIsDeletePopoverOpen(false);
-              }}
-              onCancel={() => {
-                setIsDeletePopoverOpen(false);
-              }}
-            />
+            <div className="training-exercise-card__delete-wrapper">
+              <button
+                ref={deleteButtonRef}
+                type="button"
+                className="training-exercise-card__row training-exercise-card__row--danger"
+                onClick={() => {
+                  setIsDeletePopoverOpen(true);
+                }}
+              >
+                <span className="training-exercise-card__action-text">
+                  Удалить упражнение
+                </span>
+              </button>
+
+              <ConfirmDeletePopover
+                anchorRef={deleteButtonRef}
+                open={isDeletePopoverOpen}
+                onConfirm={() => {
+                  onRemoveExercise?.(exerciseId);
+                  setIsDeletePopoverOpen(false);
+                }}
+                onCancel={() => {
+                  setIsDeletePopoverOpen(false);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
