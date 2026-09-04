@@ -173,6 +173,41 @@ export default function TrainingExerciseCard({
     );
   };
 
+  const handleCopySet = (setId) => {
+    setSets((prev) => {
+      const sourceIndex = prev.findIndex((set) => set.id === setId);
+
+      if (sourceIndex === -1) {
+        return prev;
+      }
+
+      const sourceSet = prev[sourceIndex];
+
+      const copiedSet = {
+        ...sourceSet,
+        id: crypto.randomUUID(),
+        intensityMethods: [...sourceSet.intensityMethods],
+        isExtraOpen: false,
+      };
+
+      const nextSets = [...prev];
+
+      nextSets.splice(sourceIndex + 1, 0, copiedSet);
+
+      return nextSets;
+    });
+
+    setSwipedSetId(null);
+    setSwipedSetSide(null);
+  };
+
+  const handleDeleteSet = (setId) => {
+    setSets((prev) => prev.filter((set) => set.id !== setId));
+
+    setSwipedSetId(null);
+    setSwipedSetSide(null);
+  };
+
   const handleSetTouchStart = (setId, event) => {
     const touch = event.touches[0];
 
@@ -474,10 +509,7 @@ export default function TrainingExerciseCard({
                     type="button"
                     className="training-exercise-card__set-action"
                     aria-label="Скопировать подход"
-                    onClick={() => {
-                      setSwipedSetId(null);
-                      setSwipedSetSide(null);
-                    }}
+                    onClick={() => handleCopySet(set.id)}
                   >
                     Скопировать
                   </button>
@@ -486,10 +518,7 @@ export default function TrainingExerciseCard({
                     type="button"
                     className="training-exercise-card__set-action training-exercise-card__set-action--delete"
                     aria-label="Удалить подход"
-                    onClick={() => {
-                      setSwipedSetId(null);
-                      setSwipedSetSide(null);
-                    }}
+                    onClick={() => handleDeleteSet(set.id)}
                   >
                     Удалить
                   </button>

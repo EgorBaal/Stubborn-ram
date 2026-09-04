@@ -305,31 +305,31 @@
 }
 
 .training-exercise-card__set--swiped-left .training-exercise-card__set-content {
-  transform: translateX(84px);
+  transform: translateX(100px);
 }
 
 .training-exercise-card__set--swiped-right
   .training-exercise-card__set-content {
-  transform: translateX(-84px);
+  transform: translateX(-100px);
 }
 
 .training-exercise-card__set-actions {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 84px;
+  width: 100px;
   display: flex;
   flex-direction: column;
   z-index: 1;
   overflow: hidden;
-  transform: translateX(84px);
+  transform: translateX(100px);
   transition: transform 220ms cubic-bezier(0.22, 0.72, 0.2, 1);
 }
 
 .training-exercise-card__set-actions--left {
   left: 0;
   right: auto;
-  transform: translateX(-84px);
+  transform: translateX(-100px);
 }
 
 .training-exercise-card__set-actions:not(
@@ -337,7 +337,7 @@
 ) {
   left: auto;
   right: 0;
-  transform: translateX(84px);
+  transform: translateX(100px);
 }
 
 .training-exercise-card__set--swiped-left
@@ -357,12 +357,13 @@
 
   min-height: 0;
   width: 100%;
+  min-width: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 0;
+  padding: 0 4px;
 
   border: none;
   border-left: 1px solid rgba(255, 98, 0, 0.16);
@@ -371,11 +372,32 @@
 
   color: #ff6200;
 
+  font-family: "Comfortaa", sans-serif;
+  font-size: clamp(9px, 2.5vw, 11px);
+  font-weight: 600;
+  line-height: 1.15;
+
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+
   cursor: pointer;
 
   box-sizing: border-box;
 
   transition: background 160ms ease;
+}
+
+.training-exercise-card__set-actions--left .training-exercise-card__set-action {
+  border-left: none;
+  border-right: 1px solid rgba(255, 98, 0, 0.16);
+}
+
+.training-exercise-card__set-actions--left
+  .training-exercise-card__set-action:first-child {
+  font-size: clamp(8px, 2.3vw, 10px);
+  letter-spacing: -0.15px;
 }
 
 .training-exercise-card__set-action + .training-exercise-card__set-action {
@@ -384,6 +406,14 @@
 
 .training-exercise-card__set-action:active {
   background: rgba(255, 98, 0, 0.14);
+}
+
+.training-exercise-card__set-action--delete {
+  color: #ff3b30;
+}
+
+.training-exercise-card__set-action--delete:active {
+  background: rgba(255, 59, 48, 0.08);
 }
 
 /* =========================
