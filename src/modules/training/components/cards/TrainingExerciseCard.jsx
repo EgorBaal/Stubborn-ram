@@ -196,54 +196,44 @@ export default function TrainingExerciseCard({
 
     const touch = event.touches[0];
 
-    const deltaX = touch.clientX - swipe.startX;
-    const deltaY = touch.clientY - swipe.startY;
-
-    if (!swipe.directionLocked) {
-      if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-        return;
-      }
-
-      const horizontalDistance = Math.abs(deltaX);
-      const verticalDistance = Math.abs(deltaY);
-
-      const isHorizontal =
-        horizontalDistance >= 24 &&
-        horizontalDistance > verticalDistance * 1.35;
-
-      const isVertical =
-        verticalDistance >= 24 && verticalDistance > horizontalDistance * 1.35;
-
-      if (!isHorizontal && !isVertical) {
-        return;
-      }
-
-      swipeTouchRef.current = {
-        ...swipe,
-        directionLocked: true,
-        currentX: touch.clientX,
-        currentY: touch.clientY,
-        isHorizontal,
-      };
-
-      if (isHorizontal) {
-        event.preventDefault();
-      }
-
+    if (!touch) {
       return;
     }
 
-    if (swipe.isHorizontal) {
-      event.preventDefault();
+    const deltaX = touch.clientX - swipe.startX;
+    const deltaY = touch.clientY - swipe.startY;
 
+    if (swipe.directionLocked) {
       swipeTouchRef.current.currentX = touch.clientX;
       swipeTouchRef.current.currentY = touch.clientY;
 
       return;
     }
 
-    swipeTouchRef.current.currentX = touch.clientX;
-    swipeTouchRef.current.currentY = touch.clientY;
+    const horizontalDistance = Math.abs(deltaX);
+    const verticalDistance = Math.abs(deltaY);
+
+    if (horizontalDistance < 24 && verticalDistance < 24) {
+      return;
+    }
+
+    const isHorizontal =
+      horizontalDistance >= 24 && horizontalDistance >= verticalDistance * 1.5;
+
+    const isVertical =
+      verticalDistance >= 24 && verticalDistance >= horizontalDistance * 1.5;
+
+    if (!isHorizontal && !isVertical) {
+      return;
+    }
+
+    swipeTouchRef.current = {
+      ...swipe,
+      directionLocked: true,
+      currentX: touch.clientX,
+      currentY: touch.clientY,
+      isHorizontal,
+    };
   };
 
   const handleSetTouchEnd = (setId) => {
