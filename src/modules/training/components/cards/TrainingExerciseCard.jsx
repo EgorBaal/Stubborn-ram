@@ -57,6 +57,7 @@ export default function TrainingExerciseCard({
     currentX: 0,
     currentY: 0,
     directionLocked: false,
+    isHorizontal: false,
   });
   const difficultyButtonRefs = useRef({});
   const [openDifficultySetId, setOpenDifficultySetId] = useState(null);
@@ -182,6 +183,7 @@ export default function TrainingExerciseCard({
       currentX: touch.clientX,
       currentY: touch.clientY,
       directionLocked: false,
+      isHorizontal: false,
     };
   };
 
@@ -198,18 +200,21 @@ export default function TrainingExerciseCard({
     const deltaY = touch.clientY - swipe.startY;
 
     if (!swipe.directionLocked) {
-      if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) {
+      if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
         return;
       }
 
-      if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        swipeTouchRef.current = {
-          ...swipe,
-          directionLocked: true,
-          currentX: touch.clientX,
-          currentY: touch.clientY,
-        };
+      const horizontalDistance = Math.abs(deltaX);
+      const verticalDistance = Math.abs(deltaY);
 
+      const isHorizontal =
+        horizontalDistance >= 24 &&
+        horizontalDistance > verticalDistance * 1.35;
+
+      const isVertical =
+        verticalDistance >= 24 && verticalDistance > horizontalDistance * 1.35;
+
+      if (!isHorizontal && !isVertical) {
         return;
       }
 
@@ -218,10 +223,22 @@ export default function TrainingExerciseCard({
         directionLocked: true,
         currentX: touch.clientX,
         currentY: touch.clientY,
+        isHorizontal,
       };
+
+      if (isHorizontal) {
+        event.preventDefault();
+      }
+
+      return;
     }
 
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+    if (swipe.isHorizontal) {
+      event.preventDefault();
+
+      swipeTouchRef.current.currentX = touch.clientX;
+      swipeTouchRef.current.currentY = touch.clientY;
+
       return;
     }
 
@@ -278,6 +295,7 @@ export default function TrainingExerciseCard({
       currentX: 0,
       currentY: 0,
       directionLocked: false,
+      isHorizontal: false,
     };
   };
 
@@ -289,6 +307,7 @@ export default function TrainingExerciseCard({
       currentX: 0,
       currentY: 0,
       directionLocked: false,
+      isHorizontal: false,
     };
   };
 
