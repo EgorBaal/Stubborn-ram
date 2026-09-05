@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
@@ -6,6 +6,11 @@ import "../styles/TrainingPage.css";
 import TrainingExerciseCard from "../components/cards/TrainingExerciseCard";
 import TrainingComment from "../components/comment/TrainingComment";
 import TrainingInfo from "../components/info/TrainingInfo";
+import {
+  getWorkoutById,
+  saveCompletedWorkout,
+  updateWorkout,
+} from "../services/trainingService";
 
 export default function TrainingPage() {
   const navigate = useNavigate();
@@ -33,11 +38,98 @@ export default function TrainingPage() {
   const [trainingComment, setTrainingComment] = useState("");
 
   const [exerciseCards, setExerciseCards] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingWorkout, setIsLoadingWorkout] = useState(false);
   const [addButtonRipple, setAddButtonRipple] = useState(null);
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isStartTimePickerOpen, setIsStartTimePickerOpen] = useState(false);
   const [isEndTimePickerOpen, setIsEndTimePickerOpen] = useState(false);
+  useEffect(() => {
+    if (!isHistoryTraining || !id) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadWorkout = async () => {
+      setIsLoadingWorkout(true);
+
+      try {
+        const workout = await getWorkoutById(id);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setTrainingTitle(workout.title || "Новая тренировка");
+
+        if (workout.training_date) {
+          const [year, month, day] = workout.training_date
+            .split("-")
+            .map(Number);
+
+          setTrainingDate(new Date(year, month - 1, day));
+        }
+
+        setStartTime(workout.start_time || "");
+        setEndTime(workout.end_time || "");
+        setTrainingType(workout.training_type || "Силовая");
+        setTrainingComment(workout.comment || "");
+
+        const loadedExercises = [...(workout.workout_exercises || [])]
+          .sort((a, b) => a.position - b.position)
+          .map((exercise) => ({
+            id: exercise.id,
+            exerciseId: exercise.exercise_id,
+            exerciseName: exercise.exercises?.name || "",
+            exerciseComment: exercise.exercise_comment || "",
+            supersetAfter: Boolean(exercise.superset_after),
+            sets: [...(exercise.workout_sets || [])]
+              .sort((a, b) => a.position - b.position)
+              .map((set) => ({
+                id: set.id,
+                weight: set.weight ?? "",
+                repetitions: set.repetitions ?? "",
+                difficulty: set.difficulty ?? null,
+                distance: set.distance ?? "",
+                calories: set.calories ?? "",
+                speed: set.speed ?? "",
+                power: set.power ?? "",
+                incline: set.incline ?? "",
+                time: set.time ?? "",
+                rir: set.rir ?? "",
+                rpe: set.rpe ?? "",
+                rest: set.rest ?? 0,
+                intensityMethods: Array.isArray(set.intensity_methods)
+                  ? set.intensity_methods
+                  : [],
+                isExtraOpen: false,
+              })),
+          }));
+
+        setExerciseCards(loadedExercises);
+      } catch (loadError) {
+        console.error("Ошибка загрузки тренировки:", loadError);
+
+        if (!isMounted) {
+          return;
+        }
+
+        window.alert(loadError?.message || "Не удалось загрузить тренировку.");
+      } finally {
+        if (isMounted) {
+          setIsLoadingWorkout(false);
+        }
+      }
+    };
+
+    loadWorkout();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id, isHistoryTraining]);
 
   const handleAddExercise = (event) => {
     const button = event.currentTarget;
@@ -106,6 +198,61 @@ export default function TrainingPage() {
     });
   };
 
+  const handleFinishWorkout = async () => {
+    if (isSaving) {
+      return;
+    }
+
+    const invalidExercise = exerciseCards.find(
+      (exercise) => !exercise.exerciseId,
+    );
+
+    if (invalidExercise) {
+      window.alert(
+        "Выберите упражнение из списка перед завершением тренировки.",
+      );
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      if (isHistoryTraining) {
+        await updateWorkout({
+          workoutId: id,
+          title: trainingTitle,
+          trainingDate,
+          startTime,
+          endTime,
+          trainingType,
+          comment: trainingComment,
+          exercises: exerciseCards,
+        });
+      } else {
+        await saveCompletedWorkout({
+          title: trainingTitle,
+          trainingDate,
+          startTime,
+          endTime,
+          trainingType,
+          comment: trainingComment,
+          exercises: exerciseCards,
+        });
+      }
+
+      navigate("/app/training");
+    } catch (error) {
+      console.error("Ошибка сохранения тренировки:", error);
+
+      window.alert(
+        error?.message ||
+          "Не удалось сохранить тренировку. Попробуйте ещё раз.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const getExerciseNumbers = (exercises) => {
     let groupNumber = 0;
     let supersetLetterIndex = 0;
@@ -162,8 +309,13 @@ export default function TrainingPage() {
         <h1 className="training-builder-title">{trainingTitle}</h1>
 
         <div className="training-builder-side">
-          <button type="button" className="training-builder-edit">
-            Завершить
+          <button
+            type="button"
+            className="training-builder-edit"
+            onClick={handleFinishWorkout}
+            disabled={isSaving}
+          >
+            {isSaving ? "Сохранение..." : "Завершить"}
           </button>
         </div>
       </header>
@@ -203,10 +355,29 @@ export default function TrainingPage() {
               key={exercise.id}
               exerciseId={exercise.id}
               exerciseNumber={exerciseNumbers[index]}
+              initialExerciseId={exercise.exerciseId}
+              initialExerciseName={exercise.exerciseName}
+              initialExerciseComment={exercise.exerciseComment}
+              initialSets={exercise.sets}
               isSupersetActionSelected={exercise.supersetAfter}
               isSupersetMember={isSupersetMember}
               onToggleSuperset={handleToggleSuperset}
               onRemoveExercise={handleRemoveExercise}
+              onChange={(data) => {
+                setExerciseCards((prev) =>
+                  prev.map((item) =>
+                    item.id === exercise.id
+                      ? {
+                          ...item,
+                          exerciseId: data.exerciseId,
+                          exerciseName: data.exerciseName,
+                          exerciseComment: data.exerciseComment,
+                          sets: data.sets,
+                        }
+                      : item,
+                  ),
+                );
+              }}
             />
           );
         })}

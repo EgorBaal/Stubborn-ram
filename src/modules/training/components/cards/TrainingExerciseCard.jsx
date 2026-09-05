@@ -37,14 +37,20 @@ const intensityMethods = [
 export default function TrainingExerciseCard({
   exerciseId,
   exerciseNumber = 1,
+  initialExerciseId = null,
+  initialExerciseName = "",
+  initialExerciseComment = "",
+  initialSets = [],
   isSupersetActionSelected = false,
   isSupersetMember = false,
   onToggleSuperset,
   onRemoveExercise,
+  onChange,
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
   const [exerciseName, setExerciseName] = useState("");
+  const [selectedExerciseId, setSelectedExerciseId] = useState(null);
   const [exerciseComment, setExerciseComment] = useState("");
   const [sets, setSets] = useState([]);
   const [swipedSetId, setSwipedSetId] = useState(null);
@@ -76,6 +82,12 @@ export default function TrainingExerciseCard({
 
   const exerciseNameInputRef = useRef(null);
   const exerciseCommentInputRef = useRef(null);
+  const onChangeRef = useRef(onChange);
+  const hasHydratedInitialDataRef = useRef(false);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     const textarea = exerciseNameInputRef.current;
@@ -98,6 +110,50 @@ export default function TrainingExerciseCard({
     textarea.style.height = "0px";
     textarea.style.height = `${textarea.scrollHeight}px`;
   }, [exerciseComment]);
+
+  useEffect(() => {
+    onChangeRef.current?.({
+      exerciseId: selectedExerciseId,
+      exerciseName,
+      exerciseComment,
+      sets,
+    });
+  }, [selectedExerciseId, exerciseName, exerciseComment, sets]);
+
+  useEffect(() => {
+    if (hasHydratedInitialDataRef.current) {
+      return;
+    }
+
+    const hasInitialData =
+      initialExerciseId ||
+      initialExerciseName ||
+      initialExerciseComment ||
+      initialSets.length > 0;
+
+    if (!hasInitialData) {
+      return;
+    }
+
+    hasHydratedInitialDataRef.current = true;
+
+    setSelectedExerciseId(initialExerciseId);
+    setExerciseName(initialExerciseName);
+    setExerciseComment(initialExerciseComment);
+    setSets(
+      initialSets.map((set) => ({
+        ...set,
+        intensityMethods: Array.isArray(set.intensityMethods)
+          ? [...set.intensityMethods]
+          : [],
+      })),
+    );
+  }, [
+    initialExerciseId,
+    initialExerciseName,
+    initialExerciseComment,
+    initialSets,
+  ]);
 
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
@@ -815,6 +871,7 @@ export default function TrainingExerciseCard({
         <ExercisePickerOverlay
           onClose={() => setIsExercisePickerOpen(false)}
           onSelect={(exercise) => {
+            setSelectedExerciseId(exercise.id);
             setExerciseName(exercise.name);
             setIsExercisePickerOpen(false);
           }}

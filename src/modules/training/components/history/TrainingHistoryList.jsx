@@ -2,10 +2,15 @@ import "./TrainingHistoryList.css";
 
 import TrainingCard from "../cards/TrainingCard";
 
-export default function TrainingHistoryList({ workouts }) {
+export default function TrainingHistoryList({
+  workouts,
+  onDeleteWorkout,
+  deletingWorkoutId,
+}) {
   const sortedWorkouts = [...workouts].sort(
     (a, b) => b.createdAt - a.createdAt,
   );
+
   const groupedWorkouts = sortedWorkouts.reduce((groups, workout) => {
     const month = workout.createdAt.toLocaleDateString("ru-RU", {
       month: "long",
@@ -30,7 +35,12 @@ export default function TrainingHistoryList({ workouts }) {
           <h2 className="training-history-month">{month}</h2>
 
           {workouts.map((workout) => (
-            <TrainingCard key={workout.id} workout={workout} />
+            <TrainingCard
+              key={workout.id}
+              workout={workout}
+              onDelete={() => onDeleteWorkout?.(workout.id)}
+              isDeleting={deletingWorkoutId === workout.id}
+            />
           ))}
         </div>
       ))}
