@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 
 import logo from "../../assets/obshee-logo.png";
 
 import { signIn } from "@/services/auth/authService";
-
 import { getAuthErrorMessage } from "@/services/auth/authErrors";
+import { useAuth } from "@/contexts/AuthContext";
 
 import "./AuthModal.css";
 
@@ -18,6 +18,8 @@ export default function AuthModal({
   onOpenResetPassword,
 }) {
   const navigate = useNavigate();
+  const { refreshSession } = useAuth();
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isClosed, setIsClosed] = useState(false);
@@ -40,9 +42,11 @@ export default function AuthModal({
         onClose();
       }
     }, CLOSE_ANIMATION_MS);
-  }, [isClosing, isClosed]);
+  }, [isClosing, isClosed, onClose]);
+
   async function handleSignIn() {
     setError("");
+
     const { error } = await signIn(email, password);
 
     if (error) {
@@ -50,8 +54,9 @@ export default function AuthModal({
       return;
     }
 
-    requestClose();
+    await refreshSession();
 
+    requestClose();
     navigate("/app/home");
   }
 
@@ -114,7 +119,10 @@ export default function AuthModal({
 
         <form
           className="auth-form"
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSignIn();
+          }}
         >
           <label className="auth-field" htmlFor="auth-email">
             <input
@@ -200,11 +208,7 @@ export default function AuthModal({
             <div className="auth-message auth-message--error">{error}</div>
           )}
 
-          <button
-            type="button"
-            className="auth-action auth-action--primary"
-            onClick={handleSignIn}
-          >
+          <button type="submit" className="auth-action auth-action--primary">
             Войти
           </button>
 
@@ -216,7 +220,7 @@ export default function AuthModal({
 
               setTimeout(() => {
                 onOpenRegister();
-              }, 280);
+              }, CLOSE_ANIMATION_MS);
             }}
           >
             Зарегистрироваться
@@ -230,7 +234,7 @@ export default function AuthModal({
 
               setTimeout(() => {
                 onOpenResetPassword();
-              }, 280);
+              }, CLOSE_ANIMATION_MS);
             }}
           >
             Забыли пароль?

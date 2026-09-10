@@ -35,7 +35,7 @@ const aboutSections = [
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshSession } = useAuth();
   const { show, hide } = useLoading();
 
   const displayName =
@@ -53,6 +53,7 @@ export default function ProfilePage() {
     const { error } = await signOut();
 
     if (!error) {
+      await refreshSession();
       navigate("/", { replace: true });
     }
   }

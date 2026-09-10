@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import logo from "@/assets/obshee-logo.png";
 
 import "@/components/auth/AuthModal.css";
 import { updatePassword } from "@/services/auth/authService";
+import { getAuthErrorMessage } from "@/services/auth/authErrors";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,8 +21,15 @@ export default function ResetPasswordPage() {
     setError("");
     setSuccess("");
 
-    if (password.length < 6) {
-      setError("Пароль должен содержать минимум 6 символов.");
+    const token = searchParams.get("token");
+
+    if (!token) {
+      setError("Ссылка для восстановления пароля недействительна.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Пароль должен содержать минимум 8 символов.");
       return;
     }
 
@@ -29,7 +38,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    const { error } = await updatePassword(password);
+    const { error } = await updatePassword(password, token);
 
     if (error) {
       setError(getAuthErrorMessage(error));
@@ -56,6 +65,7 @@ export default function ResetPasswordPage() {
           <input
             className="auth-input"
             type="password"
+            autoComplete="new-password"
             placeholder="Новый пароль"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -64,6 +74,7 @@ export default function ResetPasswordPage() {
           <input
             className="auth-input"
             type="password"
+            autoComplete="new-password"
             placeholder="Повторите пароль"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -78,6 +89,7 @@ export default function ResetPasswordPage() {
           )}
 
           <button
+            type="button"
             className="auth-action auth-action--primary"
             onClick={handleSavePassword}
           >

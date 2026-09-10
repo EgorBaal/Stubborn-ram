@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { getSession, onAuthStateChange } from "@/services/auth/authService";
+﻿import { createContext, useContext, useEffect, useState } from "react";
+import { getSession } from "@/services/auth/authService";
 
 const AuthContext = createContext(null);
 
@@ -8,44 +8,35 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function initializeAuth() {
-      try {
-        const {
-          data: { session },
-        } = await getSession();
+  async function refreshSession() {
+    try {
+      const {
+        data: { session },
+      } = await getSession();
 
-        setSession(session);
-        setUser(session?.user ?? null);
-      } catch (error) {
-        console.error("Ошибка восстановления сессии:", error);
-
-        setSession(null);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    initializeAuth();
-
-    const {
-      data: { subscription },
-    } = onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+
+      return session;
+    } catch (error) {
+      console.error("шибка восстановления сессии:", error);
+      setSession(null);
+      setUser(null);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    refreshSession().finally(() => {
       setLoading(false);
     });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   const value = {
     user,
     session,
     loading,
+    refreshSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
