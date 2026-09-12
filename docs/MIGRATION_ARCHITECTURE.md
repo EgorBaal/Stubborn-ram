@@ -1,323 +1,674 @@
-# Stubborn Ram — MVP Migration Architecture
+Stubborn Ram --- Актуальная архитектура миграции
 
-Версия: 1.0
-Дата: 05.09.2026
-Статус: УТВЕРЖДЕНО ДЛЯ РЕАЛИЗАЦИИ
+Версия: 2.0
+Дата: 12.09.2026
+Статус: АКТУАЛЬНОЕ СОСТОЯНИЕ ПРОЕКТА
 
-## 1. Архитектурное решение
+# 1. Назначение
 
-Основная инфраструктура MVP:
+Этот документ фиксирует фактическое текущее состояние инфраструктуры
+Stubborn Ram после выполненной миграции.
 
-- Selectel Cloud Server;
-- Selectel Managed PostgreSQL;
-- Selectel S3;
-- собственный Backend API;
-- WebSocket внутри backend для чата;
-- FFmpeg worker для видео;
-- emailService;
-- frontend React/Vite;
-- GitHub как исходный код и CI/CD, пока в GitHub не попадают пользовательские персональные данные.
+Документ заменяет старое описание архитектуры MVP, которое описывало
+будущую инфраструктуру как план.
 
-## 2. Почему не Supabase
+Главный принцип: здесь фиксируется только то, что уже реализовано и
+подтверждено, а будущие этапы явно обозначаются как следующие задачи.
 
-Supabase был удобен для прототипа, но не соответствует выбранной стратегии локализации российских пользовательских данных.
+# 2. Фактическая архитектура на текущий момент
 
-Новая архитектура не должна зависеть от Supabase.
+Текущая production-схема:
 
-После успешной миграции:
+stubbornram.ru
+│
+▼
+React / Vite frontend
+│
+│ HTTPS
+▼
+api.stubbornram.ru
+│
+▼
+Nginx
+│
+▼
+Fastify Backend
+127.0.0.1:3000
+│
+▼
+PostgreSQL 16
+на том же Selectel Cloud Server
+│
+└──────────────► Unisender Go
+email-уведомления
 
-- Supabase Auth → собственный Auth;
-- Supabase Postgres → Selectel Managed PostgreSQL;
-- Supabase Storage → Selectel S3;
-- Supabase Edge Functions → Backend API / Worker;
-- Supabase Realtime, если фактически использовался, → собственный WebSocket.
+Frontend больше не использует Supabase для отправки заявок.
 
-## 3. Backend
+Leads полностью переведены на собственный Backend API и PostgreSQL.
 
-Один backend на старте.
+# 3. Cloud Server
 
-Не создавать микросервисы.
+Production backend размещён на Selectel Cloud Server.
 
-Backend отвечает за:
+Сервер:
 
-- auth;
-- permissions;
-- coach-client relationship;
-- chat;
-- reports;
-- media access;
-- training API;
-- signed upload/download URLs;
-- системные операции.
+IP: 161.104.49.107
 
-При росте нагрузки worker можно вынести на отдельный сервер без изменения frontend API.
+hostname: stubbornram-backend
 
-## 4. PostgreSQL
+Ubuntu 24.04
 
-PostgreSQL является canonical source of truth для структурированных данных.
+2 vCPU
 
-Минимальные сущности MVP:
+4 GB RAM
 
-- users/auth;
-- profiles;
-- coach_client_relationships;
-- chats;
-- chat_messages;
-- reports;
-- report_feedback;
-- media;
-- media_links.
+20 GB SSD
 
-Training добавляет:
+На сервере работают:
 
-- exercises;
-- workouts;
-- workout_exercises;
-- workout_sets.
+Node.js;
 
-Точные поля и индексы фиксируются в DATABASE_SCHEMA.md перед созданием production schema.
+Fastify backend;
 
-## 5. Object Storage
+PM2;
 
-S3 используется для:
+Nginx;
 
-- фотографии;
-- видео;
-- документы;
-- вложения чата;
-- вложения отчётов;
-- медиа тренировок.
+PostgreSQL 16;
 
-Правила:
+pgAdmin 4;
 
-- private bucket;
-- уникальный object key;
-- metadata в PostgreSQL;
-- signed URLs;
-- серверная проверка доступа;
-- отсутствие публичных ссылок на пользовательские файлы;
-- отсутствие автоматического удаления MVP-файлов.
+Fail2ban;
 
-## 6. Upload flow
+UFW;
 
-Клиент:
+Certbot / Let's Encrypt.
 
-1. выбирает файл;
-2. frontend сообщает backend metadata;
-3. backend проверяет пользователя и создаёт upload authorization;
-4. frontend загружает файл непосредственно в S3;
-5. backend фиксирует media record;
-6. для видео создаётся задача обработки;
-7. после успешной обработки сохраняется оптимизированная версия;
-8. оригинал удаляется только если это явно разрешено правилами конкретного media-типа.
+# 4. PostgreSQL
 
-ВАЖНО:
+PostgreSQL установлен не как Managed PostgreSQL, а непосредственно
+на том же Cloud Server.
 
-Для отчётов пользовательские материалы должны сохраняться постоянно. Поэтому автоматическое удаление оригиналов допускается только после подтверждения, что требуемая итоговая версия действительно сохранена и политика хранения этого типа файла это разрешает.
+Это сознательное решение для снижения постоянных расходов и упрощения
+текущей инфраструктуры.
 
-## 7. Video processing
+Параметры:
 
-Не обрабатывать большие видео внутри HTTP-запроса.
+PostgreSQL 16;
 
-Flow:
+database: stubbornram;
 
-Upload → S3 → Queue/Job → FFmpeg worker → optimized video → S3 → PostgreSQL metadata
+application role: stubbornram_app;
 
-На старте worker может работать на том же Cloud Server.
+порт: 5432;
 
-Если нагрузка вырастет, worker переносится на отдельный сервер.
+доступ backend осуществляется локально через 127.0.0.1.
 
-## 8. Chat
+PostgreSQL является основным хранилищем структурированных данных
+backend.
 
-Один chat на одну coach-client relationship.
+# 5. Текущая схема базы данных
 
-PostgreSQL хранит историю.
+На текущем этапе в базе существуют основные таблицы:
 
-WebSocket используется только для realtime-доставки.
+users;
 
-Если WebSocket временно недоступен:
+profiles;
 
-- сообщение всё равно сохраняется через HTTP API;
-- история загружается из PostgreSQL;
-- приложение не должно терять сообщения.
+sessions;
 
-Таким образом realtime не является источником истины.
+auth_tokens;
 
-## 9. Reports
+leads;
 
-Минимальный lifecycle:
+pgmigrations.
 
-DRAFT
-→ SUBMITTED
-→ REVIEWED
+Для leads создана отдельная production migration:
 
-Клиент:
+backend/migrations/1788859125914_leads.js
 
-- создаёт отчёт;
-- добавляет текст;
-- добавляет media;
-- отправляет.
+Таблица leads содержит данные анкет и имеет индексы по created_at и
+status.
 
-Тренер:
+Статус новой заявки по умолчанию:
 
-- получает новый отчёт;
-- открывает его;
-- просматривает media;
-- пишет feedback;
-- может прикрепить media;
-- отправляет feedback.
+new
 
-Клиент:
+# 6. Backend
 
-- получает сохранённый feedback;
-- может открыть старые отчёты.
+Production backend находится по пути:
 
-История не перезаписывается таким образом, чтобы потерять исходный отчёт.
+/opt/stubbornram/backend/server
 
-## 10. Permissions
+Основная структура:
 
-Проверка прав обязательна на backend.
+backend/server
+├── .env
+├── database.cjs
+├── migrations/
+├── modules/
+│ ├── auth/
+│ ├── db/
+│ ├── email/
+│ └── leads/
+├── package.json
+├── package-lock.json
+└── server.js
 
-Базовые правила:
+Backend построен на Fastify.
 
-Client:
-- видит собственные данные;
-- видит собственные отчёты;
-- видит свой чат;
-- видит feedback своего coach.
+Основной процесс:
 
-Coach:
-- видит данные только связанных клиентов;
-- видит отчёты своих клиентов;
-- пишет feedback только своим клиентам;
-- не получает доступ к клиентам других тренеров.
+stubbornram-backend
 
-Admin:
-- отдельная роль;
-- доступ только к административным операциям;
-- действия должны логироваться.
+Управление production-процессом выполняется через PM2.
 
-## 11. Frontend
+Backend слушает:
 
-Frontend не должен знать:
+127.0.0.1:3000
 
-- SQL;
-- S3 credentials;
-- PostgreSQL credentials;
-- внутренние секреты;
-- структуру инфраструктуры.
+Наружу он публикуется через Nginx.
 
-Frontend работает через services:
+# 7. API
 
-authService
-chatService
-reportService
-mediaService
-trainingService
-coachClientService
+Production API:
 
-Существующие модули должны подключаться к этим services, а не к инфраструктуре напрямую.
+https://api.stubbornram.ru
 
-## 12. Routes MVP
+Основной backend API prefix:
 
-Основные клиентские маршруты:
+/api
 
-/app/home
-/app/chat
-/app/chat/:chatId
-/app/report
-/app/report/:reportId
+Для проверки состояния используется:
+
+GET /health
+
+Production health check подтверждён:
+
+{
+"ok": true,
+"service": "stubbornram-backend",
+"database": true
+}
+
+HTTP status:
+
+200
+
+Это подтверждает, что backend запущен и имеет рабочее соединение с
+PostgreSQL.
+
+# 8. Nginx и HTTPS
+
+api.stubbornram.ru направлен на production server:
+
+161.104.49.107
+
+Nginx принимает HTTPS-запросы и проксирует их на:
+
+127.0.0.1:3000
+
+SSL-сертификат Let's Encrypt для API действует до:
+
+09.12.2026
+
+Настроено автоматическое продление сертификата.
+
+# 9. Email
+
+Для transactional email используется:
+
+Unisender Go
+
+Backend отправляет email через собственный сервис:
+
+backend/modules/email/email.service.js
+
+Используется отправитель:
+
+noreply@stubbornram.ru
+
+Имя отправителя:
+
+Stubborn Ram
+
+Реальная отправка была проверена через production API.
+
+Результат проверки:
+
+accepted
+→ sent
+→ delivered
+
+Письмо было получено в почтовом ящике.
+
+Таким образом цепочка email подтверждена end-to-end.
+
+# 10. Leads / заявки
+
+Заявки с frontend отправляются через:
+
+POST /api/leads
+
+Frontend использует:
+
+src/services/leads/leadService.js
+
+который обращается к общему:
+
+src/shared/lib/apiClient.js
+
+Backend:
+
+принимает заявку;
+
+валидирует данные через Zod;
+
+сохраняет заявку в PostgreSQL;
+
+присваивает статус new;
+
+отправляет уведомление через Unisender;
+
+возвращает результат frontend.
+
+При ошибке email заявка не теряется: сначала она сохраняется в
+PostgreSQL, после чего backend возвращает соответствующую ошибку
+отправки уведомления.
+
+Реальная анкета была отправлена после миграции.
+
+Подтверждено:
+
+Frontend
+→ Backend API
+→ PostgreSQL
+→ Unisender
+→ почтовый ящик
+
+# 11. Старый lead-flow удалён
+
+После успешной миграции удалены старые компоненты lead-системы:
+
+Supabase Edge Function send-lead-email;
+
+Resend API;
+
+старые SQL-файлы leads;
+
+старая backend-директория backend/src/;
+
+старый Supabase lead flow.
+
+В текущем проекте нет использования:
+
+send-lead-email
+RESEND_API_KEY
+api.resend.com
+public.leads
+
+для текущего lead-flow.
+
+# 12. Supabase --- текущее состояние
+
+Supabase ещё не удалён полностью из проекта.
+
+Это важно.
+
+После миграции leads Supabase продолжает использоваться в существующем
+коде других частей приложения, в частности:
+
+Training;
+
+части Auth.
+
+Поэтому сейчас нельзя считать выполненным условие:
+
+Frontend больше не зависит от Supabase
+
+Полное удаление Supabase --- отдельный последующий этап.
+
+Удалять оставшиеся Supabase-зависимости сейчас не требуется.
+
+# 13. Frontend
+
+Frontend:
+
+React;
+
+Vite;
+
+production build через GitHub Actions;
+
+Vite base: /.
+
+Production frontend продолжает обслуживаться через существующую
+инфраструктуру сайта.
+
+Frontend обращается к backend через:
+
+https://api.stubbornram.ru/api
+
+Общий API-клиент:
+
+src/shared/lib/apiClient.js
+
+Сервисы приложения отделяют UI от backend API.
+
+Для leads уже используется новый backend API.
+
+# 14. Авторизация
+
+Собственный backend Auth уже реализован как часть новой архитектуры.
+
+В backend присутствуют модули:
+
+backend/modules/auth/
+├── auth.routes.js
+├── auth.schemas.js
+├── auth.service.js
+├── auth.session.js
+└── auth.tokens.js
+
+В базе присутствуют:
+
+users
+profiles
+sessions
+auth_tokens
+
+При этом frontend пока содержит оставшиеся Supabase-зависимости Auth.
+
+Поэтому текущий статус:
+
+Backend Auth — реализован
+Полный frontend переход с Supabase Auth — ещё не завершён
+
+Повторный аудит Auth на этом этапе не является задачей миграции.
+
+# 15. Что уже завершено
+
+На текущей контрольной точке завершены:
+
+production Cloud Server;
+
+PostgreSQL 16 на сервере;
+
+production Fastify backend;
+
+PM2;
+
+Nginx;
+
+HTTPS для API;
+
+production health check;
+
+database migrations;
+
+собственная leads API;
+
+сохранение leads в PostgreSQL;
+
+Zod validation;
+
+Unisender email service;
+
+реальная проверка отправки email;
+
+реальная проверка questionnaire flow;
+
+перевод frontend leadService на Backend API;
+
+удаление старого lead email flow;
+
+удаление старого backend/src/;
+
+удаление старых SQL для leads.
+
+# 16. Текущий этап разработки
+
+После завершения инфраструктурной миграции следующий основной этап:
+
+Training
+
+Training уже имеет существующий UI и маршрутизацию.
+
+Актуальные маршруты:
+
 /app/training
 /app/training/create
 /app/training/new
 /app/training/:id
-/app/profile
 
-Основные coach-маршруты должны быть отдельной частью coach area.
+Текущая логика:
 
-Точные URL фиксируются в router documentation перед реализацией.
+/app/training
+→ история тренировок
 
-## 13. Что оплачиваем сейчас
+/app/training/create
+→ выбор способа создания тренировки
 
-Минимальный оплачиваемый набор:
+/app/training/new
+→ редактор новой тренировки
 
-- Cloud Server;
-- Managed PostgreSQL;
-- S3.
+/app/training/:id
+→ конкретная историческая тренировка
 
-Условно бесплатные/уже имеющиеся:
+Следующая задача --- продолжить развитие Training поверх уже
+существующей структуры, а не возвращаться к завершённой миграции leads.
 
-- домен;
-- GitHub/source control.
+# 17. Следующие этапы после Training
 
-Подключаем только по необходимости:
+После Training развитие платформы продолжается по мере необходимости:
 
-- CDN;
-- email provider;
-- дополнительные worker servers;
-- payments;
-- AI;
-- analytics;
-- push infrastructure.
+Media / object storage;
 
-## 14. Что сознательно НЕ покупаем сейчас
+Reports;
 
-Не покупать заранее:
+Chat / WebSocket;
 
-- Redis;
-- Kubernetes;
-- отдельный сервер под каждый сервис;
-- платный CDN без реальной необходимости;
-- AI;
-- аналитические SaaS;
-- платёжный шлюз;
-- push provider;
-- отдельный chat SaaS;
-- сторонний video SaaS.
+окончательный перенос оставшихся Supabase-зависимостей;
 
-## 15. Главный принцип расходов
+удаление Supabase после завершения rollback window;
 
-Каждый внешний сервис должен отвечать на вопрос:
+дополнительные функции платформы.
 
-«Какую функцию MVP он обеспечивает прямо сейчас?»
+S3, отдельные workers и WebSocket сейчас не должны считаться уже
+развёрнутыми production-компонентами.
 
-Если ответ — «понадобится потом», сервис не подключается и не оплачивается сейчас.
+# 18. Object Storage / S3
 
-## 16. Definition of Done для миграции
+S3 пока не является частью фактической production-инфраструктуры.
 
-Миграция не считается завершённой, пока:
+Он нужен для будущего хранения:
 
-- пользователь может зарегистрироваться;
-- пользователь может войти;
-- тренер может видеть своего клиента;
-- чат работает;
-- сообщения сохраняются;
-- фото загружаются и открываются;
-- видео загружаются и открываются;
-- клиент создаёт отчёт;
-- отчёт отправляется тренеру;
-- тренер открывает отчёт;
-- тренер отправляет feedback;
-- клиент открывает feedback;
-- старые отчёты доступны;
-- старые файлы доступны;
-- права доступа проверяются сервером;
-- основные данные находятся в российской инфраструктуре;
-- frontend больше не зависит от Supabase;
-- production проходит build/test;
-- старый Supabase ещё не удалён до завершения rollback window.
+фотографий;
 
-## 17. Правило против повторной миграции
+видео;
 
-Новая инфраструктура должна сразу проектироваться как production foundation.
+документов;
 
-Даже если MVP маленький:
+вложений отчётов;
 
-- PostgreSQL не заменяется временной БД;
-- S3 не заменяется локальным диском;
-- backend API не заменяется frontend-прямыми запросами;
-- media не хранится в базе;
-- auth не строится на временных костылях;
-- provider-specific код изолируется service layer.
+медиа тренировок;
 
-Это позволяет расширять Stubborn Ram без второй большой миграции.
+вложений чата.
+
+Когда будет реализован media layer, frontend не должен получать S3
+credentials.
+
+Целевой flow:
+
+Frontend
+→ Backend authorization
+→ S3 upload
+→ PostgreSQL metadata
+
+Конкретный S3 provider подключается только на этапе реализации media
+storage.
+
+# 19. Reports и Chat
+
+Reports и Chat являются следующими функциональными модулями платформы.
+
+Целевая архитектура:
+
+Reports
+
+Client
+→ Report
+→ Media
+→ Submit
+→ Coach
+→ Feedback
+
+Chat
+
+HTTP API
+→ PostgreSQL
+→ история сообщений
+
+WebSocket
+→ realtime-доставка
+
+PostgreSQL должен оставаться источником истины для сообщений.
+
+WebSocket не должен быть единственным механизмом сохранения сообщений.
+
+# 20. Безопасность
+
+Текущая инфраструктура включает:
+
+UFW;
+
+Fail2ban;
+
+HTTPS;
+
+PostgreSQL, доступный локально;
+
+backend, слушающий 127.0.0.1:3000;
+
+Nginx как внешний reverse proxy;
+
+секреты в production .env, а не во frontend;
+
+отдельного application database user.
+
+Frontend не должен содержать:
+
+PostgreSQL credentials;
+
+S3 credentials;
+
+Unisender API key;
+
+внутренние серверные секреты.
+
+# 21. Rollback и удаление старых компонентов
+
+Старые компоненты не должны удаляться до подтверждения нового production
+flow.
+
+Для leads rollback уже пройден:
+
+new Backend API
+→ PostgreSQL
+→ Unisender
+→ real questionnaire test
+
+После подтверждения старый lead-flow был удалён.
+
+Для оставшихся Supabase-модулей аналогичный принцип сохраняется:
+
+новая реализация
+→ production test
+→ подтверждение
+→ rollback window
+→ удаление старого компонента
+
+# 22. Definition of Done текущей миграции
+
+Инфраструктурная часть migration считается выполненной в текущем объёме,
+потому что:
+
+production backend работает;
+
+PostgreSQL работает;
+
+API доступен по HTTPS;
+
+health check проходит;
+
+leads сохраняются в PostgreSQL;
+
+email через Unisender отправляется;
+
+реальная анкета проверена;
+
+frontend использует новый lead API;
+
+старый lead email flow удалён;
+
+production структура backend очищена от старой backend/src/.
+
+При этом полная ликвидация Supabase ещё не является выполненной
+задачей, поскольку Training и части Auth ещё используют Supabase.
+
+# 23. Архитектурный принцип
+
+Stubborn Ram развивается без повторной большой миграции.
+
+Правила:
+
+не создавать микросервисы без необходимости;
+
+PostgreSQL остаётся canonical source of truth;
+
+frontend не получает секреты инфраструктуры;
+
+backend является границей доступа к данным;
+
+media не хранится непосредственно в PostgreSQL;
+
+provider-specific код изолируется в service layer;
+
+новые инфраструктурные сервисы подключаются только тогда, когда они
+реально нужны текущему этапу.
+
+# 24. Контрольная точка проекта
+
+На момент версии 2.0 инфраструктурная миграция для Leads завершена и
+production-путь проверен.
+
+Проект находится в переходе:
+
+Инфраструктурная миграция
+↓
+ЗАВЕРШЕНА ДЛЯ ТЕКУЩЕГО ОБЪЁМА
+↓
+TRAINING
+↓
+MEDIA / REPORTS / CHAT
+↓
+ОКОНЧАТЕЛЬНЫЙ УХОД ОТ SUPABASE
+
+Следующая рабочая задача проекта:
+
+продолжение разработки Training.
+
+# 25. Правило обновления документа
+
+Этот документ обновляется после существенного изменения архитектуры.
+
+Не следует заранее записывать будущие компоненты как уже существующие.
+
+Каждый компонент должен иметь один из статусов:
+
+ГОТОВО
+В РАЗРАБОТКЕ
+ЗАПЛАНИРОВАНО
+
+Это необходимо, чтобы документация оставалась фактической контрольной
+точкой проекта.

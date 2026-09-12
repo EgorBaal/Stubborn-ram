@@ -1,9 +1,11 @@
 STUBBORN RAM --- SERVER_STATE.md
 
-Версия: 1.0 Статус: CURRENT SERVER STATE / SINGLE SOURCE OF CURRENT
-SERVER FACTS Дата фиксации: 09.09.2026
+Версия: 3.0
+Статус: CURRENT SERVER STATE / SINGLE SOURCE OF CURRENT SERVER
+FACTS
+Дата фиксации: 12.09.2026
 
-1. Назначение
+# 1. Назначение
 
 Этот документ фиксирует фактическое текущее состояние серверной части
 Stubborn Ram.
@@ -14,65 +16,69 @@ Stubborn Ram.
 
 ARCHITECTURE.md --- как система должна быть устроена.
 
-DATABASE_SCHEMA.md --- какой должна быть модель данных.
+DATABASE_SCHEMA.md --- модель данных.
 
-ROADMAP.md --- что планируется сделать.
+ROADMAP.md / STUBBORN_RAM_IMPLEMENTATION_PLAN.md --- что
+планируется сделать.
 
-SERVER_STATE.md --- что фактически существует и было проверено
-на сервере.
+SERVER_STATE.md --- что фактически существует и было проверено на
+сервере.
 
-Перед любой следующей серверной задачей AI должен сначала прочитать этот
+Перед любой следующей серверной задачей необходимо учитывать этот
 документ.
 
-Не следует заново предполагать, что Backend или PostgreSQL отсутствуют,
-если это уже указано как VERIFIED здесь.
+Не следует заново предполагать, что Backend, PostgreSQL, Authentication,
+Leads или другая инфраструктура отсутствуют, если они указаны как
+VERIFIED.
 
-После любого подтвержденного изменения серверного состояния этот
-документ должен быть обновлен.
+После подтверждённого изменения серверного состояния этот документ
+должен быть обновлён.
 
-2. Статусы
+# 2. Статусы
 
-Используются следующие статусы:
-
-VERIFIED --- состояние проверено непосредственно на сервере или
-подтверждено результатом выполнения команды.
+VERIFIED --- состояние непосредственно проверено на сервере или
+подтверждено результатом выполнения команды/реального сценария.
 
 EXISTS / NOT FULLY VERIFIED --- объект существует, но полная
 работоспособность не проверена.
 
-PLANNED --- предусмотрено архитектурой, но еще не реализовано.
+PLANNED --- предусмотрено архитектурой, но ещё не реализовано.
 
 LEGACY --- старая реализация, сохраняемая до завершения
 миграции.
 
-BLOCKED --- реализация зависит от решения/шага, который еще не
-выполнен.
+BLOCKED --- реализация зависит от ещё не выполненного решения
+или шага.
 
-3. Последняя фактическая проверка
+# 3. Последняя фактическая контрольная точка
 
-Дата: 09.09.2026
+Дата: 12.09.2026
 
-Проверенная среда:
+Проверенная production-среда:
 
-Selectel Cloud Server.
+Selectel Cloud Server;
 
-SSH под пользователем stubbornram.
+SSH под пользователем stubbornram;
 
-Backend directory: /opt/stubbornram/backend/server.
+Backend directory: /opt/stubbornram/backend/server;
 
-PostgreSQL подключение локально.
+PostgreSQL локально на Cloud Server;
 
-Backend /health.
+Backend /health;
 
-4. Инфраструктура
+production API через api.stubbornram.ru;
 
-Selectel
+pgAdmin через admin.stubbornram.ru;
 
-Статус: VERIFIED
+authentication production flows;
 
-Создан проект Selectel.
+email infrastructure через Unisender Go;
 
-Cloud Server
+lead/questionnaire production flow.
+
+# 4. Инфраструктура
+
+Selectel Cloud Server
 
 Статус: VERIFIED
 
@@ -91,26 +97,18 @@ Public IP:
 
 161.104.49.107
 
-Важное решение по PostgreSQL
+Текущее размещение:
 
-Managed PostgreSQL НЕ создается на текущем этапе.
-
-Текущее решение:
-
-Cloud Server
+Selectel Cloud Server
 ├── Backend
-└── PostgreSQL
+└── PostgreSQL 16
 
-Причина --- не создавать отдельный оплачиваемый managed-сервис, пока
-текущей нагрузки достаточно для PostgreSQL на существующем сервере.
+Managed PostgreSQL на текущем этапе НЕ используется.
 
-Старые документы, где указано Managed PostgreSQL как текущая
-инфраструктура, являются устаревшими в этой части.
+Причина: PostgreSQL размещён на существующем Cloud Server для снижения
+постоянных расходов и упрощения инфраструктуры.
 
-Целевая логическая архитектура PostgreSQL сохраняется; изменен только
-способ размещения на текущем этапе.
-
-5. Установленное ПО
+# 5. Установленное ПО
 
 Статус: VERIFIED
 
@@ -120,19 +118,17 @@ npm 11.19.0
 PM2 7.0.4
 PostgreSQL 16.15
 AWS CLI 2.36.40
-
-Также установлены/настроены:
-
 Nginx
 Certbot + Nginx module
 UFW
 Fail2ban
+pgAdmin 4
 
 Fail2ban:
 
 jail sshd — active
 
-6. Linux / доступ
+# 6. Linux / доступ
 
 Статус: VERIFIED
 
@@ -148,7 +144,7 @@ SSH-доступ под stubbornram проверен.
 
 Секреты, пароли и приватные SSH-ключи в этот документ не записываются.
 
-7. Backend directory
+# 7. Backend directory
 
 Статус: VERIFIED
 
@@ -160,27 +156,34 @@ Backend application:
 
 /opt/stubbornram/backend/server
 
-Внутри backend уже существуют:
+Основная структура:
 
-.env
-migrations/
-node_modules/
-package.json
-package-lock.json
-server.js
+/opt/stubbornram/backend/server
+├── .env
+├── database.cjs
+├── migrations/
+├── modules/
+│ ├── auth/
+│ ├── db/
+│ ├── email/
+│ └── leads/
+├── node_modules/
+├── package.json
+├── package-lock.json
+└── server.js
 
 .env содержит секретные значения и не должен выводиться, копироваться
 в документацию или передаваться AI.
 
-8. Backend runtime
+# 8. Backend runtime
 
 Статус: VERIFIED
 
 Используется:
 
-Fastify 5
 Node.js 24
-PostgreSQL driver pg
+Fastify 5
+pg
 dotenv
 Zod
 argon2
@@ -191,16 +194,15 @@ Backend entrypoint:
 
 server.js
 
-Текущий HTTP bind:
+HTTP bind:
 
 127.0.0.1:3000
 
-Backend не выставляет PostgreSQL напрямую наружу через frontend.
+# 9. Backend фактическая реализация
 
-9. Backend фактическая реализация
+Статус: VERIFIED
 
-На текущий момент Backend является реально существующим минимальным
-каркасом, а не только планом.
+Backend является реально работающим production-сервером.
 
 Реализовано:
 
@@ -214,9 +216,115 @@ startup database check;
 
 JSON health response;
 
-запуск через PM2.
+Authentication API;
 
-Текущий /health возвращает:
+session handling;
+
+email verification;
+
+password reset;
+
+rate limiting;
+
+Leads API;
+
+email service;
+
+запуск через PM2;
+
+production reverse proxy через Nginx.
+
+Текущая цепочка:
+
+Frontend
+↓
+HTTPS
+↓
+api.stubbornram.ru
+↓
+Nginx
+↓
+127.0.0.1:3000
+↓
+Fastify
+↓
+PostgreSQL
+
+# 10. Backend API
+
+Статус: VERIFIED --- ОСНОВНЫЕ ТЕКУЩИЕ ENDPOINTS
+
+Auth:
+
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET /api/auth/session
+POST /api/auth/resend-verification
+POST /api/auth/verify-email
+POST /api/auth/reset-password/request
+POST /api/auth/reset-password/complete
+
+Leads:
+
+POST /api/leads
+
+Health:
+
+GET /health
+
+Auth production flows проверены.
+
+Lead production flow также проверен.
+
+Будущие API для следующих модулей ещё не реализованы:
+
+Profiles
+Coach/Client
+Permissions
+Reports
+Media
+Chat
+Training
+Food
+Activity
+Weight
+Photos/Measurements
+Notifications
+Payments
+Analytics
+
+# 11. Production API / DNS / HTTPS
+
+API domain
+
+Статус: VERIFIED
+
+api.stubbornram.ru
+
+DNS:
+
+api.stubbornram.ru → 161.104.49.107
+
+HTTPS
+
+Статус: VERIFIED
+
+HTTPS настроен через:
+
+Nginx + Let's Encrypt
+
+API certificate действует до:
+
+09.12.2026
+
+Настроено автоматическое продление сертификата.
+
+Health
+
+Production health endpoint проверен через HTTPS.
+
+Ответ:
 
 {
 "ok": true,
@@ -224,60 +332,11 @@ JSON health response;
 "database": true
 }
 
-Это означает, что следующая цепочка фактически проверена:
+HTTP status:
 
-Backend
-↓
-PostgreSQL
+200
 
-10. Backend API
-
-Статус:
-
-PARTIALLY VERIFIED / FOUNDATION ONLY
-
-Реально реализован:
-
-GET /health
-
-Бизнес API еще не реализован.
-
-Пока отсутствуют полноценные endpoint groups для:
-
-Auth;
-
-Profiles;
-
-Coach/Client;
-
-Permissions;
-
-Reports;
-
-Media;
-
-Chat;
-
-Training;
-
-Food;
-
-Activity;
-
-Weight;
-
-Photos/Measurements;
-
-Notifications;
-
-Payments;
-
-Analytics.
-
-Не следует считать наличие архитектурного описания этих API
-доказательством их реализации.
-
-11. PostgreSQL
+# 12. PostgreSQL
 
 Статус: VERIFIED
 
@@ -295,11 +354,13 @@ Port:
 
 5432
 
-Статус cluster:
+Cluster status:
 
 online
 
-12. Database
+PostgreSQL не выставлен напрямую в Internet для frontend.
+
+# 13. Database
 
 Статус: VERIFIED
 
@@ -307,9 +368,9 @@ Database:
 
 stubbornram
 
-Database уже существует.
+Database существует.
 
-13. Application database role
+# 14. Application database role
 
 Статус: VERIFIED
 
@@ -321,143 +382,248 @@ Role имеет LOGIN.
 
 Пароль настроен пользователем и не хранится в документации.
 
-Проверено реальное подключение:
+Реальное подключение application role к базе проверено.
 
-psql -U stubbornram_app -d stubbornram -h 127.0.0.1 -W
+# 15. Физическая схема PostgreSQL
 
-Подключение успешно.
+Статус: PARTIALLY IMPLEMENTED
 
-14. Физическая схема PostgreSQL
+На текущем этапе в базе существуют:
 
-Статус: VERIFIED --- СХЕМА ЕЩЕ НЕ СОЗДАНА
+auth_tokens
+leads
+pgmigrations
+profiles
+sessions
+users
 
-Проверка:
+Таблица leads уже создана и migration применена.
 
-\dt
+Основные свойства leads:
 
-результат:
+UUID primary key;
 
-Did not find any relations.
+created_at;
 
-Следовательно:
+status;
 
-database существует;
+данные анкеты;
 
-application role существует;
+JSONB-массивы для соответствующих questionnaire fields;
 
-backend подключается;
+контактные поля;
 
-production business tables еще отсутствуют.
+vk;
 
-Нельзя считать целевую DATABASE_SCHEMA.md физически реализованной.
+instagram;
 
-15. Database migrations
+индексы по created_at и status.
 
-Статус: EXISTS / NOT APPLIED
+Статус новой заявки по умолчанию:
 
-Установлен:
+new
+
+Auth/session schema уже существует.
+
+Полная бизнес-схема MVP ещё не завершена.
+
+# 16. Database migrations
+
+Статус: VERIFIED --- ТЕКУЩИЕ MIGRATIONS
+
+Используется:
 
 node-pg-migrate
 
-Существует каталог:
+Каталог:
 
-migrations/
+/opt/stubbornram/backend/server/migrations/
 
-Существует initial migration:
+Миграции:
 
-migrations/1788859125911_init.js
+1788859125911_init.js
+1788859125912_sessions.js
+1788859125913_auth_tokens.js
+1788859125914_leads.js
 
-Текущая initial migration является пустым каркасом:
+Auth/session migrations применены.
 
-up() — без изменений
-down() — без изменений
+Leads migration применена.
 
-Физическая schema migration еще не выполнена.
+Следующие бизнес-модули пока не имеют полной production schema.
 
-16. Object Storage / S3
+Существующие migrations не изменять задним числом.
 
-Статус: PLANNED / NOT CONNECTED
+# 17. Leads
 
-AWS CLI установлен для работы с S3-совместимым Object Storage.
+Статус: VERIFIED --- MIGRATION ЗАВЕРШЕНА
 
-Однако наличие AWS CLI не означает, что production Object Storage уже
-подключено.
+Production endpoint:
 
-Целевая модель:
+POST /api/leads
 
-Backend
+Backend:
+
+modules/leads/leads.routes.js
+modules/leads/leads.schemas.js
+
+Frontend:
+
+src/services/leads/leadService.js
+src/shared/lib/apiClient.js
+
+Текущая цепочка:
+
+Questionnaire
 ↓
-private Object Storage / S3
+leadService
+↓
+apiClient
+↓
+POST /api/leads
+↓
+Fastify
+↓
+Zod validation
+↓
+PostgreSQL
+↓
+Unisender Go
+↓
+Email
 
-Пользовательские media должны быть приватными.
+Реальный questionnaire flow был проверен.
 
-Signed URLs выдаются Backend после проверки доступа.
+Подтверждено:
 
-17. WebSocket
+заявка принимается;
 
-Статус: PLANNED / NOT IMPLEMENTED
+данные сохраняются в PostgreSQL;
 
-Зависимость:
+заявке присваивается статус new;
 
-ws
+email отправляется;
 
-установлена.
+письмо реально доставляется.
 
-Но текущий server.js еще не реализует WebSocket server.
+Lead migration больше не является текущей задачей.
 
-Следовательно:
+# 18. Legacy lead infrastructure
 
-dependency существует;
+Статус: REMOVED
 
-Chat realtime еще не реализован.
+Удалены:
 
-18. Workers / FFmpeg
+supabase/functions/send-lead-email/
+database/001_create_leads.sql
+database/002_leads_rls.sql
 
-Статус: PLANNED / NOT IMPLEMENTED
+Также удалена старая backend-директория:
 
-Архитектура предусматривает Worker и FFmpeg для тяжелой обработки media.
+backend/src/
 
-На текущем серверном состоянии production worker еще не реализован.
+Старый Resend flow больше не используется.
 
-Не считать архитектурное описание FFmpeg доказательством его фактической
-установки или запуска.
+Не возвращать старый lead-flow в новую реализацию.
 
-19. PM2
+# 19. Email infrastructure
 
 Статус: VERIFIED
 
-Backend работает через PM2.
+Используется:
 
-PM2 настроен на автозапуск через systemd.
+Unisender Go
 
-Автозапуск после перезагрузки сервера проверен.
+Backend service:
 
-20. Nginx / HTTPS
+backend/modules/email/email.service.js
 
-Статус:
+Отправитель:
 
-INSTALLED / PRODUCTION ROUTING REQUIRES SEPARATE VERIFICATION
+noreply@stubbornram.ru
 
-Установлены:
+Email infrastructure реально проверена.
 
-Nginx;
+Результат production-проверки:
 
-Certbot;
+accepted
+→ sent
+→ delivered
 
-модуль Certbot для Nginx.
+Реальное письмо было получено.
 
-Наличие этих пакетов не является доказательством того, что production
-reverse proxy и HTTPS полностью настроены и проверены.
+Auth email и lead email используют новый backend email service.
 
-Перед production switch это необходимо проверить отдельно.
+# 20. PM2
 
-21. Firewall / SSH protection
+Статус: VERIFIED
+
+Backend process:
+
+stubbornram-backend
+
+PM2 используется для production process management.
+
+Автозапуск через systemd настроен.
+
+# 21. Nginx / HTTPS
+
+Статус: VERIFIED
+
+API:
+
+api.stubbornram.ru
+↓
+127.0.0.1:3000
+
+pgAdmin:
+
+admin.stubbornram.ru
+↓
+127.0.0.1:5050
+
+Проверка конфигурации:
+
+nginx -t
+→ syntax is ok
+→ test is successful
+
+# 22. pgAdmin
+
+Статус: VERIFIED
+
+Установлен pgAdmin 4.
+
+Сервис:
+
+pgadmin4.service
+
+Gunicorn:
+
+127.0.0.1:5050
+
+Production/admin domain:
+
+admin.stubbornram.ru
+
+DNS:
+
+admin.stubbornram.ru → 161.104.49.107
+
+pgAdmin открывается через домен.
+
+PostgreSQL server зарегистрирован.
+
+Подключение к базе stubbornram через application role настроено и
+проверено.
+
+# 23. Firewall / SSH protection
 
 Статус: VERIFIED
 
 Настроен UFW.
 
-Разрешенные базовые направления:
+Базовые направления:
 
 SSH
 HTTP
@@ -467,175 +633,269 @@ Fail2ban активен для:
 
 sshd
 
-22. GitHub source code
+PostgreSQL не должен быть открыт публично для frontend.
+
+# 24. GitHub source code
 
 Статус: VERIFIED
 
-GitHub остается source-code платформой.
+GitHub используется как source-code platform.
 
 Repository:
 
 EgorBaal/Stubborn-ram
 
-Repository клонирован на сервер.
-
 Рабочая ветка:
 
 main
 
-На сервере выполнены:
+GitHub Actions используется для production frontend deployment.
 
-npm ci
-npm run build
+Frontend build выполняется на Node.js 24.
 
-Frontend успешно собирается на Node.js 24.
+# 25. Git checkpoint
 
-23. Git checkpoint
-
-Последний зафиксированный архитектурный checkpoint:
+Последний известный архитектурный checkpoint:
 
 05e15a7
 
-Push в main был успешно выполнен.
+Push в main был выполнен.
 
-Git не является частью автоматических действий при работе с сервером без
-отдельного запроса пользователя.
+После этого production infrastructure и backend продолжили развиваться.
 
-24. Legacy Supabase
+Поэтому 05e15a7 не является снимком текущего production-состояния.
 
-Статус: LEGACY / STILL IN USE UNTIL MIGRATION COMPLETES
+Git-команды не выполняются автоматически без отдельного запроса
+пользователя.
 
-Историческая frontend/server infrastructure использует Supabase.
+# 26. Frontend API migration
 
-Прямые обращения были обнаружены в:
+Статус: PARTIALLY MIGRATED
 
-authService.js
-leadService.js
-trainingService.js
-ExerciseList.jsx
-supabaseClient.js
+Основной API base:
 
-Это не означает, что эти файлы нужно немедленно переписывать.
+https://api.stubbornram.ru/api
 
-Миграция должна выполняться поэтапно:
+Общий API client:
 
-Supabase implementation
-↓
-Backend API equivalent
-↓
-Verification
-↓
-Remove legacy dependency
+src/shared/lib/apiClient.js
 
-Supabase не отключается до завершения миграции и проверки production
-сценариев.
+Auth frontend использует Backend API.
 
-25. Authentication
+Lead frontend также использует Backend API.
 
-Статус:
+Остальные legacy-модули ещё не полностью переведены.
 
-LEGACY CURRENT / TARGET NOT COMPLETED
+# 27. Authentication
 
-Текущая система исторически основана на Supabase Auth.
+Статус: VERIFIED --- PRODUCTION FLOWS
 
-Целевая система:
+Собственный Backend Auth реализован.
 
-Frontend
-↓
-authService
-↓
-Backend API
-↓
-PostgreSQL
+Модули:
 
-Целевая Auth должна поддерживать утвержденные требования:
+backend/modules/auth/
+├── auth.routes.js
+├── auth.schemas.js
+├── auth.service.js
+├── auth.session.js
+└── auth.tokens.js
 
-email verification;
+Реализованы:
 
 registration;
+
+email verification;
 
 login;
 
 logout;
 
-persistent sessions;
+persistent session;
 
-password recovery;
+password reset;
 
-profile creation;
+resend verification;
 
-server-side authorization.
+session endpoint;
 
-В будущем biometric unlock является локальной разблокировкой
-существующей сессии, а не отдельной серверной authentication system.
+password hashing через argon2;
 
-26. Coach / Client Relationship
+session cookie;
 
-Статус:
+auth route rate limiting.
 
-PLANNED / NOT IMPLEMENTED IN NEW BACKEND
+Session cookie:
+
+stubbornram_session
+
+Основные cookie attributes:
+
+httpOnly
+secure
+sameSite: none
+path: /
+maxAge: 30 days
+
+Production flows проверены:
+
+регистрация
+→ подтверждение email
+→ вход
+→ сессия
+→ выход
+
+восстановление пароля
+
+Supabase Auth больше не является текущим механизмом этих auth flows.
+
+# 28. Supabase
+
+Статус: LEGACY / STILL IN USE
+
+Supabase не удалён полностью.
+
+Оставшиеся зависимости используются в ещё не перенесённых частях
+приложения.
+
+Известные области:
+
+Training
+часть legacy Auth / related frontend code
+supabaseClient
+
+Правило:
+
+Legacy Supabase
+↓
+Новая Backend API реализация
+↓
+Production verification
+↓
+Rollback window
+↓
+Удаление legacy
+
+Не удалять оставшиеся Supabase-зависимости до переноса соответствующих
+модулей.
+
+# 29. Training
+
+Статус: FRONTEND UI EXISTS / BACKEND PERSISTENCE NOT MIGRATED
+
+Training является следующим основным этапом разработки.
+
+Существующие маршруты:
+
+/app/training
+/app/training/create
+/app/training/new
+/app/training/:id
+
+Текущая логика:
+
+/app/training
+→ история тренировок
+
+/app/training/create
+→ выбор способа создания
+
+/app/training/new
+→ создание/редактор новой тренировки
+
+/app/training/:id
+→ конкретная историческая тренировка
+
+Целевая модель данных:
+
+WORKOUT
+↓
+WORKOUT_EXERCISE
+↓
+WORKOUT_SET
+
+Persistence Training через новый Backend API и PostgreSQL ещё не
+реализована.
+
+# 30. Object Storage / S3
+
+Статус: PLANNED / NOT CONNECTED
+
+AWS CLI установлен.
+
+Production Object Storage пока не подключено.
+
+Целевая модель:
+
+Frontend
+↓
+Backend
+↓
+permission check
+↓
+signed URL
+↓
+private Object Storage
+
+Пользовательские media должны быть приватными.
+
+Signed URLs пока не реализованы.
+
+# 31. WebSocket
+
+Статус: PLANNED / NOT IMPLEMENTED
+
+Зависимость ws установлена.
+
+Полноценный WebSocket server для Chat ещё не реализован.
+
+# 32. Workers / FFmpeg
+
+Статус: PLANNED / NOT IMPLEMENTED
+
+Production worker ещё не реализован.
+
+FFmpeg worker не считать установленным или работающим только на
+основании архитектурной документации.
+
+# 33. Coach / Client Relationship
+
+Статус: PLANNED / NOT IMPLEMENTED IN NEW BACKEND
 
 Целевая модель:
 
 User
 ↓
-Coach-Client Relationship
+Coach / Client Relationship
 ↓
 Permissions
 
-MVP:
+Предусмотрены состояния:
 
-одна активная coach-client relationship;
+pending
+accepted
+rejected
+cancellation
+archive
 
-pending;
+История сотрудничества не должна удаляться только из-за архивирования
+relationship.
 
-accepted;
+# 34. Permissions
 
-rejected;
+Статус: PLANNED / NOT IMPLEMENTED IN NEW BACKEND
 
-cancellation;
+Целевая модель --- action-based permissions.
 
-archive;
+Проверка доступа выполняется Backend.
 
-исторический доступ согласно permissions.
+Frontend не является источником истины для authorization.
 
-Архивирование не удаляет пользовательскую историю.
+# 35. Reports
 
-27. Permissions
+Статус: PLANNED / NOT IMPLEMENTED IN NEW BACKEND
 
-Статус:
-
-PLANNED / NOT IMPLEMENTED IN NEW BACKEND
-
-Целевая модель action-based permissions.
-
-Роли и статусы не являются заменой permissions.
-
-При проверке учитываются:
-
-authentication;
-
-ownership;
-
-action/permission;
-
-coach-client relationship;
-
-ACTIVE / ARCHIVED;
-
-historical access;
-
-object state.
-
-Критические проверки выполняются на Backend.
-
-28. Reports
-
-Статус:
-
-PLANNED / NOT IMPLEMENTED IN NEW BACKEND
-
-Целевая модель:
+Целевой lifecycle:
 
 DRAFT
 ↓
@@ -645,15 +905,11 @@ REVIEWED
 
 Report является отдельной canonical сущностью.
 
-Он не должен становиться частью Chat history.
+Media отчётов будет использовать общий Object Storage layer.
 
-Media отчета использует общий Media/Object Storage layer.
+# 36. Chat
 
-29. Chat
-
-Статус:
-
-PLANNED / NOT IMPLEMENTED IN NEW BACKEND
+Статус: PLANNED / NOT IMPLEMENTED IN NEW BACKEND
 
 Целевая схема:
 
@@ -665,59 +921,28 @@ Backend / WebSocket
 ↓
 PostgreSQL + Object Storage
 
-PostgreSQL --- source of truth.
+PostgreSQL является source of truth.
 
-WebSocket --- realtime transport.
+WebSocket используется для realtime transport.
 
-Если WebSocket недоступен, сообщения не должны теряться.
+# 37. Остальные бизнес-модули
 
-30. Training
+Статус: PLANNED
 
-Статус:
+На новом Backend уровне ещё не реализованы:
 
-FRONTEND UI EXISTS / BACKEND PERSISTENCE NOT IMPLEMENTED
+Food
+Activity
+Weight
+Photos / Measurements
+Notifications
+Payments
+Analytics
+AI / OCR
 
-Существующий Training UI сохраняется.
+# 38. Security --- фактическое состояние
 
-Целевая canonical model:
-
-Workout
-↓
-WorkoutExercise
-↓
-WorkoutSet
-
-Exercise является отдельной entity.
-
-Persistence будет подключаться к Backend API и PostgreSQL без ненужного
-переписывания существующего UI.
-
-31. Остальные бизнес-модули
-
-На новом Backend уровне не считать реализованными:
-
-Food;
-
-Activity;
-
-Weight;
-
-Photos/Measurements;
-
-Analytics;
-
-Notifications;
-
-Payments;
-
-AI/OCR.
-
-Их архитектура существует в документации, но физическая серверная
-реализация еще не завершена.
-
-32. Security --- фактическое состояние
-
-Фактически подтверждено:
+Подтверждено:
 
 backend запускается не от root;
 
@@ -729,21 +954,21 @@ UFW;
 
 Fail2ban sshd;
 
-secrets находятся в server .env, а не в исходном коде backend;
+secrets находятся в server .env;
 
 PostgreSQL доступен приложению локально;
 
-frontend не подключается непосредственно к PostgreSQL.
+frontend не подключается непосредственно к PostgreSQL;
 
-Архитектурно требуется дополнительно реализовать/проверить:
+API работает через HTTPS;
 
-полноценную authentication;
+auth routes имеют rate limiting.
 
-authorization;
+Будущие security-задачи:
+
+полноценная authorization;
 
 permission layer;
-
-rate limiting;
 
 audit log;
 
@@ -757,24 +982,22 @@ security notifications;
 
 re-authentication;
 
-production incident procedures.
+incident procedures.
 
-33. Персональные данные
+# 39. Персональные данные
 
-Проект обрабатывает персональные данные.
+Проект работает с персональными данными.
 
-Инфраструктурное решение ориентировано на российский регион.
+Инфраструктура ориентирована на российское размещение данных.
 
-Однако:
+При этом размещение сервера в российской инфраструктуре само по себе не
+означает автоматического выполнения всех требований 152-ФЗ.
 
-Российское размещение сервера само по себе не означает автоматического
-выполнения всех требований 152-ФЗ.
+Отдельно должны быть проверены:
 
-До production необходимо отдельно проверить:
+локализация;
 
-локализацию;
-
-трансграничную передачу;
+трансграничная передача;
 
 consent;
 
@@ -788,18 +1011,15 @@ privacy policy;
 
 incident response.
 
-34. Что НЕ считать выполненным
+# 40. Что НЕ считать выполненным
 
-Наличие следующих вещей в документации не означает их фактическую
-реализацию:
+Не считать фактически завершёнными:
 
-PostgreSQL schema;
-
-Auth backend;
-
-Permissions;
+полную PostgreSQL business schema;
 
 Coach/Client backend;
+
+Permissions backend;
 
 Reports backend;
 
@@ -809,55 +1029,15 @@ WebSocket;
 
 Object Storage;
 
+Signed URLs;
+
 FFmpeg Worker;
 
-API business endpoints;
+полную миграцию всех legacy-модулей;
 
-production backups;
+полное удаление Supabase.
 
-production migration;
-
-production switch.
-
-35. Критическое различие между документами
-
-Некоторые старые документы содержат состояние, которое больше не
-соответствует фактическому серверу.
-
-В частности:
-
-Старое утверждение
-
-Backend отсутствует.
-
-Факт
-
-Backend уже существует в:
-
-/opt/stubbornram/backend/server
-
-и успешно подключается к PostgreSQL.
-
-Старое утверждение
-
-Managed PostgreSQL является следующим обязательным шагом.
-
-Факт
-
-Managed PostgreSQL не создается.
-
-PostgreSQL уже установлен непосредственно на существующем Cloud Server и
-connection verified.
-
-Старое утверждение
-
-Infrastructure Migration / Backend Foundation еще не начались.
-
-Факт
-
-Часть Infrastructure Migration и Backend Foundation уже выполнена.
-
-36. Состояние по слоям
+# 41. Текущее состояние по слоям
 
 Слой Состояние
 
@@ -874,113 +1054,158 @@ GitHub source VERIFIED
 Frontend build VERIFIED
 Backend Fastify VERIFIED
 Backend process VERIFIED
+Backend production API VERIFIED
+Nginx VERIFIED
+HTTPS API VERIFIED
+pgAdmin VERIFIED
 PostgreSQL server VERIFIED
 PostgreSQL database VERIFIED
 Application DB role VERIFIED
 Backend → PostgreSQL VERIFIED
-PostgreSQL business schema NOT IMPLEMENTED
-DB migrations NOT APPLIED
-Object Storage NOT CONNECTED
-Signed URLs NOT IMPLEMENTED
-WebSocket NOT IMPLEMENTED
-Worker / FFmpeg NOT IMPLEMENTED
-Auth backend NOT IMPLEMENTED
-Permissions backend NOT IMPLEMENTED
-Coach/Client backend NOT IMPLEMENTED
-Reports backend NOT IMPLEMENTED
-Chat backend NOT IMPLEMENTED
-Training persistence NOT IMPLEMENTED
-Production migration NOT COMPLETED
-Supabase removal NOT COMPLETED
+Auth backend VERIFIED
+Auth production flows VERIFIED
+Email service VERIFIED
+Unisender Go VERIFIED
+Leads migration VERIFIED
+Lead persistence VERIFIED
+Lead email VERIFIED
+Object Storage PLANNED
+Signed URLs PLANNED
+WebSocket PLANNED
+Worker / FFmpeg PLANNED
+Permissions backend PLANNED
+Coach/Client backend PLANNED
+Reports backend PLANNED
+Chat backend PLANNED
+Training persistence PLANNED
+Full Supabase removal PLANNED
 
-37. Фактическая точка проекта
+# 42. Фактическая точка проекта
 
-Наиболее точное описание текущего этапа:
+На текущей контрольной точке:
 
-Infrastructure foundation + minimal Backend foundation завершены.
-PostgreSQL connection verified. Production business data layer еще не
-создан.
+Infrastructure
+↓
+✅ VERIFIED
 
-Фактическая цепочка уже работает:
+Backend Foundation
+↓
+✅ VERIFIED
+
+PostgreSQL Foundation
+↓
+✅ VERIFIED
+
+Authentication
+↓
+✅ VERIFIED
+
+Email infrastructure
+↓
+✅ VERIFIED
+
+Leads migration
+↓
+✅ VERIFIED + PRODUCTION TEST
+
+Documentation
+↓
+✅ UPDATED
+
+Training
+↓
+➡ NEXT MAIN DEVELOPMENT STAGE
+
+Фактически работающая базовая цепочка:
 
 Cloud Server
 ↓
-Node.js
+Nginx / HTTPS
 ↓
 Fastify Backend
 ↓
-PostgreSQL 16
-↓
-stubbornram database
+PostgreSQL
 
-Следующий слой --- не создание еще одного сервера и не установка еще
-одного PostgreSQL.
+Для Auth:
 
-Следующий слой --- реализация утвержденной database schema через
-migrations, после проверки соответствующих архитектурных документов.
+Frontend
+↓
+authService
+↓
+Backend API
+↓
+PostgreSQL
+↓
+Unisender Go
 
-38. Следующие этапы
+Для Leads:
 
-Порядок определяется актуальной архитектурой и MVP.
+Questionnaire
+↓
+leadService
+↓
+Backend API
+↓
+PostgreSQL
+↓
+Unisender Go
 
-Ближайший технический этап:
+# 43. Следующий этап
 
-DATABASE_SCHEMA
-↓
-physical PostgreSQL migrations
-↓
-verification
-↓
-Backend data/repository layer
+Следующая основная задача проекта:
 
-После этого:
+TRAINING
 
-Auth
-↓
-Permissions
-↓
-Coach / Client
-↓
-Media / Object Storage
-↓
-Reports
-↓
-Chat
-↓
-Training persistence
+Не возвращаться к уже проверенным:
 
-Точный порядок отдельных модулей может быть изменен только отдельным
-утвержденным архитектурным решением.
+Infrastructure;
 
-39. Правило для будущих AI-агентов
+Backend Foundation;
+
+PostgreSQL Foundation;
+
+Auth;
+
+Email;
+
+Leads.
+
+Работа продолжается с существующего Training UI.
+
+# 44. Правило для будущих AI-агентов
 
 Перед серверной задачей:
 
-Прочитать docs/server/SERVER_STATE.md.
+прочитать docs/server/SERVER_STATE.md;
 
-Проверить соответствующую архитектурную документацию.
+проверить соответствующую архитектурную документацию;
 
-Не считать PLANNED функциональность реализованной.
+не считать PLANNED функциональность реализованной;
 
-Не считать LEGACY функциональность частью target architecture.
+не считать LEGACY функциональность частью target architecture;
 
-Не создавать второй Backend.
+не создавать второй Backend;
 
-Не создавать второй PostgreSQL.
+не создавать второй PostgreSQL;
 
-Не создавать Managed PostgreSQL без отдельного решения.
+не создавать Managed PostgreSQL без отдельного решения;
 
-Не переустанавливать уже VERIFIED инфраструктуру без причины.
+не переустанавливать уже VERIFIED инфраструктуру без причины;
 
-Не просить пользователя повторно объяснять уже зафиксированное
-состояние.
+не просить пользователя повторно объяснять уже зафиксированное
+состояние;
 
-После серверного изменения обновить этот документ.
+после серверного изменения обновить этот документ.
 
-Если фактическое состояние сервера противоречит этому документу, сначала
-проверить сервер, затем обновить документ.
+Если фактическое состояние сервера противоречит документу:
 
-40. Правило секретов
+Проверить сервер
+↓
+Обновить SERVER_STATE.md
+↓
+Продолжить работу
+
+# 45. Правило секретов
 
 Никогда не записывать в SERVER_STATE.md:
 
@@ -996,13 +1221,13 @@ database passwords;
 
 JWT secrets;
 
-Email provider secrets;
+email provider secrets;
 
 payment secrets;
 
 AI provider secrets.
 
-Разрешается фиксировать только:
+Разрешается фиксировать:
 
 наличие переменной;
 
@@ -1012,13 +1237,15 @@ AI provider secrets.
 
 способ хранения.
 
-41. Источники истины
+# 46. Источники истины
 
 При конфликте:
 
 Фактическое серверное состояние
 
-SERVER_STATE.md + непосредственная проверка сервера.
+SERVER_STATE.md
+
+- непосредственная проверка сервера
 
 Архитектура
 
@@ -1031,18 +1258,19 @@ docs/core/\*
 План
 
 ROADMAP.md
+STUBBORN_RAM_IMPLEMENTATION_PLAN.md
 
 История решений
 
 AI_HISTORY.md
 
 Документы старше текущего состояния не должны автоматически
-переопределять VERIFIED факты из этого документа.
+переопределять подтверждённые факты.
 
-42. Главное
+# 47. Главное
 
-Этот файл описывает не желаемый Stubborn Ram, а тот сервер, который
-реально существует сейчас.
+Этот файл описывает не желаемый Stubborn Ram, а сервер и backend,
+которые реально существуют сейчас.
 
 Он создан для предотвращения:
 
@@ -1050,13 +1278,51 @@ AI_HISTORY.md
 
 создания второго Backend;
 
+создания второго PostgreSQL;
+
 создания ненужного Managed PostgreSQL;
 
-повторной проверки уже подтвержденных базовых шагов;
+повторной проверки уже подтверждённых базовых шагов;
 
-ошибочного предположения, что Backend еще не существует;
+ошибочного предположения, что Backend или Auth ещё не существуют;
 
-потери контекста между AI-сессиями.
+потери контекста между AI-сессиями;
+
+преждевременного удаления legacy-инфраструктуры.
 
 После каждого существенного изменения серверной инфраструктуры этот файл
 должен оставаться актуальным.
+
+# 48. Контрольная точка 12.09.2026
+
+На текущей контрольной точке подтверждено:
+
+Selectel Cloud Server ✅
+PostgreSQL 16 ✅
+Backend Fastify ✅
+PM2 ✅
+Nginx ✅
+HTTPS API ✅
+pgAdmin ✅
+api.stubbornram.ru ✅
+admin.stubbornram.ru ✅
+Backend → PostgreSQL ✅
+Custom Authentication ✅
+Email verification ✅
+Password reset ✅
+Unisender Go ✅
+Frontend Auth → Backend ✅
+Leads migration ✅
+Lead persistence ✅
+Lead email ✅
+
+Object Storage ⏳
+Permissions ⏳
+Coach/Client ⏳
+Reports ⏳
+Chat/WebSocket ⏳
+Training persistence ⏳
+Full Supabase removal ⏳
+
+Это является текущей контрольной точкой серверного состояния Stubborn
+Ram.

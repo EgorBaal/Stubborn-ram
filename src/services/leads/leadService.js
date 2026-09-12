@@ -1,20 +1,21 @@
-import { supabase } from "@/shared/lib/supabaseClient";
+import { request } from "@/shared/lib/apiClient";
 
 export async function createLead(lead) {
-  const { error } = await supabase.from("leads").insert([lead]);
+  const { data, error } = await request("/leads", {
+    method: "POST",
+    body: JSON.stringify(lead),
+  });
 
   if (error) {
-    throw error;
+    const requestError = new Error(
+      error.message || "Не удалось отправить заявку.",
+    );
+
+    requestError.code = error.error;
+    requestError.details = error.details;
+
+    throw requestError;
   }
 
-  const { error: functionError } = await supabase.functions.invoke(
-    "send-lead-email",
-    {
-      body: lead,
-    },
-  );
-
-  if (functionError) {
-    console.error("Ошибка отправки письма:", functionError);
-  }
+  return data;
 }

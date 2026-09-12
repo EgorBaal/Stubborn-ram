@@ -1,630 +1,758 @@
-# INFRASTRUCTURE_MIGRATION.md
+Миграция инфраструктуры Stubborn Ram
 
-# Миграция инфраструктуры Stubborn Ram
-
-Версия: 1.0
-Статус: утверждено
-Дата: сентябрь 2026
-
----
+Версия: 2.0 Статус: CURRENT / SOURCE OF TRUTH Дата: сентябрь 2026
 
 # 1. НАЗНАЧЕНИЕ
 
-Документ является единой картой перехода Stubborn Ram с текущей инфраструктуры Supabase на целевую архитектуру проекта.
+Документ фиксирует фактическое состояние инфраструктурной миграции
+Stubborn Ram и оставшиеся этапы перехода с Supabase на собственную
+серверную архитектуру.
 
-Документ фиксирует:
+Документ используется как источник истины для инфраструктуры.
 
-- целевую инфраструктуру;
-- последовательность миграции;
-- порядок подготовки платформы;
-- зависимости между этапами;
-- проверки;
-- rollback;
-- условия отключения старой инфраструктуры.
+Он фиксирует:
 
-Документ используется как источник истины для этапа Infrastructure Migration.
+фактическую инфраструктуру;
 
-Новая feature-разработка не должна выполняться вместо необходимых миграционных этапов.
+текущую архитектуру;
 
----
+уже завершённые этапы миграции;
 
-# 2. ТЕКУЩЕЕ СОСТОЯНИЕ
+оставшиеся этапы;
 
-Текущая система использует Supabase как legacy-инфраструктуру.
+зависимости между этапами;
 
-Supabase сохраняется до полного завершения миграции и rollback window.
+проверки;
 
-До этого момента старая инфраструктура не удаляется.
+rollback;
 
----
+условия окончательного отключения legacy-инфраструктуры.
 
-# 3. ЦЕЛЕВАЯ АРХИТЕКТУРА
+Документ необходимо обновлять после каждого подтверждённого
+инфраструктурного изменения.
 
-Целевая схема:
+# 2. ОСНОВНОЕ АРХИТЕКТУРНОЕ РЕШЕНИЕ
 
-```text
+Stubborn Ram переходит от зависимости от Supabase к собственной
+серверной архитектуре.
+
+При этом миграция выполняется поэтапно.
+
+На текущем этапе:
+
+Backend API работает на собственном Cloud Server;
+
+PostgreSQL работает непосредственно на том же Cloud Server;
+
+frontend использует Backend API для уже перенесённых серверных
+функций;
+
+Unisender Go используется для transactional email;
+
+Supabase пока сохраняется для ещё не перенесённых частей приложения.
+
+Важно:
+
+Selectel Managed PostgreSQL на текущем этапе НЕ используется.
+
+PostgreSQL размещён непосредственно на существующем Cloud Server.
+
+# 3. ФАКТИЧЕСКАЯ ТЕКУЩАЯ АРХИТЕКТУРА
+
+Текущая production-схема:
+
+stubbornram.ru
+↓
 Stubborn Ram Frontend
-        ↓
-    Backend API
-        ↓
- ┌───────────────┐
- │ PostgreSQL    │
- │ Object Storage│
- │ Workers       │
- └───────────────┘
-```
-
-Основные сервисы:
-
-- Selectel Cloud Server — Backend API и первоначально worker;
-- Selectel Managed PostgreSQL — основная база данных;
-- Selectel Object Storage / S3 — пользовательские файлы;
-- Selectel CDN — доставка медиа;
-- Selectel DNS — DNS;
-- Unisender Go — transactional email;
-- Yandex AI — AI/OCR;
-- собственный WebSocket backend — Chat;
-- YooKassa или T-Bank — платежи на будущем этапе.
-
-Redis, Kubernetes и отдельные микросервисы на начальном этапе не используются.
-
----
-
-# 4. ГЛАВНЫЕ АРХИТЕКТУРНЫЕ ПРИНЦИПЫ
-
-1. Frontend не обращается напрямую к PostgreSQL.
-2. Frontend не имеет секретов инфраструктуры.
-3. Backend API является основной точкой доступа к данным.
-4. Пользовательские файлы хранятся в приватном Object Storage.
-5. Доступ к приватным файлам предоставляется через backend/signed URLs.
-6. Пользователь остаётся владельцем своих данных.
-7. Доступ тренера определяется relationship и permissions.
-8. Объекты системы существуют в единственном экземпляре.
-9. Внешние сервисы подключаются через service/adapter layer.
-10. Миграция выполняется поэтапно, с возможностью rollback.
-11. Старая инфраструктура не удаляется до завершения rollback window.
-12. Не выполняется массовая перепись frontend только ради смены backend.
-
----
-
-# 5. УТВЕРЖДЁННАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ МИГРАЦИИ
-
-## Этап 1. Подготовка инфраструктуры
-
-Создать и настроить:
-
-- Selectel Cloud Server;
-- Managed PostgreSQL;
-- Object Storage;
-- CDN;
-- DNS.
-
-На этом этапе production продолжает работать на текущей инфраструктуре.
-
-**Результат:**
-
-целевая инфраструктура существует и доступна для staging.
-
----
-
-## Этап 2. Backup текущей системы
-
-Перед переносом данных:
-
-1. создать полный backup Supabase;
-2. проверить, что backup пригоден для восстановления;
-3. сохранить информацию, необходимую для rollback.
-
-**Запрещено удалять или отключать Supabase.**
-
-**Результат:**
-
-существует проверенная точка восстановления.
-
----
-
-## Этап 3. Подготовка целевой PostgreSQL
-
-Создать физическую схему целевой PostgreSQL на основании утверждённой `DATABASE_SCHEMA.md`.
-
-Последовательность:
-
-```text
-DATABASE_SCHEMA.md
+↓ HTTPS / API
+api.stubbornram.ru
 ↓
-Approved physical schema
+Nginx reverse proxy
 ↓
-Migrations
+Fastify Backend
 ↓
-Selectel PostgreSQL
-```
-
-Не изменять production database ради удобства текущего frontend-кода.
-
-**Результат:**
-
-целевая PostgreSQL готова принимать данные.
-
----
-
-## Этап 4. Backend Foundation
-
-Создать основу собственного Backend API.
-
-Backend должен обеспечить:
-
-- конфигурацию;
-- database access;
-- API routing;
-- authentication foundation;
-- authorization foundation;
-- validation;
-- error handling;
-- logging;
-- secrets management;
-- health checks.
-
-Frontend начинает использовать service layer для обращения к Backend API.
-
-**Результат:**
-
-существует стабильная серверная основа целевой платформы.
-
----
-
-## Этап 5. Authentication
-
-Перенести authentication на целевой Backend.
-
-Целевой flow:
-
-```text
-Landing
+PostgreSQL 16
 ↓
-Registration
+Stubborn Ram DB
+
+Backend также использует Unisender Go
+для transactional email.
+
+Backend и PostgreSQL находятся на одном Selectel Cloud Server.
+
+# 4. SERVER INFRASTRUCTURE
+
+4.1 Selectel Cloud Server
+
+Статус: VERIFIED
+
+Сервер:
+
+Name: stubbornram-backend
+IP: 161.104.49.107
+OS: Ubuntu 24.04
+CPU: 2 vCPU
+RAM: 4 GB
+Disk: 20 GB SSD
+
+Назначение сервера:
+
+Backend API;
+
+PostgreSQL;
+
+Nginx;
+
+pgAdmin;
+
+PM2;
+
+системные сервисы инфраструктуры.
+
+# 5. POSTGRESQL
+
+5.1 Размещение
+
+Статус: VERIFIED
+
+PostgreSQL 16 работает непосредственно на Cloud Server.
+
+PostgreSQL не выставлен наружу как публичный database endpoint.
+
+Backend подключается к PostgreSQL локально.
+
+5.2 Database
+
+Database: stubbornram
+Application role: stubbornram_app
+Port: 5432
+Connection: 127.0.0.1:5432
+
+Структура базы управляется миграциями node-pg-migrate.
+
+Production-миграции уже применены.
+
+Основные таблицы:
+
+users;
+
+profiles;
+
+sessions;
+
+auth_tokens;
+
+pgmigrations;
+
+leads.
+
+# 6. BACKEND API
+
+6.1 Production
+
+Статус: VERIFIED
+
+Backend:
+
+/opt/stubbornram/backend/server
+
+Runtime:
+
+Node.js;
+
+Fastify;
+
+PM2.
+
+PM2 process:
+
+stubbornram-backend
+
+Backend слушает:
+
+127.0.0.1:3000
+
+Внешний API:
+
+https://api.stubbornram.ru
+
+Nginx используется как reverse proxy.
+
+# 7. API DOMAIN
+
+Production API:
+
+api.stubbornram.ru
+
+DNS:
+
+api.stubbornram.ru
+→ 161.104.49.107
+
+HTTPS:
+
+Let's Encrypt.
+
+Nginx:
+
+api.stubbornram.ru
 ↓
-Email Verification
+127.0.0.1:3000
+
+# 8. BACKEND HEALTH CHECK
+
+Endpoint:
+
+GET /health
+
+Health check проверяет доступность Backend и PostgreSQL.
+
+Успешный production response:
+
+{
+"ok": true,
+"service": "stubbornram-backend",
+"database": true
+}
+
+Статус: VERIFIED
+
+# 9. EMAIL INFRASTRUCTURE
+
+9.1 Provider
+
+Статус: VERIFIED
+
+Transactional email provider:
+
+Unisender Go
+
+Backend использует:
+
+modules/email/email.service.js
+
+API key хранится только на сервере в environment variables.
+
+Frontend не получает API key.
+
+9.2 Проверка доставки
+
+Production API-запрос в Unisender Go успешно проверен.
+
+Email был принят, отправлен и доставлен.
+
+Также успешно проверена отправка реальной заявки из production
+questionnaire.
+
+# 10. LEADS
+
+10.1 Production flow
+
+Статус: VERIFIED
+
+Frontend
 ↓
-Profile
+createLead()
 ↓
-Welcome Flow
+apiClient
 ↓
-Home
-```
+POST /api/leads
+↓
+Backend
+↓
+PostgreSQL
+↓
+Unisender Go
+↓
+Trainer email
+
+10.2 Lead endpoint
+
+POST /api/leads
+
+Backend выполняет:
+
+validation входных данных;
+
+сохранение заявки в PostgreSQL;
+
+отправку уведомления тренеру;
+
+возврат результата frontend.
+
+Rate limit:
+
+10 requests / minute
+
+Production end-to-end test успешно пройден.
+
+# 11. FRONTEND API LAYER
+
+Frontend использует:
+
+src/shared/lib/apiClient.js
+
+Для leads используется:
+
+src/services/leads/leadService.js
+
+Frontend больше не использует старый Supabase Edge Function для отправки
+заявок.
+
+Удалены:
+
+supabase/functions/send-lead-email/
+
+а также старые SQL-файлы leads.
+
+# 12. SUPABASE
+
+Статус:
+
+LEGACY / PARTIALLY IN USE
+
+Supabase больше не используется для отправки заявок.
+
+Удалены:
+
+supabase/functions/send-lead-email/;
+
+Resend integration;
+
+старый Supabase leads flow;
+
+старые SQL-файлы для leads.
+
+Однако Supabase пока остаётся legacy-зависимостью для ещё не
+перенесённых частей приложения.
+
+В частности, Supabase пока используется некоторыми частями
+Authentication и Training.
+
+Полное отключение Supabase является будущим этапом.
+
+# 13. ТЕКУЩЕЕ РАСПРЕДЕЛЕНИЕ ОТВЕТСТВЕННОСТИ
+
+Компонент Технология Статус
+
+Frontend React / Vite VERIFIED
+Backend Fastify / Node.js VERIFIED
+Database PostgreSQL 16 VERIFIED
+DB migrations node-pg-migrate VERIFIED
+Reverse proxy Nginx VERIFIED
+Process manager PM2 VERIFIED
+Transactional email Unisender Go VERIFIED
+Leads API Own Backend API VERIFIED
+Leads storage PostgreSQL VERIFIED
+Leads email Unisender Go VERIFIED
+Authentication Backend + legacy Supabase parts IN PROGRESS
+Training Supabase LEGACY / IN PROGRESS
+Object Storage Selectel S3 PLANNED
+CDN Selectel CDN PLANNED
+Chat / WebSocket Own Backend PLANNED
+Workers Own infrastructure PLANNED
+AI/OCR Yandex AI PLANNED
+Payments YooKassa / T-Bank PLANNED
+
+# 14. ЧТО УЖЕ ЗАВЕРШЕНО
+
+Infrastructure
+
+Selectel Cloud Server создан;
+
+Ubuntu 24.04 настроен;
+
+PostgreSQL 16 установлен;
+
+PostgreSQL работает на Cloud Server;
+
+Nginx настроен;
+
+HTTPS настроен;
+
+API domain настроен;
+
+PM2 настроен;
+
+backend запускается автоматически;
+
+health check работает;
+
+базовая защита сервера настроена.
+
+Backend
+
+Backend foundation;
+
+Fastify;
+
+database connection;
+
+migrations;
+
+CORS;
+
+cookies;
+
+rate limiting;
+
+validation;
+
+logging;
+
+health check.
+
+Leads
+
+leads migration;
+
+leads table;
+
+leads schema;
+
+leads API;
+
+PostgreSQL persistence;
+
+email service;
+
+Unisender integration;
+
+frontend API integration;
+
+production end-to-end test.
+
+# 15. ЧТО ОСТАЛОСЬ СДЕЛАТЬ
+
+Authentication
+
+Завершить переход Authentication на собственный Backend API.
 
 Требования:
 
-- один аккаунт на пользователя;
-- стабильный `user_id`;
-- подтверждение email;
-- persistent sessions;
-- password reset;
-- профиль после подтверждения email.
+registration;
 
-Email provider:
+email verification;
 
-Unisender Go.
+login;
 
-**Результат:**
+persistent sessions;
 
-пользователь может безопасно зарегистрироваться, подтвердить email, войти и восстановить доступ.
+logout;
 
----
+password reset;
 
-## Этап 6. Relationships + Permissions
+profile lifecycle;
 
-После authentication переносится модель:
+server-side authorization.
 
-```text
-User
-↓
-Coach Relationship
-↓
-ACTIVE / ARCHIVED
-↓
-Permissions
-```
+Training
 
-Проверяются:
+После стабилизации Authentication продолжить миграцию Training с
+Supabase на Backend API + PostgreSQL.
 
-- ownership;
-- active relationship;
-- archived relationship;
-- разрешённые действия;
-- запрещённые действия;
-- server-side permission checks.
+Миграция выполняется модульно.
 
-**Результат:**
-
-сервер корректно определяет, кто и какие данные может видеть/изменять.
-
----
-
-## Этап 7. Reports + Media
+Reports + Media
 
 Перенести Reports и Media.
 
-Reports:
+PostgreSQL используется для metadata и состояния.
 
-- PostgreSQL — metadata и состояние;
-- Object Storage — media;
-- Backend — access control.
+Object Storage / S3 подключается для пользовательских файлов.
 
-Media:
+Приватные файлы не должны храниться в публичном доступе.
 
-```text
-Upload
-↓
-Backend validation
-↓
-Private S3
-↓
-Signed URL
-```
+Chat
 
-Не использовать публичные URL для приватных пользовательских файлов.
+Перенести Chat на собственный WebSocket backend.
 
-Для видео используется FFmpeg worker.
-
-**Результат:**
-
-отчёты и пользовательские файлы сохраняются в целевой инфраструктуре.
-
----
-
-## Этап 8. Chat
-
-Перенести Chat на:
-
-```text
 Frontend
 ↓
 Backend WebSocket
 ↓
 PostgreSQL
-+
-Object Storage
-```
 
-Сообщения сохраняются в PostgreSQL.
+- Object Storage
 
-Файлы сохраняются в Object Storage.
+Остальные модули
 
-Прикреплённые объекты платформы являются ссылками на существующие объекты, а не копиями.
+После стабилизации базовой платформы постепенно переводятся:
 
-**Результат:**
+Food;
 
-чат работает на собственной серверной инфраструктуре.
+Activity;
 
----
+Weight;
 
-## Этап 9. Training и остальные модули
+Photos & Measurements;
 
-После стабильной базовой платформы постепенно переводятся:
+Progress;
 
-- Training;
-- Food;
-- Activity;
-- Weight;
-- Photos & Measurements;
-- Progress;
-- другие модули.
+другие модули.
 
-Перенос выполняется модульно.
+Не выполнять массовую перепись всех модулей одновременно.
 
-Не выполнять массовую перепись независимых разделов одновременно.
+Workers
 
-**Результат:**
+Workers добавляются при появлении реальных тяжёлых фоновых задач:
 
-основные модули работают через целевой Backend API и canonical data.
+обработка видео;
 
----
+FFmpeg;
 
-# 6. STAGING
+генерация файлов;
 
-До переключения production необходимо создать staging-сценарий.
+тяжёлые фоновые операции;
 
-Проверяются:
+AI/OCR.
 
-## Authentication
+Payments
 
-- registration;
-- email verification;
-- login;
-- logout;
-- persistent session;
-- password reset.
+Платёжная инфраструктура добавляется после стабилизации основного
+пользовательского и тренерского flow.
 
-## Data
+Потенциальные providers:
 
-- create;
-- read;
-- update;
-- delete;
-- refresh;
-- повторный вход.
+YooKassa;
 
-## Coach access
+T-Bank.
 
-- ACTIVE;
-- ARCHIVED;
-- ownership;
-- permissions.
+Полное отключение Supabase
 
-## Media
+После переноса всех production-зависимостей:
 
-- upload;
-- processing;
-- preview;
-- private access;
-- signed URL;
-- retention/deletion rules.
+проверить отсутствие production-зависимости от Supabase;
 
-## Chat
+сделать финальный backup;
 
-- send;
-- read;
-- reply;
-- media;
-- object references.
+завершить rollback window;
 
-## UI
+отключить legacy integration;
 
-- mobile;
-- desktop;
-- PWA;
-- routing;
-- loading;
-- error;
-- empty states.
+только после этого удалить Supabase.
 
----
+# 16. ПРИНЦИП РАЗВИТИЯ ИНФРАСТРУКТУРЫ
 
-# 7. ПРОВЕРКА ПЕРЕД PRODUCTION
+Stubborn Ram не должен усложняться инфраструктурой раньше времени.
 
-Перед переключением необходимо подтвердить:
+На текущем этапе не используются:
 
-- данные перенесены корректно;
-- количество и целостность объектов проверены;
-- authentication работает;
-- permissions работают;
-- relationships работают;
-- private media работает;
-- signed URLs работают;
-- chat работает;
-- email работает;
-- AI integrations, если уже подключены, работают;
-- frontend работает через Backend API;
-- secrets отсутствуют во frontend;
-- `npm run build` проходит;
-- критических ошибок нет.
+Kubernetes;
 
----
+Redis;
 
-# 8. PRODUCTION SWITCH
+микросервисная архитектура;
 
-После успешной staging-проверки:
+отдельный PostgreSQL server;
 
-```text
-stubbornram.ru
-      ↓
-Target infrastructure
-```
+отдельный worker server,
 
-DNS переключается только после подтверждения готовности.
+если для них нет реальной технической необходимости.
 
-Старая Supabase-инфраструктура остаётся доступной.
+Основная модель:
 
----
+Cloud Server
+├── Backend
+├── PostgreSQL
+├── Nginx
+├── PM2
+└── системные сервисы
 
-# 9. ROLLBACK WINDOW
+Это является осознанным решением для текущего масштаба проекта.
 
-После production switch начинается rollback window.
+При росте нагрузки отдельные компоненты могут быть вынесены без
+изменения публичного API.
 
-В этот период необходимо:
+# 17. SECURITY PRINCIPLES
 
-- наблюдать за ошибками;
-- проверять authentication;
-- проверять сохранение данных;
-- проверять media;
-- проверять chat;
-- проверять критические пользовательские сценарии.
+PostgreSQL не должен быть доступен из публичного интернета.
 
-При обнаружении критической проблемы:
+Backend API является единой точкой доступа frontend к серверным
+данным.
 
-```text
-Target infrastructure
+Секреты не хранятся во frontend.
+
+API keys хранятся только в server environment.
+
+Пароли пользователей хранятся только в виде безопасных хэшей.
+
+Доступ к данным проверяется на сервере.
+
+Rate limiting применяется к публичным endpoints.
+
+HTTPS используется для production API.
+
+Production .env не хранится в Git.
+
+Изменение инфраструктуры должно быть проверено после deployment.
+
+# 18. ROLLBACK
+
+Для каждого существенного инфраструктурного изменения должен
+существовать понятный rollback.
+
+Минимальный принцип:
+
+Change
+↓
+Deploy
+↓
+Verify
+↓
+If failed
 ↓
 Rollback
+
+Нельзя удалять рабочую legacy-систему только потому, что новая
+реализация уже создана.
+
+Удаление legacy выполняется только после:
+
+успешной проверки новой реализации;
+
+завершения миграции соответствующего функционала;
+
+подтверждения отсутствия зависимостей;
+
+наличия рабочего rollback / backup;
+
+отдельного решения об окончательном отключении.
+
+# 19. УСЛОВИЯ ПОЛНОГО УДАЛЕНИЯ SUPABASE
+
+Supabase можно окончательно отключать только после того, как:
+
+Authentication перенесён;
+
+Training перенесён;
+
+все остальные используемые Supabase-зависимости найдены;
+
+frontend больше не требует Supabase для production-функций;
+
+backend покрывает соответствующие операции;
+
+production end-to-end тесты пройдены;
+
+данные проверены;
+
+backup существует;
+
+rollback plan подтверждён.
+
+До выполнения этих условий Supabase остаётся:
+
+LEGACY
+
+а не удалённой системой.
+
+# 20. DEFINITION OF DONE ДЛЯ INFRASTRUCTURE MIGRATION
+
+Миграция считается завершённой, когда production работает по схеме:
+
+Stubborn Ram Frontend
 ↓
-Previous infrastructure
-```
-
-Supabase не удаляется до окончания rollback window.
-
----
-
-# 10. DECOMMISSION
-
-После завершения rollback window и подтверждения стабильности:
-
-1. сделать финальный backup;
-2. подтвердить отсутствие зависимости production от Supabase;
-3. проверить отсутствие старых Supabase references в production;
-4. отключить legacy integration;
-5. только после этого деcommission Supabase.
-
-Удаление старой инфраструктуры является отдельным завершённым этапом.
-
----
-
-# 11. ПОРЯДОК В РАЗРАБОТКЕ
-
-Нельзя перескакивать через критические зависимости.
-
-Основная последовательность:
-
-```text
-Architecture
-↓
-Infrastructure
-↓
-Backup
+Backend API
 ↓
 PostgreSQL
 ↓
-Backend Foundation
-↓
+┌─────────────────────┐
+│ Object Storage │
+│ Workers │
+│ WebSocket │
+│ Email │
+│ AI / OCR │
+│ Payments │
+└─────────────────────┘
+
+и при этом:
+
+frontend не зависит от Supabase для production-функций;
+
+данные контролируются собственным Backend;
+
+authentication работает через собственную серверную архитектуру;
+
+Training работает через собственный Backend;
+
+файлы хранятся в Object Storage;
+
+email работает через Unisender Go;
+
+фоновые задачи выполняются workers;
+
+chat работает через собственный WebSocket backend;
+
+все секреты находятся на сервере;
+
+PostgreSQL защищён от публичного доступа;
+
+production имеет backup и понятный rollback;
+
+legacy Supabase отключён.
+
+# 21. ТЕКУЩАЯ ТОЧКА ПРОЕКТА
+
+На текущий момент инфраструктурная миграция уже вышла из этапа
+первоначальной подготовки.
+
+Текущая точка:
+
+Cloud Server ✅
+PostgreSQL ✅
+Backend API ✅
+Nginx + HTTPS ✅
+PM2 ✅
+Health check ✅
+Database migrations ✅
+Leads API ✅
+Leads PostgreSQL ✅
+Unisender email ✅
+Production leads test ✅
+
+Authentication 🔄
+Training 🔄
+
+Object Storage ⏳
+Reports / Media ⏳
+Chat / WebSocket ⏳
+Workers ⏳
+AI/OCR ⏳
+Payments ⏳
+Supabase removal ⏳
+
+Следующий основной рабочий блок:
+
 Authentication
 ↓
-Relationships / Permissions
+Training
 ↓
 Reports / Media
 ↓
 Chat
 ↓
-Training
+остальные модули
 ↓
-Other modules
-↓
-Staging
-↓
-Verification
-↓
-Production
-↓
-Rollback Window
-↓
-Decommission Supabase
-```
+полное отключение Supabase
 
-Feature-разработка может продолжаться только в пределах, которые не конфликтуют с текущим миграционным этапом.
+# 22. ПРАВИЛО АКТУАЛИЗАЦИИ
 
----
+Этот документ должен отражать фактическое состояние системы.
 
-# 12. ЧТО НЕ ДЕЛАЕМ НА ПЕРВОМ ЭТАПЕ
+Если инфраструктурное решение изменилось, необходимо обновить этот
+документ до начала следующего крупного этапа.
 
-Не создаём:
+Нельзя оставлять в документе:
 
-- Kubernetes;
-- Redis;
-- отдельные микросервисы;
-- сложный message broker;
-- отдельную инфраструктуру только ради будущей нагрузки;
-- второй frontend;
-- массовую перепись всех модулей.
+уже выполненные задачи как PLANNED;
 
-Архитектура должна оставаться простой до появления реальной необходимости масштабирования.
+удалённые компоненты как ACTIVE;
 
----
+отменённые архитектурные решения;
 
-# 13. ПРАВИЛО НОВЫХ ВНЕШНИХ СЕРВИСОВ
+Managed PostgreSQL как фактически используемую базу, если PostgreSQL
+работает непосредственно на Cloud Server.
 
-Каждый новый сервис должен быть предварительно проверен по:
-
-- необходимости;
-- обработке данных;
-- физическому хранению данных;
-- API/contract;
-- стоимости;
-- ограничениям;
-- возможности замены provider;
-- юридическим требованиям.
-
-После утверждения интеграция выполняется через соответствующий service/adapter.
-
----
-
-# 14. КРИТЕРИИ ЗАВЕРШЕНИЯ МИГРАЦИИ
-
-Миграция считается завершённой, если:
-
-- целевая инфраструктура работает;
-- данные находятся в целевой PostgreSQL;
-- пользовательские файлы находятся в целевом Object Storage;
-- Backend API является основной точкой доступа;
-- authentication работает;
-- permissions работают;
-- relationships работают;
-- Reports/Media работают;
-- Chat работает;
-- критические пользовательские сценарии проверены;
-- build проходит;
-- production работает стабильно;
-- rollback window завершён;
-- Supabase больше не является production dependency;
-- документация соответствует реализации;
-- CHANGELOG обновлён.
-
----
-
-# 15. ТЕКУЩАЯ ТОЧКА
-
-На момент утверждения документа:
-
-```text
-Документация
-     ↓
-     ✅
-     ↓
-Целевая архитектура
-     ↓
-     ✅
-     ↓
-Подготовка инфраструктуры
-     ↓
-     ← МЫ ЗДЕСЬ
-```
-
-**Следующее действие:**
-
-Подготовить инфраструктуру Selectel.
-
-После этого двигаться строго по данному документу.
-
----
-
-# 16. СВЯЗАННЫЕ ДОКУМЕНТЫ
-
-Основные документы:
-
-- `AGENTS.md`
-- `ARCHITECTURE.md`
-- `PROJECT_CONTEXT.md`
-- `PROJECT_STRUCTURE.md`
-- `DATABASE_SCHEMA.md`
-- `AUTH_ARCHITECTURE.md`
-- `PERMISSIONS_ARCHITECTURE.md`
-- `SECURITY.md`
-- `COACH_CLIENT_RELATIONSHIP.md`
-- `CHAT.md`
-- `REPORT.md`
-- `MEDIA.md`
-- `PAYMENT_ARCHITECTURE.md`
-- `ROADMAP.md`
-- `WORKFLOW.md`
-- `CODING_RULES.md`
-- `DEVELOPMENT_RULES.md`
-- `DESIGN_SYSTEM.md`
-- `PLATFORM_ARCHITECTURE.md`
-- `CHANGELOG.md`
-
----
-
-# ГЛАВНЫЙ ПРИНЦИП
-
-Не начинать миграцию с переписывания frontend.
-
-Сначала создаётся надёжная целевая инфраструктура.
-
-Затем данные и backend.
-
-Затем модули.
-
-Затем staging.
-
-Затем production.
-
-Старая инфраструктура удаляется последней.
-
-Цель — выполнить один контролируемый переход и не создавать необходимость повторной миграции.
+Последняя проверенная версия документа должна соответствовать реальному
+production-состоянию Stubborn Ram.

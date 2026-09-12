@@ -17,7 +17,7 @@ async function request(path, options = {}) {
       data: null,
       error: data ?? {
         error: "REQUEST_FAILED",
-        message: "роизошла ошибка запроса.",
+        message: "Произошла ошибка запроса.",
       },
     };
   }
