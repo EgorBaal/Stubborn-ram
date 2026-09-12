@@ -21,12 +21,9 @@ Roadmap определяет последовательность развити
 
 ---
 
-# Текущее состояние проекта
-
+Текущее состояние проекта
 Статус:
-
 🟡 Архитектурная миграция / подготовка к реализации
-
 До текущего этапа проект уже получил:
 
 - Landing Page;
@@ -42,22 +39,17 @@ Roadmap определяет последовательность развити
 - частично реализованную авторизацию;
 - модульную структуру frontend;
 - архитектурную документацию.
-
-Исторически backend был построен на Supabase/PostgreSQL/Edge Functions/Resend. Этот контур сохраняется до завершения миграции.
-
-Сейчас согласована целевая архитектура:
-
-```text
-React / PWA
-↓
-Services
-↓
-Backend API
-↓
-PostgreSQL + Object Storage
-↓
-Server-side integrations
-```
+  Исторически backend был построен на Supabase/PostgreSQL/Edge Functions/Resend. Этот контур сохраняется до завершения миграции.
+  Сейчас согласована целевая архитектура:
+  React / PWA
+  ↓
+  Services
+  ↓
+  Backend API
+  ↓
+  PostgreSQL + Object Storage
+  ↓
+  Server-side integrations
 
 ---
 
@@ -168,97 +160,98 @@ Email
 
 # ЭТАП 5 — Infrastructure Migration
 
-Статус: 🔜 Следующий крупный этап
+Статус: ✅ Завершено
 
 Цель:
 
-Один раз перейти на устойчивую целевую инфраструктуру и больше не менять фундамент без необходимости.
+Перейти на устойчивую целевую серверную инфраструктуру без повторного изменения фундамента без необходимости.
 
-Целевая инфраструктура:
+Реализовано:
 
 - Cloud Server;
-- Managed PostgreSQL;
-- Object Storage;
-- CDN;
-- DNS;
+- PostgreSQL 16;
 - Backend API;
-- server-side workers.
+- Nginx;
+- HTTPS;
+- DNS;
+- PM2;
+- pgAdmin;
+- production health check.
 
-Не добавлять на старте без реальной необходимости:
+Целевая цепочка:
 
-- Kubernetes;
-- Redis;
-- отдельный message broker;
-- микросервисную архитектуру.
-
-## Порядок
-
-```text
-Backup current system
+Frontend
 ↓
-Provision target infrastructure
+HTTPS
+↓
+Nginx
+↓
+Backend API
+↓
+Fastify
 ↓
 PostgreSQL
-↓
-Object Storage
-↓
-Backend Foundation
-↓
-Data Migration
-↓
-Verification
-↓
-Production Switch
-↓
-Rollback Window
-↓
-Decommission old infrastructure
-```
-
-Старая Supabase-инфраструктура не удаляется до завершения rollback window.
 
 ---
 
 # ЭТАП 6 — Backend Foundation
 
-Статус: 🔜 После подготовки инфраструктуры
+Статус: ✅ Завершено
 
 Цель:
 
-Создать основу собственного backend.
+Создать и запустить собственную основу Backend для production.
 
-Включает:
+Реализовано:
 
 - Backend API;
 - environment/secrets;
 - database connection;
 - migrations;
-- service/repository layer;
-- authentication foundation;
-- authorization foundation;
-- permissions;
+- PostgreSQL connection pool;
 - validation;
 - error handling;
 - rate limiting;
-- logging;
-- audit log;
-- health checks.
+- health checks;
+- production process management;
+- Nginx reverse proxy;
+- HTTPS;
+- server-side integrations.
 
 Результат:
 
 Frontend получает единую серверную точку входа.
 
+Текущая цепочка:
+
+Frontend
+↓
+Backend API
+↓
+Fastify
+↓
+PostgreSQL
+
+Следующие расширения Backend выполняются по мере миграции соответствующих модулей:
+
+- authorization;
+- permissions;
+- audit log;
+- Object Storage;
+- WebSocket;
+- workers.
+
 ---
 
 # ЭТАП 7 — Authentication & Account
 
-Статус: 🟡 Архитектура согласована, реализация частичная
+Статус: ✅ Завершено
 
 Цель:
 
-Перевести authentication на целевую Backend API архитектуру.
+Перевести Authentication на собственную Backend API архитектуру.
 
-Включает:
+Реализовано:
 
 - регистрация;
 - Email verification;
@@ -266,48 +259,86 @@ Frontend получает единую серверную точку входа.
 - logout;
 - persistent sessions;
 - password recovery;
+- resend verification;
+- session endpoint;
+- route protection;
+- access state;
+- profile creation;
+- password hashing через argon2;
+- session cookie;
+- auth route rate limiting.
+
+Production flows проверены:
+
+регистрация
+↓
+подтверждение Email
+↓
+вход
+↓
+сессия
+↓
+выход
+
+Также проверено восстановление пароля.
+
+Supabase Auth больше не является текущим механизмом Authentication.
+
+Дальнейшее расширение:
+
 - смена Email;
 - security notifications;
-- profile creation;
-- route protection;
-- access state.
-
-В дальнейшем:
-
 - 2FA/MFA.
 
 ---
 
 # ЭТАП 8 — Core Data Platform
 
-Статус: 🔜
+Статус: 🟡 Частично реализовано
 
 Цель:
 
 Создать основные сущности и связи, на которых строятся все модули.
 
-Включает:
+Уже реализовано:
 
-- profiles;
-- coach_client_relationships;
-- ownership;
-- authorship;
-- permissions;
+- базовая модель пользователей;
+- Authentication infrastructure;
+- PostgreSQL;
+- ownership для Training;
+- server-side authentication;
+- базовые server-side ownership checks.
+
+Training использует собственную persistence-модель:
+
+USER
+↓
+WORKOUT
+↓
+WORKOUT_EXERCISE
+↓
+WORKOUT_SET
+
+WORKOUT_EXERCISE
+↓
+EXERCISE
+
+В production реализованы:
+
+- `exercises`;
+- `workouts`;
+- `workout_exercises`;
+- `workout_sets`.
+
+Не реализовано:
+
+- `coach_client_relationships`;
+- полноценная permissions model;
 - access sources;
-- system statuses;
-- archive states.
+- archive states;
+- общая relationship-based authorization.
 
-Главный принцип:
-
-```text
-User
-↓
-Ownership
-↓
-Relationship
-↓
-Permissions
-```
+Эти сущности реализуются отдельным этапом до полноценного Client & Coach Platform.
 
 ---
 
@@ -336,6 +367,14 @@ Permissions
 - основные действия тренера.
 
 Данные не копируются между кабинетами.
+
+Для реализации требуется:
+
+- `coach_client_relationships`;
+- полноценная permissions model;
+- relationship-based access;
+- archive states;
+- исторический доступ.
 
 ---
 

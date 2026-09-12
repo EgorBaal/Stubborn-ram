@@ -166,7 +166,8 @@ Backend application:
 │ ├── auth/
 │ ├── db/
 │ ├── email/
-│ └── leads/
+│ ├── leads/
+│ └── training/
 ├── node_modules/
 ├── package.json
 ├── package-lock.json
@@ -277,6 +278,17 @@ Auth production flows проверены.
 
 Lead production flow также проверен.
 
+Реализовано:
+
+Training API
+
+GET /api/training/exercises
+GET /api/training/workouts
+GET /api/training/workouts/:id
+POST /api/training/workouts
+PUT /api/training/workouts/:id
+DELETE /api/training/workouts/:id
+
 Будущие API для следующих модулей ещё не реализованы:
 
 Profiles
@@ -285,7 +297,6 @@ Permissions
 Reports
 Media
 Chat
-Training
 Food
 Activity
 Weight
@@ -386,46 +397,53 @@ Role имеет LOGIN.
 
 # 15. Физическая схема PostgreSQL
 
-Статус: PARTIALLY IMPLEMENTED
+Статус: VERIFIED — CURRENT PRODUCTION SCHEMA
 
 На текущем этапе в базе существуют:
 
-auth_tokens
-leads
-pgmigrations
-profiles
-sessions
 users
+sessions
+auth_tokens
+profiles
+leads
+exercises
+workouts
+workout_exercises
+workout_sets
+pgmigrations
 
-Таблица leads уже создана и migration применена.
+Auth/session schema существует и используется production backend.
 
-Основные свойства leads:
+Leads schema реализована и используется production.
 
-UUID primary key;
+Training schema реализована и используется production.
 
-created_at;
+Основные Training таблицы:
 
-status;
+exercises
+workouts
+workout_exercises
+workout_sets
 
-данные анкеты;
+В production загружено:
 
-JSONB-массивы для соответствующих questionnaire fields;
+232 системных упражнения.
 
-контактные поля;
+Связи Training:
 
-vk;
+workouts.user_id → users.id
 
-instagram;
+workout_exercises.workout_id → workouts.id
 
-индексы по created_at и status.
+workout_exercises.exercise_id → exercises.id
 
-Статус новой заявки по умолчанию:
+workout_sets.workout_exercise_id → workout_exercises.id
 
-new
+Training ownership проверяется на Backend API.
 
-Auth/session schema уже существует.
+Существующие migrations не изменяются задним числом.
 
-Полная бизнес-схема MVP ещё не завершена.
+Остальная business schema MVP ещё не реализована.
 
 # 16. Database migrations
 
@@ -445,12 +463,18 @@ node-pg-migrate
 1788859125912_sessions.js
 1788859125913_auth_tokens.js
 1788859125914_leads.js
+1788859125915_training.js
+1788859125916_seed_exercises.js
 
 Auth/session migrations применены.
 
 Leads migration применена.
 
-Следующие бизнес-модули пока не имеют полной production schema.
+Training migration применена.
+
+Seed migration применена.
+
+В production загружено 232 системных упражнения.
 
 Существующие migrations не изменять задним числом.
 
@@ -760,9 +784,10 @@ Supabase не удалён полностью.
 
 Известные области:
 
-Training
 часть legacy Auth / related frontend code
 supabaseClient
+
+Training больше не относится к legacy Supabase flow.
 
 Правило:
 
@@ -781,9 +806,9 @@ Rollback window
 
 # 29. Training
 
-Статус: FRONTEND UI EXISTS / BACKEND PERSISTENCE NOT MIGRATED
+Статус: VERIFIED — PRODUCTION
 
-Training является следующим основным этапом разработки.
+Training persistence полностью переведён на новый Backend API и PostgreSQL.
 
 Существующие маршруты:
 
@@ -806,6 +831,15 @@ Training является следующим основным этапом ра�
 /app/training/:id
 → конкретная историческая тренировка
 
+Production Training API:
+
+GET /api/training/exercises
+GET /api/training/workouts
+GET /api/training/workouts/:id
+POST /api/training/workouts
+PUT /api/training/workouts/:id
+DELETE /api/training/workouts/:id
+
 Целевая модель данных:
 
 WORKOUT
@@ -814,8 +848,78 @@ WORKOUT_EXERCISE
 ↓
 WORKOUT_SET
 
-Persistence Training через новый Backend API и PostgreSQL ещё не
-реализована.
+WORKOUT_EXERCISE
+↓
+EXERCISE
+
+Production PostgreSQL содержит:
+
+exercises
+workouts
+workout_exercises
+workout_sets
+
+В production загружено:
+
+232 системных упражнения.
+
+Frontend Training использует:
+
+React
+↓
+trainingService
+↓
+Backend API
+↓
+Fastify
+↓
+PostgreSQL
+
+Backend выполняет authentication и ownership checks.
+
+Проверено в production:
+
+создание тренировки;
+
+загрузка истории;
+
+открытие тренировки по ID;
+
+редактирование тренировки;
+
+удаление тренировки;
+
+сохранение упражнений;
+
+сохранение подходов;
+
+перезагрузка страницы после сохранения;
+
+работа с датой и временем.
+
+Supabase больше не используется рабочим Training persistence flow.
+
+Training migration завершена.
+
+Следующие расширения Training остаются отдельными задачами:
+
+пользовательские упражнения;
+
+шаблоны;
+
+программы;
+
+media;
+
+feedback;
+
+история упражнения;
+
+analytics;
+
+Reports integration;
+
+расширенная coach-client permission model.
 
 # 30. Object Storage / S3
 
@@ -1015,7 +1119,7 @@ incident response.
 
 Не считать фактически завершёнными:
 
-полную PostgreSQL business schema;
+полную PostgreSQL business schema остальных MVP-модулей;
 
 Coach/Client backend;
 
@@ -1077,7 +1181,7 @@ Permissions backend PLANNED
 Coach/Client backend PLANNED
 Reports backend PLANNED
 Chat backend PLANNED
-Training persistence PLANNED
+Training persistence VERIFIED
 Full Supabase removal PLANNED
 
 # 42. Фактическая точка проекта
@@ -1114,7 +1218,7 @@ Documentation
 
 Training
 ↓
-➡ NEXT MAIN DEVELOPMENT STAGE
+✅ VERIFIED + PRODUCTION
 
 Фактически работающая базовая цепочка:
 
@@ -1154,7 +1258,9 @@ Unisender Go
 
 Следующая основная задача проекта:
 
-TRAINING
+Миграция следующего legacy-модуля на Backend API и PostgreSQL.
+
+Training migration завершена и повторной миграции не требует.
 
 Не возвращаться к уже проверенным:
 
@@ -1168,9 +1274,11 @@ Auth;
 
 Email;
 
-Leads.
+Leads;
 
-Работа продолжается с существующего Training UI.
+Training persistence.
+
+Работа продолжается со следующего модуля согласно ROADMAP.md.
 
 # 44. Правило для будущих AI-агентов
 
@@ -1315,13 +1423,13 @@ Frontend Auth → Backend ✅
 Leads migration ✅
 Lead persistence ✅
 Lead email ✅
+Training persistence ✅
 
 Object Storage ⏳
 Permissions ⏳
 Coach/Client ⏳
 Reports ⏳
 Chat/WebSocket ⏳
-Training persistence ⏳
 Full Supabase removal ⏳
 
 Это является текущей контрольной точкой серверного состояния Stubborn

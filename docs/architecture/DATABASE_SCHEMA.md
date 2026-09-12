@@ -4,11 +4,11 @@
 
 Версия документа:
 
-1.1
+1.2
 
 Статус:
 
-Проектирование целевой схемы / подготовка миграции
+Целевая схема / фактически реализованная PostgreSQL-схема
 
 ---
 
@@ -25,7 +25,7 @@ DATABASE_SCHEMA.md описывает структуру данных платф
 - границы текущего MVP;
 - переход от Supabase PostgreSQL к целевой PostgreSQL-инфраструктуре.
 
-Этот документ является основой для дальнейшего проектирования и создания базы данных PostgreSQL.
+Этот документ является основой для проектирования, реализации и дальнейшего развития базы данных PostgreSQL.
 
 На текущем этапе в репозитории уже присутствуют базовые SQL-скрипты для хранения лидов и настройки RLS:
 
@@ -36,7 +36,11 @@ DATABASE_SCHEMA.md описывает структуру данных платф
 
 Важно:
 
-**описание сущностей ниже является целевой архитектурой. Наличие сущности в этом документе не означает, что соответствующая таблица уже существует в production.**
+Документ разделяет фактически реализованную схему и целевые сущности будущих модулей.
+
+Если сущность отмечена как CURRENT IMPLEMENTED, соответствующая структура уже реализована в production PostgreSQL.
+
+Если сущность отмечена как PLANNED, она является частью целевой архитектуры и ещё не считается реализованной.
 
 ---
 
@@ -405,50 +409,134 @@ Object Storage хранит:
 
 # TRAINING
 
+TRAINING
 Статус:
-
-**P1 — после критических модулей MVP.**
-
-Training имеет утвержденную модель:
-
-```text
+CURRENT IMPLEMENTED — production
+Training persistence реализован в PostgreSQL.
+Каноническая модель:
+USER
+↓
 WORKOUT
 ↓
 WORKOUT_EXERCISE
 ↓
 WORKOUT_SET
-```
 
-Дополнительные связи:
-
-```text
-WORKOUT
+WORKOUT_EXERCISE
 ↓
-MEDIA
+EXERCISE
 
-WORKOUT
-↓
-FEEDBACK
-↓
-AUTHOR
-```
+Основные таблицы:
 
-Training должен использовать общий Media слой.
-
-Отчеты могут ссылаться на существующие тренировки.
-
-Chat может ссылаться на существующие объекты через object references.
-
-Копирование одной и той же тренировки между модулями не используется.
-
-Целевые сущности:
-
-- `exercises`;
-- `workouts`;
-- `workout_exercises`;
-- `workout_sets`.
-
-Точная структура полей должна соответствовать утвержденной архитектуре TRAINING.md перед созданием таблиц.
+- exercises;
+- workouts;
+- workout_exercises;
+- workout_sets.
+  exercises
+  Системные упражнения:
+- user_id IS NULL.
+  Личные упражнения:
+- user_id = пользователь.
+  На текущем этапе в production загружено:
+- 232 системных упражнения.
+  Текущая реализованная схема:
+- id — UUID;
+- name;
+- muscle_group;
+- user_id;
+- created_at;
+- updated_at.
+  Индекс:
+- (user_id, name).
+  Пользовательские упражнения пока не реализованы в frontend/backend flow.
+  workouts
+  Тренировка принадлежит пользователю через user_id.
+  Текущие поля:
+- id — UUID;
+- user_id;
+- title;
+- training_date;
+- start_time;
+- end_time;
+- training_type;
+- comment;
+- status;
+- completed_at;
+- created_at;
+- updated_at.
+  Индексы:
+- (user_id, training_date);
+- (user_id, created_at).
+  workout_exercises
+  Связывает конкретную тренировку с упражнением.
+  Текущие поля:
+- id — UUID;
+- workout_id;
+- exercise_id;
+- position;
+- exercise_comment;
+- superset_after;
+- created_at;
+- updated_at.
+  Связи:
+- workout_id → workouts;
+- exercise_id → exercises.
+  Удаление упражнения, на которое ссылается история, защищено ограничением внешнего ключа.
+  workout_sets
+  Каждый подход является отдельной записью.
+  Текущие поля:
+- id — UUID;
+- workout_exercise_id;
+- position;
+- weight;
+- repetitions;
+- difficulty;
+- distance;
+- calories;
+- speed;
+- power;
+- incline;
+- time;
+- rir;
+- rpe;
+- rest;
+- intensity_methods — JSONB.
+  Связь:
+- workout_exercise_id → workout_exercises.
+  Индекс:
+- (workout_exercise_id, position).
+  Backend
+  Training работает через:
+  React
+  ↓
+  trainingService
+  ↓
+  Backend API
+  ↓
+  Fastify
+  ↓
+  PostgreSQL
+  Основные API-операции:
+- получение системных упражнений;
+- получение истории тренировок;
+- получение тренировки по ID;
+- создание;
+- обновление;
+- удаление.
+  Backend выполняет server-side authentication и ownership checks.
+  Supabase не является источником данных для рабочего Training persistence flow.
+  Не реализовано в текущем Training persistence
+  Следующие возможности остаются будущими:
+- пользовательские упражнения;
+- шаблоны и программы как persisted entities;
+- media;
+- feedback;
+- история конкретного упражнения как отдельный функциональный слой;
+- Reports integration;
+- Analytics integration;
+- расширенная coach-client permission model.
+  Эти пункты не означают отсутствие текущей Training persistence.
+  Они являются следующими расширениями уже существующей модели.
 
 ---
 
@@ -556,7 +644,6 @@ REPORT
 
 Training подключается отдельно:
 
-```text
 USER
 ↓
 WORKOUT
@@ -565,18 +652,21 @@ WORKOUT_EXERCISE
 ↓
 WORKOUT_SET
 
+WORKOUT_EXERCISE
+↓
+EXERCISE
+
+В будущем:
+
 WORKOUT
 ↓
 MEDIA
 
-REPORT
+WORKOUT / WORKOUT_EXERCISE / WORKOUT_SET
 ↓
-reference → WORKOUT
+FEEDBACK
 
-CHAT
-↓
-object reference → WORKOUT
-```
+Reports и Chat могут ссылаться на существующие Training-объекты через object references.
 
 Данные не копируются между модулями.
 
@@ -593,21 +683,27 @@ Object Storage является источником истины для сам�
 ```text
 PostgreSQL
 │
-├── user/profile data
-├── relationships
-├── chats
-├── messages
-├── reports
-├── feedback
-├── media metadata
-└── training data
+├── implemented:
+│   ├── auth/session infrastructure
+│   ├── leads
+│   └── training data
+│
+└── planned:
+    ├── relationships
+    ├── chats
+    ├── messages
+    ├── reports
+    ├── feedback
+    └── media metadata
 
 Object Storage
 │
-├── photos
-├── screenshots
-├── videos
-└── documents
+└── planned:
+    ├── photos
+    ├── screenshots
+    ├── videos
+    └── documents
+
 ```
 
 ---
@@ -735,7 +831,36 @@ Weekly Report является самостоятельным каноничес
 
 Статус:
 
-**P1 — архитектура утверждена, persistence не реализован.**
+**CURRENT IMPLEMENTED — production.**
+
+Основная persistence-модель реализована:
+
+- `exercises`;
+- `workouts`;
+- `workout_exercises`;
+- `workout_sets`.
+
+Training Backend API реализован.
+
+Frontend Training использует Backend API через `trainingService`.
+
+Создание, загрузка, редактирование и удаление тренировок проверены в production.
+
+232 системных упражнения перенесены в PostgreSQL.
+
+Supabase больше не используется рабочим Training flow.
+
+Следующие расширения Training проектируются отдельно:
+
+- пользовательские упражнения;
+- шаблоны;
+- программы;
+- media;
+- feedback;
+- история упражнения;
+- analytics;
+- Reports integration;
+- расширенные permissions.
 
 ---
 
@@ -808,11 +933,11 @@ SQL-миграции должны соответствовать DATABASE_SCHEMA
 
 # Правило миграции
 
-Целевая база данных создается в PostgreSQL новой backend-инфраструктуры.
+Целевая база данных Stubborn Ram находится в PostgreSQL новой backend-инфраструктуры.
 
-Supabase не является целевой системой хранения.
+Уже мигрированные модули используют эту PostgreSQL-инфраструктуру как источник истины.
 
-Во время миграции:
+Во время миграции legacy-модуля:
 
 1. существующие данные сохраняются;
 2. создается целевая схема;
@@ -821,32 +946,10 @@ Supabase не является целевой системой хранения.
 5. реализуются серверные проверки доступа;
 6. выполняется перенос данных;
 7. выполняется проверка целостности;
-8. только после успешной проверки frontend переводится на новую систему.
+8. frontend переводится на новую систему;
+9. старый flow удаляется только после успешной проверки.
 
-Старая база не удаляется до завершения проверки миграции.
-
----
-
-# Definition of Done для схемы MVP
-
-Схема MVP считается готовой к реализации, когда согласованы:
-
-- структура пользователей и профилей;
-- coach-client relationship;
-- chat;
-- messages;
-- reports;
-- report feedback;
-- media metadata;
-- связи media с объектами;
-- ownership;
-- authorship;
-- индексы для основных запросов;
-- ограничения целостности;
-- правила доступа;
-- стратегия хранения.
-
-После этого допускается создание production SQL-миграций.
+Training является уже мигрированным модулем и не требует повторной миграции persistence.
 
 ---
 
@@ -869,3 +972,7 @@ Supabase не является целевой системой хранения.
 Media хранится отдельно от структурированных данных.
 
 История пользователя не должна исчезать из-за смены тренера, окончания Trial или смены инфраструктурного provider.
+
+```
+
+```
