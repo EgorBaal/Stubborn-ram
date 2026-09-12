@@ -121,12 +121,17 @@ export default function TrainingInfo({
     setIsTrainingTypePickerOpen(nextIsTrainingTypePickerOpen);
   };
 
+  const safeTrainingDate =
+    trainingDate instanceof Date && !Number.isNaN(trainingDate.getTime())
+      ? trainingDate
+      : new Date();
+
   const formattedTrainingDate = new Intl.DateTimeFormat("ru-RU", {
     day: "numeric",
     month: "short",
     year: "numeric",
   })
-    .formatToParts(trainingDate)
+    .formatToParts(safeTrainingDate)
     .map((part) => {
       if (part.type !== "month") {
         return part.value;

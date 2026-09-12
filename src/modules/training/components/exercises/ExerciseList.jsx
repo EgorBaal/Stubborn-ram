@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { supabase } from "@/shared/lib/supabaseClient";
+const TRAINING_API_URL = "https://api.stubbornram.ru/api/training";
 
 import "./ExerciseList.css";
 
@@ -62,11 +62,16 @@ export default function ExerciseList({ onSelect }) {
       setLoading(true);
       setError("");
 
-      const { data, error: fetchError } = await supabase
-        .from("exercises")
-        .select("id, name, muscle_group")
-        .is("user_id", null)
-        .order("name", { ascending: true });
+      const response = await fetch(`${TRAINING_API_URL}/exercises`, {
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Не удалось загрузить упражнения.");
+      }
+
+      const { exercises: data } = await response.json();
+      const fetchError = null;
 
       if (!isMounted) {
         return;
@@ -77,8 +82,6 @@ export default function ExerciseList({ onSelect }) {
         setError("Не удалось загрузить упражнения");
         setExercises([]);
       } else {
-        console.log("EXERCISES FROM SUPABASE:", data);
-
         setExercises(data ?? []);
       }
 

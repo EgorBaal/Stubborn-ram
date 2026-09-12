@@ -201,9 +201,6 @@ export default function DatePopover({
 
       const capitalized = text.charAt(0).toUpperCase() + text.slice(1);
 
-      // ВАЖНО:
-      // не записываем textContent, если он уже правильный.
-      // Иначе MutationObserver запускает сам себя бесконечно.
       if (monthNode.textContent.trim() === capitalized) {
         return;
       }
@@ -230,6 +227,11 @@ export default function DatePopover({
     };
   }, [isPositioned]);
 
+  const safeSelectedDate =
+    trainingDate instanceof Date && !Number.isNaN(trainingDate.getTime())
+      ? trainingDate
+      : new Date();
+
   if (!isPositioned) {
     return null;
   }
@@ -245,11 +247,11 @@ export default function DatePopover({
       <DatePicker
         inline
         locale="ru"
-        selected={trainingDate}
+        selected={safeSelectedDate}
         showPreviousMonths={false}
         fixedHeight
         onChange={(date) => {
-          if (date) {
+          if (date instanceof Date && !Number.isNaN(date.getTime())) {
             setTrainingDate(date);
           }
 

@@ -66,3 +66,41 @@ export async function deleteUserSession(pool, request, reply) {
 
   clearSessionCookie(reply);
 }
+
+export async function getAuthenticatedUser(pool, request) {
+  const token = getSessionToken(request);
+
+  if (!token) {
+    return null;
+  }
+
+  const tokenHash = hashSessionToken(token);
+
+  const result = await pool.query(
+    `
+      SELECT user_id
+      FROM sessions
+      WHERE token_hash = $1
+        AND expires_at > now()
+      LIMIT 1
+    `,
+    [tokenHash],
+  );
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  await pool.query(
+    `
+      UPDATE sessions
+      SET last_used_at = now()
+      WHERE token_hash = $1
+    `,
+    [tokenHash],
+  );
+
+  return {
+    userId: result.rows[0].user_id,
+  };
+}

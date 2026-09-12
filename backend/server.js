@@ -8,6 +8,7 @@ import rateLimit from "@fastify/rate-limit";
 import { createDatabasePool } from "./modules/db/database.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import leadsRoutes from "./modules/leads/leads.routes.js";
+import trainingRoutes from "./modules/training/training.routes.js";
 
 const app = Fastify({
   logger: true,
@@ -23,6 +24,7 @@ await app.register(cors, {
     "http://127.0.0.1:5173",
     "https://stubbornram.ru",
   ],
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true,
 });
 
@@ -44,6 +46,7 @@ app.get("/health", async () => {
 
 await app.register(authRoutes);
 await app.register(leadsRoutes);
+await app.register(trainingRoutes);
 
 const start = async () => {
   try {

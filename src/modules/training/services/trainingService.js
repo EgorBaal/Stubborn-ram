@@ -1,5 +1,3 @@
-import { supabase } from "@/shared/lib/supabaseClient";
-
 function formatDateForDatabase(date) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
     throw new Error("Некорректная дата тренировки.");
@@ -29,19 +27,6 @@ export async function saveCompletedWorkout({
   comment,
   exercises,
 }) {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    throw userError;
-  }
-
-  if (!user) {
-    throw new Error("Пользователь не авторизован.");
-  }
-
   const preparedExercises = exercises
     .map((exercise, index) => ({
       ...exercise,
@@ -49,197 +34,124 @@ export async function saveCompletedWorkout({
     }))
     .filter((exercise) => exercise.exerciseId);
 
-  const workoutPayload = {
-    user_id: user.id,
-    title: title?.trim() || "Новая тренировка",
-    training_date: formatDateForDatabase(trainingDate),
-    start_time: normalizeValue(startTime),
-    end_time: normalizeValue(endTime),
-    training_type: trainingType || "Силовая",
-    comment: comment?.trim() || null,
-    status: "completed",
-    completed_at: new Date().toISOString(),
-  };
+  const response = await fetch(
+    "https://api.stubbornram.ru/api/training/workouts",
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title?.trim() || "Новая тренировка",
+        trainingDate: formatDateForDatabase(trainingDate),
+        startTime: normalizeValue(startTime),
+        endTime: normalizeValue(endTime),
+        trainingType: trainingType || "Силовая",
+        comment: comment?.trim() || null,
+        exercises: preparedExercises.map((exercise) => ({
+          exerciseId: exercise.exerciseId,
+          position: exercise.position,
+          exerciseComment: exercise.exerciseComment?.trim() || null,
+          supersetAfter: Boolean(exercise.supersetAfter),
+          sets: (exercise.sets || []).map((set, index) => ({
+            position: index,
+            weight: normalizeValue(set.weight),
+            repetitions: normalizeValue(set.repetitions),
+            difficulty: normalizeValue(set.difficulty),
+            distance: normalizeValue(set.distance),
+            calories: normalizeValue(set.calories),
+            speed: normalizeValue(set.speed),
+            power: normalizeValue(set.power),
+            incline: normalizeValue(set.incline),
+            time: normalizeValue(set.time),
+            rir: normalizeValue(set.rir),
+            rpe: normalizeValue(set.rpe),
+            rest: normalizeValue(set.rest),
+            intensityMethods: Array.isArray(set.intensityMethods)
+              ? set.intensityMethods
+              : [],
+          })),
+        })),
+      }),
+    },
+  );
 
-  const { data: workout, error: workoutError } = await supabase
-    .from("workouts")
-    .insert(workoutPayload)
-    .select("id")
-    .single();
-
-  if (workoutError) {
-    throw workoutError;
-  }
-
-  try {
-    for (const exercise of preparedExercises) {
-      const { data: workoutExercise, error: workoutExerciseError } =
-        await supabase
-          .from("workout_exercises")
-          .insert({
-            workout_id: workout.id,
-            exercise_id: exercise.exerciseId,
-            position: exercise.position,
-            exercise_comment: exercise.exerciseComment?.trim() || null,
-            superset_after: Boolean(exercise.supersetAfter),
-          })
-          .select("id")
-          .single();
-
-      if (workoutExerciseError) {
-        throw workoutExerciseError;
-      }
-
-      const preparedSets = (exercise.sets || []).map((set, index) => ({
-        workout_exercise_id: workoutExercise.id,
-        position: index,
-        weight: normalizeValue(set.weight),
-        repetitions: normalizeValue(set.repetitions),
-        difficulty: normalizeValue(set.difficulty),
-        distance: normalizeValue(set.distance),
-        calories: normalizeValue(set.calories),
-        speed: normalizeValue(set.speed),
-        power: normalizeValue(set.power),
-        incline: normalizeValue(set.incline),
-        time: normalizeValue(set.time),
-        rir: normalizeValue(set.rir),
-        rpe: normalizeValue(set.rpe),
-        rest: normalizeValue(set.rest),
-        intensity_methods: Array.isArray(set.intensityMethods)
-          ? set.intensityMethods
-          : [],
-      }));
-
-      if (preparedSets.length === 0) {
-        continue;
-      }
-
-      const { error: setsError } = await supabase
-        .from("workout_sets")
-        .insert(preparedSets);
-
-      if (setsError) {
-        throw setsError;
-      }
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Пользователь не авторизован.");
     }
 
-    return workout;
-  } catch (error) {
-    await supabase.from("workouts").delete().eq("id", workout.id);
+    const errorData = await response.json().catch(() => null);
 
-    throw error;
+    throw new Error(errorData?.error || "Не удалось сохранить тренировку.");
   }
+
+  return response.json();
 }
 
 export async function getCompletedWorkouts() {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  const response = await fetch(
+    "https://api.stubbornram.ru/api/training/workouts",
+    {
+      credentials: "include",
+    },
+  );
 
-  if (userError) {
-    throw userError;
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Пользователь не авторизован.");
+    }
+
+    throw new Error("Не удалось загрузить историю тренировок.");
   }
 
-  if (!user) {
-    throw new Error("Пользователь не авторизован.");
-  }
+  const { workouts } = await response.json();
 
-  const { data, error } = await supabase
-    .from("workouts")
-    .select("id, title, training_date, created_at")
-    .eq("user_id", user.id)
-    .eq("status", "completed")
-    .order("training_date", { ascending: false })
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    throw error;
-  }
-
-  return (data || []).map((workout) => ({
+  return (workouts || []).map((workout) => ({
     id: workout.id,
     title: workout.title,
-    createdAt: new Date(`${workout.training_date}T00:00:00`),
+    createdAt: new Date(`${workout.createdAt}`),
   }));
 }
 
 export async function getWorkoutById(workoutId) {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    throw userError;
-  }
-
-  if (!user) {
-    throw new Error("Пользователь не авторизован.");
-  }
-
   if (!workoutId) {
     throw new Error("Не указан ID тренировки.");
   }
 
-  const { data, error } = await supabase
-    .from("workouts")
-    .select(
-      `
-      id,
-      user_id,
-      title,
-      training_date,
-      start_time,
-      end_time,
-      training_type,
-      comment,
-      status,
-      completed_at,
-      created_at,
-      updated_at,
-      workout_exercises (
-        id,
-        workout_id,
-        exercise_id,
-        position,
-        exercise_comment,
-        superset_after,
-        exercises (
-          id,
-          name,
-          muscle_group
-        ),
-        workout_sets (
-          id,
-          workout_exercise_id,
-          position,
-          weight,
-          repetitions,
-          difficulty,
-          distance,
-          calories,
-          speed,
-          power,
-          incline,
-          time,
-          rir,
-          rpe,
-          rest,
-          intensity_methods
-        )
-      )
-    `,
-    )
-    .eq("id", workoutId)
-    .eq("user_id", user.id)
-    .single();
+  const response = await fetch(
+    `https://api.stubbornram.ru/api/training/workouts/${workoutId}`,
+    {
+      credentials: "include",
+    },
+  );
 
-  if (error) {
-    throw error;
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Пользователь не авторизован.");
+    }
+
+    if (response.status === 404) {
+      throw new Error("Тренировка не найдена.");
+    }
+
+    throw new Error("Не удалось загрузить тренировку.");
   }
 
-  return data;
+  const workout = await response.json();
+
+  return {
+    ...workout,
+    training_date: workout.training_date
+      ? String(workout.training_date).slice(0, 10)
+      : "",
+    start_time: workout.start_time
+      ? String(workout.start_time).slice(11, 16)
+      : "",
+
+    end_time: workout.end_time ? String(workout.end_time).slice(11, 16) : "",
+  };
 }
 
 export async function updateWorkout({
@@ -252,19 +164,6 @@ export async function updateWorkout({
   comment,
   exercises,
 }) {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    throw userError;
-  }
-
-  if (!user) {
-    throw new Error("Пользователь не авторизован.");
-  }
-
   if (!workoutId) {
     throw new Error("Не указан ID тренировки.");
   }
@@ -276,146 +175,92 @@ export async function updateWorkout({
     }))
     .filter((exercise) => exercise.exerciseId);
 
-  const workoutPayload = {
-    title: title?.trim() || "Новая тренировка",
-    training_date: formatDateForDatabase(trainingDate),
-    start_time: normalizeValue(startTime),
-    end_time: normalizeValue(endTime),
-    training_type: trainingType || "Силовая",
-    comment: comment?.trim() || null,
-    status: "completed",
-    completed_at: new Date().toISOString(),
-  };
+  const response = await fetch(
+    `https://api.stubbornram.ru/api/training/workouts/${workoutId}`,
+    {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title?.trim() || "Новая тренировка",
+        trainingDate: formatDateForDatabase(trainingDate),
+        startTime: normalizeValue(startTime),
+        endTime: normalizeValue(endTime),
+        trainingType: trainingType || "Силовая",
+        comment: comment?.trim() || null,
+        exercises: preparedExercises.map((exercise) => ({
+          exerciseId: exercise.exerciseId,
+          position: exercise.position,
+          exerciseComment: exercise.exerciseComment?.trim() || null,
+          supersetAfter: Boolean(exercise.supersetAfter),
+          sets: (exercise.sets || []).map((set, index) => ({
+            position: index,
+            weight: normalizeValue(set.weight),
+            repetitions: normalizeValue(set.repetitions),
+            difficulty: normalizeValue(set.difficulty),
+            distance: normalizeValue(set.distance),
+            calories: normalizeValue(set.calories),
+            speed: normalizeValue(set.speed),
+            power: normalizeValue(set.power),
+            incline: normalizeValue(set.incline),
+            time: normalizeValue(set.time),
+            rir: normalizeValue(set.rir),
+            rpe: normalizeValue(set.rpe),
+            rest: normalizeValue(set.rest),
+            intensityMethods: Array.isArray(set.intensityMethods)
+              ? set.intensityMethods
+              : [],
+          })),
+        })),
+      }),
+    },
+  );
 
-  const { data: workout, error: workoutError } = await supabase
-    .from("workouts")
-    .update(workoutPayload)
-    .eq("id", workoutId)
-    .eq("user_id", user.id)
-    .select("id")
-    .single();
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Пользователь не авторизован.");
+    }
 
-  if (workoutError) {
-    throw workoutError;
+    if (response.status === 404) {
+      throw new Error("Тренировка не найдена.");
+    }
+
+    const errorData = await response.json().catch(() => null);
+
+    throw new Error(errorData?.message || "Не удалось обновить тренировку.");
   }
 
-  try {
-    const { data: existingExercises, error: existingExercisesError } =
-      await supabase
-        .from("workout_exercises")
-        .select("id")
-        .eq("workout_id", workoutId);
-
-    if (existingExercisesError) {
-      throw existingExercisesError;
-    }
-
-    const existingExerciseIds = (existingExercises || []).map(
-      (exercise) => exercise.id,
-    );
-
-    if (existingExerciseIds.length > 0) {
-      const { error: deleteSetsError } = await supabase
-        .from("workout_sets")
-        .delete()
-        .in("workout_exercise_id", existingExerciseIds);
-
-      if (deleteSetsError) {
-        throw deleteSetsError;
-      }
-
-      const { error: deleteExercisesError } = await supabase
-        .from("workout_exercises")
-        .delete()
-        .eq("workout_id", workoutId);
-
-      if (deleteExercisesError) {
-        throw deleteExercisesError;
-      }
-    }
-
-    for (const exercise of preparedExercises) {
-      const { data: workoutExercise, error: workoutExerciseError } =
-        await supabase
-          .from("workout_exercises")
-          .insert({
-            workout_id: workoutId,
-            exercise_id: exercise.exerciseId,
-            position: exercise.position,
-            exercise_comment: exercise.exerciseComment?.trim() || null,
-            superset_after: Boolean(exercise.supersetAfter),
-          })
-          .select("id")
-          .single();
-
-      if (workoutExerciseError) {
-        throw workoutExerciseError;
-      }
-
-      const preparedSets = (exercise.sets || []).map((set, index) => ({
-        workout_exercise_id: workoutExercise.id,
-        position: index,
-        weight: normalizeValue(set.weight),
-        repetitions: normalizeValue(set.repetitions),
-        difficulty: normalizeValue(set.difficulty),
-        distance: normalizeValue(set.distance),
-        calories: normalizeValue(set.calories),
-        speed: normalizeValue(set.speed),
-        power: normalizeValue(set.power),
-        incline: normalizeValue(set.incline),
-        time: normalizeValue(set.time),
-        rir: normalizeValue(set.rir),
-        rpe: normalizeValue(set.rpe),
-        rest: normalizeValue(set.rest),
-        intensity_methods: Array.isArray(set.intensityMethods)
-          ? set.intensityMethods
-          : [],
-      }));
-
-      if (preparedSets.length === 0) {
-        continue;
-      }
-
-      const { error: setsError } = await supabase
-        .from("workout_sets")
-        .insert(preparedSets);
-
-      if (setsError) {
-        throw setsError;
-      }
-    }
-
-    return workout;
-  } catch (error) {
-    throw error;
-  }
+  return response.json();
 }
 
 export async function deleteWorkout(workoutId) {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    throw userError;
-  }
-
-  if (!user) {
-    throw new Error("Пользователь не авторизован.");
-  }
-
   if (!workoutId) {
     throw new Error("Не указан ID тренировки.");
   }
 
-  const { error } = await supabase
-    .from("workouts")
-    .delete()
-    .eq("id", workoutId)
-    .eq("user_id", user.id);
+  const response = await fetch(
+    `https://api.stubbornram.ru/api/training/workouts/${workoutId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    },
+  );
 
-  if (error) {
-    throw error;
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Пользователь не авторизован.");
+    }
+
+    if (response.status === 404) {
+      throw new Error("Тренировка не найдена.");
+    }
+
+    const errorData = await response.json().catch(() => null);
+
+    throw new Error(errorData?.message || "Не удалось удалить тренировку.");
   }
+
+  return response.json();
 }
