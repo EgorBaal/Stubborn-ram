@@ -326,8 +326,12 @@ Resend integration;
 Однако Supabase пока остаётся legacy-зависимостью для ещё не
 перенесённых частей приложения.
 
-В частности, Supabase пока используется некоторыми частями
-Authentication и Training.
+В текущем репозитории рабочие Auth и Training flows уже используют
+Backend API и PostgreSQL.
+
+Каталог `supabase/` сохраняется как legacy-артефакт миграции до
+окончательной очистки репозитория и подтверждения, что оставшихся
+рабочих зависимостей больше нет.
 
 Полное отключение Supabase является будущим этапом.
 
@@ -345,8 +349,8 @@ Transactional email Unisender Go VERIFIED
 Leads API Own Backend API VERIFIED
 Leads storage PostgreSQL VERIFIED
 Leads email Unisender Go VERIFIED
-Authentication Backend + legacy Supabase parts IN PROGRESS
-Training Supabase LEGACY / IN PROGRESS
+Authentication Own Backend API VERIFIED
+Training Backend API + PostgreSQL VERIFIED
 Object Storage Selectel S3 PLANNED
 CDN Selectel CDN PLANNED
 Chat / WebSocket Own Backend PLANNED
@@ -426,32 +430,26 @@ production end-to-end test.
 
 Authentication
 
-Завершить переход Authentication на собственный Backend API.
+Переход основных Authentication flows на собственный Backend API
+завершён.
 
-Требования:
+Следующие задачи Authentication:
 
-registration;
+change email;
 
-email verification;
+Welcome Flow / onboarding;
 
-login;
+дополнительные security-сценарии;
 
-persistent sessions;
+дальнейшее развитие profile lifecycle;
 
-logout;
-
-password reset;
-
-profile lifecycle;
-
-server-side authorization.
+расширение server-side authorization.
 
 Training
 
-После стабилизации Authentication продолжить миграцию Training с
-Supabase на Backend API + PostgreSQL.
+Базовая Training migration на Backend API + PostgreSQL завершена.
 
-Миграция выполняется модульно.
+Следующие расширения выполняются модульно.
 
 Reports + Media
 

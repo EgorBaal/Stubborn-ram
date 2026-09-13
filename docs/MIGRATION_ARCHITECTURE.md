@@ -315,12 +315,11 @@ Supabase ещё не удалён полностью из проекта.
 
 Это важно.
 
-После миграции leads Supabase продолжает использоваться в существующем
-коде других частей приложения, в частности:
+После миграции leads каталог `supabase/` и связанные legacy-артефакты
+ещё сохраняются в проекте.
 
-Training;
-
-части Auth.
+При этом по текущему коду рабочие Training и Auth flows уже используют
+Backend API и PostgreSQL.
 
 Поэтому сейчас нельзя считать выполненным условие:
 
@@ -377,12 +376,12 @@ profiles
 sessions
 auth_tokens
 
-При этом frontend пока содержит оставшиеся Supabase-зависимости Auth.
+Frontend Auth использует Backend API через `src/services/auth/authService.js`.
 
 Поэтому текущий статус:
 
 Backend Auth — реализован
-Полный frontend переход с Supabase Auth — ещё не завершён
+Рабочие frontend Auth flows переведены на Backend API
 
 Повторный аудит Auth на этом этапе не является задачей миграции.
 
@@ -614,7 +613,8 @@ frontend использует новый lead API;
 production структура backend очищена от старой backend/src/.
 
 При этом полная ликвидация Supabase ещё не является выполненной
-задачей, поскольку Training и части Auth ещё используют Supabase.
+задачей, поскольку legacy-артефакты Supabase ещё сохраняются в
+репозитории до отдельного cleanup-этапа.
 
 # 23. Архитектурный принцип
 

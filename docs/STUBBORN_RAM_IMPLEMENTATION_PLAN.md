@@ -176,9 +176,17 @@ profiles
 sessions
 auth_tokens
 
-Однако frontend пока содержит Supabase-зависимости Auth.
+Frontend Auth использует Backend API через `src/services/auth/authService.js`.
 
-Поэтому Auth не считается полностью переведённым на новый backend.
+Текущие рабочие Auth flows переведены на новый backend.
+
+Следующие расширения Auth остаются отдельными задачами:
+
+смена Email;
+
+Welcome Flow / onboarding;
+
+дополнительные security-сценарии.
 
 Это не текущий первый этап работы.
 
@@ -187,8 +195,11 @@ auth_tokens
 Supabase пока сохраняется как legacy для тех частей приложения, которые
 ещё не переведены.
 
-В частности, текущий код Training и часть Auth всё ещё используют
+В текущем репозитории рабочие Auth и Training flows уже не используют
 Supabase.
+
+Каталог `supabase/` сохраняется как legacy-артефакт миграции до
+отдельного cleanup-этапа.
 
 Правило:
 
@@ -197,11 +208,7 @@ Supabase.
 
 Удалённый lead-flow к Supabase возвращать не нужно.
 
-# 7. Текущий основной этап --- Training
-
-Следующий этап разработки:
-
-Training
+# 7. Training
 
 Training уже имеет существующий UI.
 
@@ -226,12 +233,15 @@ Training уже имеет существующий UI.
 /app/training/:id
 → конкретная историческая тренировка
 
+Базовая Training persistence уже работает через Backend API и
+PostgreSQL.
+
 Эти маршруты и существующий UI не переписываются без необходимости.
 
 # 8. Цель Training
 
-Наша задача --- перевести Training от текущего UI/legacy data flow к
-устойчивому сохранению данных.
+Базовая задача перевода Training от UI/legacy data flow к устойчивому
+сохранению данных уже выполнена.
 
 Целевая модель:
 
@@ -245,8 +255,8 @@ PostgreSQL
 
 Frontend не должен напрямую работать с PostgreSQL.
 
-До изменения существующего Training-кода сначала определить, какая часть
-уже работает и какие именно данные сейчас получает/сохраняет Supabase.
+Следующие изменения Training должны опираться на уже существующие
+Backend API и PostgreSQL persistence.
 
 # 9. Training data model
 

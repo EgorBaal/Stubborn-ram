@@ -465,6 +465,7 @@ node-pg-migrate
 1788859125914_leads.js
 1788859125915_training.js
 1788859125916_seed_exercises.js
+1788859125917_auth_tokens_active_unique.js
 
 Auth/session migrations применены.
 
@@ -779,13 +780,11 @@ Supabase Auth больше не является текущим механизм
 
 Supabase не удалён полностью.
 
-Оставшиеся зависимости используются в ещё не перенесённых частях
-приложения.
+Каталог `supabase/` и связанные legacy-артефакты ещё не удалены из
+репозитория.
 
-Известные области:
-
-часть legacy Auth / related frontend code
-supabaseClient
+По текущему коду репозитория активное использование Supabase в рабочих
+Auth и Training flows не подтверждается.
 
 Training больше не относится к legacy Supabase flow.
 

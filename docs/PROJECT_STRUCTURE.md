@@ -35,7 +35,6 @@ Stubborn Ram/
 ├── database/
 ├── design/
 ├── docs/
-├── home/
 ├── public/
 ├── src/
 ├── supabase/              ← LEGACY, только на время миграции
@@ -57,16 +56,12 @@ Stubborn Ram/
 
 ```text
 src/
-├── App.css
 ├── App.jsx
+├── app/
 ├── assets/
 ├── components/
-│   ├── app/
 │   ├── auth/
-│   ├── client/
-│   ├── coach/
 │   ├── common/
-│   ├── home/
 │   ├── landing/
 │   ├── questionnaire/
 │   └── ui/
@@ -74,12 +69,15 @@ src/
 │   └── AuthContext.jsx
 ├── data/
 │   └── supportSlides.js
+├── debug/
 ├── features/
 ├── hooks/
+├── loading/
 ├── modules/
 │   ├── activity/
 │   ├── analytics/
 │   ├── chat/
+│   ├── comments/
 │   ├── home/
 │   ├── library/
 │   ├── nutrition/
@@ -89,26 +87,17 @@ src/
 │   ├── training/
 │   └── weight/
 ├── pages/
-│   ├── app/
 │   ├── auth/
-│   ├── client/
-│   ├── coach/
 │   ├── landing/
 │   └── questionnaire/
 ├── services/
-│   ├── api/
 │   ├── auth/
-│   ├── leadService.js
-│   ├── chatService.js
-│   ├── reportService.js
-│   ├── mediaService.js
-│   ├── trainingService.js
-│   └── coachClientService.js
+│   └── leads/
 ├── shared/
+│   └── lib/
+│       └── apiClient.js
 ├── styles/
 ├── utils/
-├── loading/
-├── home.jsx
 ├── index.css
 ├── main.jsx
 └── ...
@@ -116,7 +105,9 @@ src/
 
 Примечание:
 
-Часть целевых service-файлов появится в процессе миграции. Их наличие в этом разделе описывает целевую структуру, а не утверждает, что они уже реализованы.
+`src/modules/training/services/trainingService.js` пока остаётся модульным сервисом Training.
+
+Часть целевых service-файлов появится в процессе миграции. Их наличие в целевых разделах ниже описывает будущую структуру, а не утверждает, что они уже реализованы.
 
 ---
 
@@ -258,6 +249,13 @@ Startup Screen и Loading Overlay являются независимыми по
 Назначение:
 
 - единый frontend-слой для работы с Backend API и внешними интеграциями.
+
+Текущее состояние на 13.09.2026:
+
+- `src/services/auth/authService.js` — текущий frontend auth layer;
+- `src/services/leads/leadService.js` — текущий сервис заявок;
+- `src/shared/lib/apiClient.js` — текущий общий API client;
+- `src/modules/training/services/trainingService.js` — текущий модульный сервис Training.
 
 Целевая структура:
 
@@ -573,16 +571,16 @@ Payments не являются MVP-функцией.
 
 # Правила зависимостей
 
-| Слой | Может зависеть от | Запрещено |
-|---|---|---|
-| Router | Layout, Pages | бизнес-логика модуля |
-| Layout | Shared UI, Router | page-specific логика |
-| Page | Components, Hooks, Services | другая Page, прямой DB/API client |
-| Component | UI, Hooks | Page, прямой backend |
-| Hook | Services | Page, прямой DB |
-| Service | API client, другие Services | UI, Page, CSS |
-| Context | Services | прямой DB/Supabase |
-| Backend | DB, Storage, Workers, adapters | frontend UI |
+| Слой      | Может зависеть от              | Запрещено                         |
+| --------- | ------------------------------ | --------------------------------- |
+| Router    | Layout, Pages                  | бизнес-логика модуля              |
+| Layout    | Shared UI, Router              | page-specific логика              |
+| Page      | Components, Hooks, Services    | другая Page, прямой DB/API client |
+| Component | UI, Hooks                      | Page, прямой backend              |
+| Hook      | Services                       | Page, прямой DB                   |
+| Service   | API client, другие Services    | UI, Page, CSS                     |
+| Context   | Services                       | прямой DB/Supabase                |
+| Backend   | DB, Storage, Workers, adapters | frontend UI                       |
 
 ---
 
@@ -655,19 +653,19 @@ Router меняется только при добавлении или изме
 
 # Статус основных модулей
 
-| Модуль | Статус |
-|---|---|
-| Home | реализован |
-| Profile | в разработке |
-| Training | UI существует, persistence после data layer |
-| Chat | MVP |
-| Report | MVP |
-| Nutrition | после MVP |
-| Library | после MVP |
-| Analytics | после MVP |
-| Photos | после MVP |
-| Weight | после MVP |
-| Activity | после MVP |
+| Модуль    | Статус                                      |
+| --------- | ------------------------------------------- |
+| Home      | реализован                                  |
+| Profile   | в разработке                                |
+| Training  | UI существует, persistence после data layer |
+| Chat      | MVP                                         |
+| Report    | MVP                                         |
+| Nutrition | после MVP                                   |
+| Library   | после MVP                                   |
+| Analytics | после MVP                                   |
+| Photos    | после MVP                                   |
+| Weight    | после MVP                                   |
+| Activity  | после MVP                                   |
 
 ---
 

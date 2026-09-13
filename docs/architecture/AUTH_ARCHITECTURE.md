@@ -36,6 +36,14 @@ AUTH_ARCHITECTURE.md описывает архитектуру системы а
 
 Целевая архитектура не зависит от Supabase Authentication. После миграции авторизация предоставляется собственным Backend API Stubborn Ram с PostgreSQL и серверным управлением сессиями.
 
+Текущее состояние реализации на 13.09.2026:
+
+- регистрация, подтверждение Email, login, logout, session restore, resend verification и password reset уже работают через Backend API;
+- frontend использует `src/services/auth/authService.js` и `AuthContext.jsx` для работы с текущим Auth API;
+- профиль пользователя в текущей реализации создаётся на этапе регистрации, а не после подтверждения Email;
+- имя и фамилия пока не запрашиваются на регистрации;
+- Welcome Flow / `onboarding_completed` остаются целевым следующим этапом и не реализованы в текущем коде.
+
 ---
 
 # Принципы авторизации
