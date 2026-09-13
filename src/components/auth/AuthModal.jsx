@@ -2,7 +2,7 @@
 
 import logo from "../../assets/obshee-logo.png";
 
-import { signIn } from "@/services/auth/authService";
+import { resendVerification, signIn } from "@/services/auth/authService";
 import { getAuthErrorMessage } from "@/services/auth/authErrors";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -26,6 +26,9 @@ export default function AuthModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState("");
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
   const closeTimerRef = useRef(null);
 
   const requestClose = useCallback(() => {
@@ -46,11 +49,14 @@ export default function AuthModal({
 
   async function handleSignIn() {
     setError("");
+    setErrorCode("");
+    setResendMessage("");
 
     const { error } = await signIn(email, password);
 
     if (error) {
       setError(getAuthErrorMessage(error));
+      setErrorCode(error?.error || "");
       return;
     }
 
@@ -58,6 +64,26 @@ export default function AuthModal({
 
     requestClose();
     navigate("/app/home");
+  }
+
+  async function handleResendVerification() {
+    if (isResending) {
+      return;
+    }
+
+    setIsResending(true);
+    setResendMessage("");
+
+    const { error } = await resendVerification(email);
+
+    if (error) {
+      setResendMessage(getAuthErrorMessage(error));
+      setIsResending(false);
+      return;
+    }
+
+    setResendMessage("Письмо отправлено. Проверьте почту и папку «Спам».");
+    setIsResending(false);
   }
 
   useEffect(() => {
@@ -205,7 +231,26 @@ export default function AuthModal({
           </label>
 
           {error && (
-            <div className="auth-message auth-message--error">{error}</div>
+            <div className="auth-message auth-message--error">
+              {error}
+
+              {errorCode === "EMAIL_NOT_VERIFIED" && (
+                <button
+                  type="button"
+                  className="auth-resend-button"
+                  onClick={handleResendVerification}
+                  disabled={isResending}
+                >
+                  {isResending ? "Отправка..." : "Отправить письмо повторно"}
+                </button>
+              )}
+            </div>
+          )}
+
+          {resendMessage && (
+            <div className="auth-message auth-message--success">
+              {resendMessage}
+            </div>
           )}
 
           <button type="submit" className="auth-action auth-action--primary">

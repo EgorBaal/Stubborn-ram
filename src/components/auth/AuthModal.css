@@ -539,3 +539,26 @@
 
   font-family: "Comfortaa", sans-serif;
 }
+
+.auth-resend-button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #ff6200;
+  font-family: "Comfortaa", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-resend-button:hover {
+  filter: brightness(1.12);
+}
+
+.auth-resend-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

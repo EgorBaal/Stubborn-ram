@@ -40,8 +40,8 @@ export default function RegisterModal({ onClose }) {
   async function handleSignUp() {
     setError("");
     setSuccess("");
-    if (password.length < 6) {
-      setError("Пароль должен содержать минимум 6 символов.");
+    if (password.length < 8) {
+      setError("Пароль должен содержать минимум 8 символов.");
       return;
     }
 

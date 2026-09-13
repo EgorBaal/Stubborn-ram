@@ -1,24 +1,25 @@
 export function getAuthErrorMessage(error) {
+  const code = error?.error || "";
   const message = error?.message?.toLowerCase() || "";
 
-  if (message.includes("user already registered")) {
-    return "Пользователь с таким email уже зарегистрирован.";
-  }
+  switch (code) {
+    case "EMAIL_ALREADY_EXISTS":
+      return "Пользователь с таким email уже зарегистрирован.";
 
-  if (message.includes("invalid login credentials")) {
-    return "Неверный email или пароль.";
-  }
+    case "INVALID_CREDENTIALS":
+      return "Неверный email или пароль.";
 
-  if (message.includes("email not confirmed")) {
-    return "Подтвердите электронную почту перед входом.";
-  }
+    case "EMAIL_NOT_VERIFIED":
+      return "Почта не подтверждена.";
 
-  if (message.includes("password should be at least")) {
-    return "Пароль должен содержать минимум 6 символов.";
-  }
+    case "INVALID_INPUT":
+      return "Проверьте введённые данные.";
 
-  if (message.includes("invalid email")) {
-    return "Введите корректный email.";
+    case "INVALID_OR_EXPIRED_TOKEN":
+      return "Ссылка недействительна или срок её действия истёк.";
+
+    case "UNAUTHENTICATED":
+      return "Необходимо войти в аккаунт.";
   }
 
   if (message.includes("network")) {
@@ -27,6 +28,14 @@ export function getAuthErrorMessage(error) {
 
   if (message.includes("too many requests")) {
     return "Слишком много попыток. Попробуйте позже.";
+  }
+
+  if (message.includes("password should be at least")) {
+    return "Пароль должен содержать минимум 8 символов.";
+  }
+
+  if (message.includes("invalid email")) {
+    return "Введите корректный email.";
   }
 
   if (message.includes("new password should be different")) {

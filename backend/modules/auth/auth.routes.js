@@ -152,9 +152,12 @@ async function sendPasswordResetEmail(email, token) {
             style="width:110px;max-width:100%;height:auto;margin-bottom:20px;"
           />
 
-          <h1 style="margin:0 0 16px;color:#ffffff;">
-            Восстановление пароля
-          </h1>
+          <h1
+  style="margin:0 0 16px;color:#ffffff;font-size:20px;line-height:1.3;word-break:normal;overflow-wrap:normal;"
+>
+  <span style="white-space:nowrap;">Восстановление</span>
+  <span style="white-space:nowrap;"> пароля</span>
+</h1>
 
           <p style="color:#cccccc;line-height:1.6;">
             Нажми кнопку ниже, чтобы задать новый пароль.
@@ -252,10 +255,7 @@ export default async function authRoutes(app) {
         client.release();
       }
 
-      const token = await createEmailVerificationToken(
-        app.pg,
-        user.id,
-      );
+      const token = await createEmailVerificationToken(app.pg, user.id);
 
       await sendVerificationEmail(user.email, token);
 
@@ -417,9 +417,7 @@ export default async function authRoutes(app) {
       },
     },
     async (request, reply) => {
-      const parsed = resetPasswordRequestSchema.safeParse(
-        request.body,
-      );
+      const parsed = resetPasswordRequestSchema.safeParse(request.body);
 
       if (!parsed.success) {
         return reply.code(400).send({
@@ -447,10 +445,7 @@ export default async function authRoutes(app) {
       }
 
       const user = result.rows[0];
-      const token = await createEmailVerificationToken(
-        app.pg,
-        user.id,
-      );
+      const token = await createEmailVerificationToken(app.pg, user.id);
 
       await sendVerificationEmail(user.email, token);
 
@@ -472,9 +467,7 @@ export default async function authRoutes(app) {
     },
     async (request, reply) => {
       const token =
-        typeof request.body?.token === "string"
-          ? request.body.token
-          : "";
+        typeof request.body?.token === "string" ? request.body.token : "";
 
       if (!token) {
         return reply.code(400).send({
@@ -509,32 +502,36 @@ export default async function authRoutes(app) {
 
       const authToken = result.rows[0];
 
-      await app.pg.query("BEGIN");
+      const client = await app.pg.connect();
 
       try {
-        await app.pg.query(
+        await client.query("BEGIN");
+
+        await client.query(
           `
-            UPDATE users
-            SET email_verified_at = now(),
-                updated_at = now()
-            WHERE id = $1
-          `,
+      UPDATE users
+      SET email_verified_at = now(),
+          updated_at = now()
+      WHERE id = $1
+    `,
           [authToken.user_id],
         );
 
-        await app.pg.query(
+        await client.query(
           `
-            UPDATE auth_tokens
-            SET used_at = now()
-            WHERE id = $1
-          `,
+      UPDATE auth_tokens
+      SET used_at = now()
+      WHERE id = $1
+    `,
           [authToken.id],
         );
 
-        await app.pg.query("COMMIT");
+        await client.query("COMMIT");
       } catch (error) {
-        await app.pg.query("ROLLBACK");
+        await client.query("ROLLBACK");
         throw error;
+      } finally {
+        client.release();
       }
 
       return {
@@ -555,9 +552,7 @@ export default async function authRoutes(app) {
       },
     },
     async (request) => {
-      const parsed = resetPasswordRequestSchema.safeParse(
-        request.body,
-      );
+      const parsed = resetPasswordRequestSchema.safeParse(request.body);
 
       if (!parsed.success) {
         return {
@@ -585,10 +580,7 @@ export default async function authRoutes(app) {
 
       const user = result.rows[0];
 
-      const token = await createPasswordResetToken(
-        app.pg,
-        user.id,
-      );
+      const token = await createPasswordResetToken(app.pg, user.id);
 
       await sendPasswordResetEmail(user.email, token);
 
@@ -610,9 +602,7 @@ export default async function authRoutes(app) {
     },
     async (request, reply) => {
       const token =
-        typeof request.body?.token === "string"
-          ? request.body.token
-          : "";
+        typeof request.body?.token === "string" ? request.body.token : "";
 
       const parsed = updatePasswordSchema.safeParse({
         password: request.body?.password,
@@ -650,44 +640,46 @@ export default async function authRoutes(app) {
       }
 
       const authToken = result.rows[0];
-      const passwordHash = await hashPassword(
-        parsed.data.password,
-      );
+      const passwordHash = await hashPassword(parsed.data.password);
 
-      await app.pg.query("BEGIN");
+      const client = await app.pg.connect();
 
       try {
-        await app.pg.query(
+        await client.query("BEGIN");
+
+        await client.query(
           `
-            UPDATE users
-            SET password_hash = $1,
-                updated_at = now()
-            WHERE id = $2
-          `,
+      UPDATE users
+      SET password_hash = $1,
+          updated_at = now()
+      WHERE id = $2
+    `,
           [passwordHash, authToken.user_id],
         );
 
-        await app.pg.query(
+        await client.query(
           `
-            UPDATE auth_tokens
-            SET used_at = now()
-            WHERE id = $1
-          `,
+      UPDATE auth_tokens
+      SET used_at = now()
+      WHERE id = $1
+    `,
           [authToken.id],
         );
 
-        await app.pg.query(
+        await client.query(
           `
-            DELETE FROM sessions
-            WHERE user_id = $1
-          `,
+      DELETE FROM sessions
+      WHERE user_id = $1
+    `,
           [authToken.user_id],
         );
 
-        await app.pg.query("COMMIT");
+        await client.query("COMMIT");
       } catch (error) {
-        await app.pg.query("ROLLBACK");
+        await client.query("ROLLBACK");
         throw error;
+      } finally {
+        client.release();
       }
 
       return {

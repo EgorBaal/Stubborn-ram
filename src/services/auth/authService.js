@@ -9,6 +9,7 @@ export async function getSession() {
         session: null,
       },
       error: result.error,
+      status: result.status,
     };
   }
 
@@ -17,6 +18,7 @@ export async function getSession() {
       session: result.data?.authenticated ? result.data : null,
     },
     error: null,
+    status: result.status,
   };
 }
 

@@ -10,19 +10,30 @@ export function AuthProvider({ children }) {
 
   async function refreshSession() {
     try {
-      const {
-        data: { session },
-      } = await getSession();
+      const result = await getSession();
 
-      setSession(session);
-      setUser(session?.user ?? null);
+      if (result.error) {
+        if (result.status === 401) {
+          setSession(null);
+          setUser(null);
+          return null;
+        }
+
+        console.error("Ошибка восстановления сессии:", result.error);
+
+        return session;
+      }
+
+      const nextSession = result.data?.session ?? null;
+
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      return nextSession;
+    } catch (error) {
+      console.error("Ошибка восстановления сессии:", error);
 
       return session;
-    } catch (error) {
-      console.error("шибка восстановления сессии:", error);
-      setSession(null);
-      setUser(null);
-      return null;
     }
   }
 
