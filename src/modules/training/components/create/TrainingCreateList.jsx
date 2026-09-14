@@ -5,20 +5,6 @@ import TrainingCreateCard from "./TrainingCreateCard";
 
 export default function TrainingCreateList() {
   const navigate = useNavigate();
-  const templates = [
-    { id: 1, title: "Фулбади" },
-    { id: 2, title: "Верх тела" },
-    { id: 3, title: "Ноги" },
-    { id: 4, title: "Push" },
-    { id: 5, title: "Pull" },
-    { id: 6, title: "Upper" },
-    { id: 7, title: "Lower" },
-    { id: 8, title: "Спина" },
-    { id: 9, title: "Грудь" },
-    { id: 10, title: "Плечи" },
-    { id: 11, title: "Руки" },
-    { id: 12, title: "Кардио" },
-  ];
 
   return (
     <div className="training-create-list">

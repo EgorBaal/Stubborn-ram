@@ -10,7 +10,7 @@ export default function TrainingCreatePage() {
   const navigate = useNavigate();
 
   return (
-    <main className="training-view">
+    <main className="training-view training-create-view">
       <header className="training-builder-topbar">
         <div className="training-builder-side">
           <button

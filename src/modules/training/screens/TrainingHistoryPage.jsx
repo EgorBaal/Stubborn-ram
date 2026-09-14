@@ -82,7 +82,7 @@ export default function TrainingHistoryPage() {
   };
 
   return (
-    <main className="training-view">
+    <main className="training-view training-history-view">
       <TrainingTabs
         activeTab="history"
         onHistoryClick={() => navigate("/app/training")}
