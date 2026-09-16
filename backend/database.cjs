@@ -1,5 +1,9 @@
-require('dotenv').config();
+require("dotenv").config();
 
 module.exports = {
-  databaseUrl: `postgresql://${encodeURIComponent(process.env.DB_USER)}:${encodeURIComponent(process.env.DB_PASSWORD)}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  name: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: Number(process.env.DB_PORT),
 };
