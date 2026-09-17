@@ -26,7 +26,12 @@ import {
 import { sendEmail } from "../email/email.service.js";
 
 function getFrontendUrl(path) {
-  return `https://stubbornram.ru${path}`;
+  const baseUrl =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:5173"
+      : "https://stubbornram.ru";
+
+  return `${baseUrl}${path}`;
 }
 
 async function createEmailVerificationToken(pool, userId) {

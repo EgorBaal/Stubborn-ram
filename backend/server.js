@@ -9,6 +9,7 @@ import { createDatabasePool } from "./modules/db/database.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import leadsRoutes from "./modules/leads/leads.routes.js";
 import trainingRoutes from "./modules/training/training.routes.js";
+import mediaRoutes from "./modules/media/media.routes.js";
 import storagePlugin from "./modules/storage/storage.plugin.js";
 
 const app = Fastify({
@@ -48,6 +49,7 @@ app.get("/health", async () => {
 await app.register(authRoutes);
 await app.register(leadsRoutes);
 await app.register(trainingRoutes);
+await app.register(mediaRoutes);
 await app.register(storagePlugin);
 
 const start = async () => {

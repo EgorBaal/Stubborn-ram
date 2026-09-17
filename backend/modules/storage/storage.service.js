@@ -1,9 +1,11 @@
 ﻿import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
@@ -48,6 +50,17 @@ export async function deleteObject({ key }) {
 
   return s3.send(
     new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    }),
+  );
+}
+
+export async function headObject({ key }) {
+  ensureConfigured();
+
+  return s3.send(
+    new HeadObjectCommand({
       Bucket: bucket,
       Key: key,
     }),

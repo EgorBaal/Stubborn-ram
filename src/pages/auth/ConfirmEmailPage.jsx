@@ -38,17 +38,15 @@ export default function ConfirmEmailPage() {
         {status === "loading" && (
           <>
             <div className="confirm-email-icon">...</div>
-            <h1 className="confirm-email-title">одтверждаем email</h1>
-            <p className="confirm-email-text">
-              ожалуйста, подождите.
-            </p>
+            <h1 className="confirm-email-title">Подтверждаем email</h1>
+            <p className="confirm-email-text">Пожалуйста, подождите.</p>
           </>
         )}
 
         {status === "success" && (
           <>
             <div className="confirm-email-icon">✓</div>
-            <h1 className="confirm-email-title">очта подтверждена</h1>
+            <h1 className="confirm-email-title">Почта подтверждена</h1>
             <p className="confirm-email-text">
               Теперь вы можете войти в свой аккаунт.
             </p>
@@ -58,7 +56,9 @@ export default function ConfirmEmailPage() {
         {status === "error" && (
           <>
             <div className="confirm-email-icon">!</div>
-            <h1 className="confirm-email-title">е удалось подтвердить email</h1>
+            <h1 className="confirm-email-title">
+              Не удалось подтвердить email
+            </h1>
             <p className="confirm-email-text">
               Ссылка недействительна или срок её действия истёк.
             </p>

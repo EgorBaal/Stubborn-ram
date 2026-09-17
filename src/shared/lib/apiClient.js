@@ -1,4 +1,4 @@
-﻿const API_BASE_URL = "https://api.stubbornram.ru/api";
+﻿const API_BASE_URL = "http://127.0.0.1:3000/api";
 
 async function request(path, options = {}) {
   let response;
