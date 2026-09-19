@@ -6,7 +6,12 @@ import ConfirmDeletePopover from "../popovers/ConfirmDeletePopover";
 
 import ExercisePickerOverlay from "../exercises/ExercisePickerOverlay";
 import "./TrainingExerciseCard.css";
+import { getSetMaterials } from "../../services/trainingMaterialsService";
 
+const MIN_PHOTO_ZOOM = 1;
+const MAX_PHOTO_ZOOM = 4;
+const PHOTO_ZOOM_STEP = 0.25;
+const PHOTO_SWIPE_THRESHOLD = 50;
 const intensityMethods = [
   {
     id: "drop-set",
@@ -53,6 +58,9 @@ export default function TrainingExerciseCard({
   const [selectedExerciseId, setSelectedExerciseId] = useState(null);
   const [exerciseComment, setExerciseComment] = useState("");
   const [sets, setSets] = useState([]);
+  const [setMaterials, setSetMaterials] = useState({});
+  const [feedbackSetId, setFeedbackSetId] = useState(null);
+  const [materialsModalSetId, setMaterialsModalSetId] = useState(null);
   const [swipedSetId, setSwipedSetId] = useState(null);
   const [swipedSetSide, setSwipedSetSide] = useState(null);
 
@@ -79,6 +87,27 @@ export default function TrainingExerciseCard({
 
   const parametersButtonRef = useRef(null);
   const deleteButtonRef = useRef(null);
+  const photoInputRef = useRef(null);
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const photoViewerRef = useRef(null);
+
+  const photoTouchState = useRef({
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    pinchDistance: null,
+    pinchZoom: MIN_PHOTO_ZOOM,
+    pinchCenter: null,
+  });
+
+  const photoPointerState = useRef(null);
+
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
+  const [photoZoom, setPhotoZoom] = useState(MIN_PHOTO_ZOOM);
+  const [photoPosition, setPhotoPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const exerciseNameInputRef = useRef(null);
   const exerciseCommentInputRef = useRef(null);
@@ -155,6 +184,343 @@ export default function TrainingExerciseCard({
     initialSets,
   ]);
 
+  useEffect(() => {
+    const loadSetMaterials = async () => {
+      const persistedSets = initialSets.filter((set) => set.id);
+
+      if (persistedSets.length === 0) {
+        return;
+      }
+
+      await Promise.all(
+        persistedSets.map(async (set) => {
+          const result = await getSetMaterials(set.id);
+
+          if (result.error) {
+            console.error(
+              `Ошибка загрузки материалов подхода ${set.id}:`,
+              result.error,
+            );
+            return;
+          }
+
+          setSetMaterials((prev) => ({
+            ...prev,
+            [set.id]: result.data?.materials ?? [],
+          }));
+        }),
+      );
+    };
+
+    loadSetMaterials();
+  }, [initialSets]);
+
+  const resetPhotoViewerTransform = () => {
+    setPhotoZoom(MIN_PHOTO_ZOOM);
+    setPhotoPosition({
+      x: 0,
+      y: 0,
+    });
+  };
+
+  const handleOpenPhotoViewer = (index) => {
+    setSelectedPhotoIndex(index);
+    resetPhotoViewerTransform();
+  };
+
+  const handleClosePhotoViewer = () => {
+    setSelectedPhotoIndex(null);
+    resetPhotoViewerTransform();
+  };
+
+  const handlePreviousPhoto = () => {
+    setSelectedPhotoIndex((current) => {
+      if (current === null || current <= 0) {
+        return current;
+      }
+
+      resetPhotoViewerTransform();
+      return current - 1;
+    });
+  };
+
+  const handleNextPhoto = () => {
+    setSelectedPhotoIndex((current) => {
+      if (current === null || current >= photoFiles.length - 1) {
+        return current;
+      }
+
+      resetPhotoViewerTransform();
+      return current + 1;
+    });
+  };
+
+  const getPhotoTouchDistance = (touches) => {
+    if (touches.length < 2) {
+      return 0;
+    }
+
+    const first = touches[0];
+    const second = touches[1];
+
+    return Math.hypot(
+      second.clientX - first.clientX,
+      second.clientY - first.clientY,
+    );
+  };
+
+  const getPhotoTouchCenter = (touches) => ({
+    x: (touches[0].clientX + touches[1].clientX) / 2,
+    y: (touches[0].clientY + touches[1].clientY) / 2,
+  });
+
+  const getPhotoViewerCenter = () => {
+    const rect = photoViewerRef.current?.getBoundingClientRect();
+
+    if (!rect) {
+      return {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      };
+    }
+
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+  };
+
+  const zoomPhotoAroundPoint = (nextZoom, clientX, clientY) => {
+    const clampedZoom = Math.min(
+      MAX_PHOTO_ZOOM,
+      Math.max(MIN_PHOTO_ZOOM, nextZoom),
+    );
+
+    if (clampedZoom === MIN_PHOTO_ZOOM) {
+      resetPhotoViewerTransform();
+      return;
+    }
+
+    setPhotoPosition((current) => {
+      const viewerCenter = getPhotoViewerCenter();
+
+      const pointX = clientX - viewerCenter.x;
+      const pointY = clientY - viewerCenter.y;
+
+      const oldScale = photoZoom;
+      const scaleRatio = clampedZoom / oldScale;
+
+      return {
+        x: pointX - (pointX - current.x) * scaleRatio,
+        y: pointY - (pointY - current.y) * scaleRatio,
+      };
+    });
+
+    setPhotoZoom(clampedZoom);
+  };
+
+  const handlePhotoTouchStart = (event) => {
+    if (event.touches.length >= 2) {
+      event.preventDefault();
+
+      const distance = getPhotoTouchDistance(event.touches);
+      const center = getPhotoTouchCenter(event.touches);
+
+      photoTouchState.current.pinchDistance = distance;
+      photoTouchState.current.pinchZoom = photoZoom;
+      photoTouchState.current.pinchCenter = center;
+
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    if (!touch) {
+      return;
+    }
+
+    photoTouchState.current.startX = touch.clientX;
+    photoTouchState.current.startY = touch.clientY;
+    photoTouchState.current.startTime = Date.now();
+  };
+
+  const handlePhotoTouchMove = (event) => {
+    if (event.touches.length >= 2) {
+      event.preventDefault();
+
+      const distance = getPhotoTouchDistance(event.touches);
+      const center = getPhotoTouchCenter(event.touches);
+
+      if (!photoTouchState.current.pinchDistance || !distance) {
+        return;
+      }
+
+      const scale = distance / photoTouchState.current.pinchDistance;
+
+      const nextZoom = Math.min(
+        MAX_PHOTO_ZOOM,
+        Math.max(MIN_PHOTO_ZOOM, photoTouchState.current.pinchZoom * scale),
+      );
+
+      const previousCenter = photoTouchState.current.pinchCenter;
+
+      const viewerCenter = getPhotoViewerCenter();
+
+      const centerDeltaX = center.x - previousCenter.x;
+      const centerDeltaY = center.y - previousCenter.y;
+
+      setPhotoPosition((current) => {
+        const pointX = previousCenter.x - viewerCenter.x;
+        const pointY = previousCenter.y - viewerCenter.y;
+
+        const scaleRatio = nextZoom / photoTouchState.current.pinchZoom;
+
+        return {
+          x: pointX - (pointX - current.x) * scaleRatio + centerDeltaX,
+          y: pointY - (pointY - current.y) * scaleRatio + centerDeltaY,
+        };
+      });
+
+      setPhotoZoom(nextZoom);
+
+      photoTouchState.current.pinchCenter = center;
+
+      return;
+    }
+
+    if (photoZoom > MIN_PHOTO_ZOOM) {
+      event.preventDefault();
+
+      const touch = event.touches[0];
+
+      const deltaX = touch.clientX - photoTouchState.current.startX;
+      const deltaY = touch.clientY - photoTouchState.current.startY;
+
+      setPhotoPosition((current) => ({
+        x: current.x + deltaX,
+        y: current.y + deltaY,
+      }));
+
+      photoTouchState.current.startX = touch.clientX;
+      photoTouchState.current.startY = touch.clientY;
+    }
+  };
+
+  const handlePhotoTouchEnd = (event) => {
+    if (photoTouchState.current.pinchDistance !== null) {
+      if (event.touches.length < 2) {
+        photoTouchState.current.pinchDistance = null;
+        photoTouchState.current.pinchCenter = null;
+      }
+
+      return;
+    }
+
+    if (photoZoom > MIN_PHOTO_ZOOM) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    if (!touch) {
+      return;
+    }
+
+    const deltaX = touch.clientX - photoTouchState.current.startX;
+    const deltaY = touch.clientY - photoTouchState.current.startY;
+
+    const elapsed = Date.now() - photoTouchState.current.startTime;
+
+    if (
+      Math.abs(deltaX) >= PHOTO_SWIPE_THRESHOLD &&
+      Math.abs(deltaX) > Math.abs(deltaY) &&
+      elapsed < 700
+    ) {
+      if (deltaX < 0) {
+        handleNextPhoto();
+      } else {
+        handlePreviousPhoto();
+      }
+    }
+  };
+
+  const handlePhotoPointerDown = (event) => {
+    if (photoZoom <= MIN_PHOTO_ZOOM || event.pointerType === "touch") {
+      return;
+    }
+
+    photoPointerState.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const handlePhotoPointerMove = (event) => {
+    if (!photoPointerState.current || photoZoom <= MIN_PHOTO_ZOOM) {
+      return;
+    }
+
+    const deltaX = event.clientX - photoPointerState.current.x;
+    const deltaY = event.clientY - photoPointerState.current.y;
+
+    setPhotoPosition((current) => ({
+      x: current.x + deltaX,
+      y: current.y + deltaY,
+    }));
+
+    photoPointerState.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+  };
+
+  const handlePhotoPointerUp = () => {
+    photoPointerState.current = null;
+  };
+
+  const handlePhotoWheel = (event) => {
+    event.preventDefault();
+
+    const direction = event.deltaY < 0 ? 1 : -1;
+
+    zoomPhotoAroundPoint(
+      photoZoom + direction * PHOTO_ZOOM_STEP,
+      event.clientX,
+      event.clientY,
+    );
+  };
+
+  const handlePhotoViewerKeyDown = (event) => {
+    if (event.key === "Escape") {
+      handleClosePhotoViewer();
+      return;
+    }
+
+    if (photoZoom !== MIN_PHOTO_ZOOM) {
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      handlePreviousPhoto();
+    }
+
+    if (event.key === "ArrowRight") {
+      handleNextPhoto();
+    }
+  };
+
+  useEffect(() => {
+    if (selectedPhotoIndex === null) {
+      return;
+    }
+
+    photoViewerRef.current?.focus();
+  }, [selectedPhotoIndex]);
+
+  const selectedPhoto =
+    selectedPhotoIndex !== null ? photoFiles[selectedPhotoIndex] : null;
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
   };
@@ -587,7 +953,64 @@ export default function TrainingExerciseCard({
                   }`}
                 >
                   <div className="training-exercise-card__set-title">
-                    Подход {index + 1}
+                    <span>Подход {index + 1}</span>
+
+                    {(() => {
+                      const materials = setMaterials[set.id] ?? [];
+
+                      const clientMaterials = materials.filter(
+                        (material) => material.type === "CLIENT_NOTE",
+                      );
+
+                      const trainerMaterials = materials.filter(
+                        (material) => material.type === "TRAINER_FEEDBACK",
+                      );
+
+                      const clientMedia = clientMaterials.flatMap(
+                        (material) => material.media ?? [],
+                      );
+
+                      const hasPhoto = clientMedia.some((media) =>
+                        media.mimeType?.startsWith("image/"),
+                      );
+
+                      const hasVideo = clientMedia.some((media) =>
+                        media.mimeType?.startsWith("video/"),
+                      );
+
+                      const hasComment = clientMaterials.some((material) =>
+                        material.comment?.trim(),
+                      );
+
+                      const hasTrainerFeedback = trainerMaterials.length > 0;
+
+                      return (
+                        <span className="training-exercise-card__set-indicators">
+                          {hasPhoto && (
+                            <Image size={14} aria-label="Есть фото" />
+                          )}
+
+                          {hasVideo && (
+                            <Video size={14} aria-label="Есть видео" />
+                          )}
+
+                          {hasComment && (
+                            <MessageSquare
+                              size={14}
+                              aria-label="Есть комментарий"
+                            />
+                          )}
+
+                          {hasTrainerFeedback && (
+                            <MessageSquare
+                              size={14}
+                              className="training-exercise-card__set-indicator--feedback"
+                              aria-label="Есть обратная связь тренера"
+                            />
+                          )}
+                        </span>
+                      );
+                    })()}
                   </div>
 
                   <div className="training-exercise-card__set-values">
@@ -758,32 +1181,9 @@ export default function TrainingExerciseCard({
                   <button
                     type="button"
                     className="training-exercise-card__set-action"
-                    aria-label="Добавить фото"
+                    aria-label="Материалы подхода"
                     onClick={() => {
-                      setSwipedSetId(null);
-                      setSwipedSetSide(null);
-                    }}
-                  >
-                    <Image size={20} strokeWidth={1.8} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className="training-exercise-card__set-action"
-                    aria-label="Добавить видео"
-                    onClick={() => {
-                      setSwipedSetId(null);
-                      setSwipedSetSide(null);
-                    }}
-                  >
-                    <Video size={20} strokeWidth={1.8} />
-                  </button>
-
-                  <button
-                    type="button"
-                    className="training-exercise-card__set-action"
-                    aria-label="Добавить комментарий"
-                    onClick={() => {
+                      setMaterialsModalSetId(set.id);
                       setSwipedSetId(null);
                       setSwipedSetSide(null);
                     }}
@@ -876,6 +1276,246 @@ export default function TrainingExerciseCard({
             setIsExercisePickerOpen(false);
           }}
         />
+      )}
+      {materialsModalSetId && (
+        <div
+          className="training-exercise-card__materials-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Материалы подхода"
+          onClick={() => setMaterialsModalSetId(null)}
+        >
+          <div
+            className="training-exercise-card__materials-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="training-exercise-card__materials-header">
+              <button
+                type="button"
+                className="training-exercise-card__materials-edit"
+                onClick={() => {
+                  setFeedbackSetId((currentId) =>
+                    currentId === materialsModalSetId
+                      ? null
+                      : materialsModalSetId,
+                  );
+                }}
+              >
+                {feedbackSetId === materialsModalSetId
+                  ? "Сохранить"
+                  : "Изменить"}
+              </button>
+
+              <button
+                type="button"
+                className="training-exercise-card__materials-close"
+                onClick={() => setMaterialsModalSetId(null)}
+                aria-label="Закрыть"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="training-exercise-card__materials-body">
+              <div className="training-exercise-card__materials-item">
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  hidden
+                  onChange={(event) => {
+                    const files = Array.from(event.target.files ?? []);
+
+                    if (files.length === 0) {
+                      return;
+                    }
+
+                    setPhotoFiles((prev) => [
+                      ...prev,
+                      ...files.map((file) => ({
+                        file,
+                        previewUrl: URL.createObjectURL(file),
+                      })),
+                    ]);
+
+                    event.target.value = "";
+                  }}
+                />
+
+                <div className="training-exercise-card__materials-placeholder">
+                  {photoFiles.length > 0 ? (
+                    <div className="training-exercise-card__materials-photo-grid">
+                      {photoFiles.map((photo, index) => (
+                        <div
+                          key={`${photo.file.name}-${photo.file.lastModified}-${index}`}
+                          className="training-exercise-card__materials-photo"
+                        >
+                          <button
+                            type="button"
+                            className="training-exercise-card__materials-photo-open"
+                            onClick={() => handleOpenPhotoViewer(index)}
+                            aria-label={`Открыть фото ${index + 1}`}
+                          >
+                            <img
+                              src={photo.previewUrl}
+                              alt={`Фото ${index + 1}`}
+                            />
+                          </button>
+
+                          {feedbackSetId === materialsModalSetId && (
+                            <button
+                              type="button"
+                              className="training-exercise-card__materials-photo-delete"
+                              aria-label={`Удалить фото ${index + 1}`}
+                              onClick={() => {
+                                URL.revokeObjectURL(photo.previewUrl);
+
+                                setPhotoFiles((prev) =>
+                                  prev.filter(
+                                    (_, photoIndex) => photoIndex !== index,
+                                  ),
+                                );
+                              }}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                      {feedbackSetId === materialsModalSetId && (
+                        <button
+                          type="button"
+                          className="training-exercise-card__materials-photo-add"
+                          onClick={() => photoInputRef.current?.click()}
+                          aria-label="Добавить фото"
+                        >
+                          +
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <Image size={28} strokeWidth={1.6} />
+
+                      {feedbackSetId === materialsModalSetId && (
+                        <button
+                          type="button"
+                          className="training-exercise-card__materials-plus"
+                          onClick={() => photoInputRef.current?.click()}
+                          aria-label="Добавить фото"
+                        >
+                          +
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="training-exercise-card__materials-item">
+                <div className="training-exercise-card__materials-placeholder">
+                  <Video size={28} strokeWidth={1.6} />
+
+                  {feedbackSetId === materialsModalSetId && (
+                    <span className="training-exercise-card__materials-plus">
+                      +
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="training-exercise-card__materials-comment">
+                <MessageSquare size={24} strokeWidth={1.6} />
+
+                <textarea
+                  placeholder="Комментарий"
+                  disabled={feedbackSetId !== materialsModalSetId}
+                />
+
+                {feedbackSetId === materialsModalSetId && (
+                  <button
+                    type="button"
+                    className="training-exercise-card__materials-voice"
+                    aria-label="Добавить голосовое сообщение"
+                  >
+                    🎙
+                  </button>
+                )}
+              </div>
+            </div>
+            {selectedPhoto ? (
+              <div
+                ref={photoViewerRef}
+                className="training-exercise-card__photo-viewer"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Просмотр фотографии"
+                tabIndex={-1}
+                onKeyDown={handlePhotoViewerKeyDown}
+                onTouchStart={handlePhotoTouchStart}
+                onTouchMove={handlePhotoTouchMove}
+                onTouchEnd={handlePhotoTouchEnd}
+                onWheel={handlePhotoWheel}
+                onClick={handleClosePhotoViewer}
+              >
+                <button
+                  type="button"
+                  className="training-exercise-card__photo-viewer-close"
+                  onClick={handleClosePhotoViewer}
+                  aria-label="Закрыть"
+                >
+                  ×
+                </button>
+
+                {selectedPhotoIndex > 0 && (
+                  <button
+                    type="button"
+                    className="training-exercise-card__photo-viewer-nav training-exercise-card__photo-viewer-nav--previous"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handlePreviousPhoto();
+                    }}
+                    aria-label="Предыдущая фотография"
+                  >
+                    ‹
+                  </button>
+                )}
+
+                <div className="training-exercise-card__photo-viewer-stage">
+                  <img
+                    className="training-exercise-card__photo-viewer-image"
+                    src={selectedPhoto.previewUrl}
+                    alt={`Фото ${(selectedPhotoIndex ?? 0) + 1}`}
+                    draggable="false"
+                    style={{
+                      transform: `translate3d(${photoPosition.x}px, ${photoPosition.y}px, 0) scale(${photoZoom})`,
+                    }}
+                    onClick={(event) => event.stopPropagation()}
+                    onPointerDown={handlePhotoPointerDown}
+                    onPointerMove={handlePhotoPointerMove}
+                    onPointerUp={handlePhotoPointerUp}
+                    onPointerCancel={handlePhotoPointerUp}
+                  />
+                </div>
+
+                {selectedPhotoIndex < photoFiles.length - 1 && (
+                  <button
+                    type="button"
+                    className="training-exercise-card__photo-viewer-nav training-exercise-card__photo-viewer-nav--next"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleNextPhoto();
+                    }}
+                    aria-label="Следующая фотография"
+                  >
+                    ›
+                  </button>
+                )}
+              </div>
+            ) : null}
+          </div>
+        </div>
       )}
     </article>
   );

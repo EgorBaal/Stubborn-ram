@@ -1,0 +1,229 @@
+.photo-uploader {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.photo-uploader__button {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: #ff6200;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.photo-uploader__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.photo-uploader__error {
+  margin-top: 12px;
+  color: #ff8a8a;
+  font-size: 14px;
+}
+
+.photo-uploader__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.photo-uploader__item {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  aspect-ratio: 1 / 1;
+  background: #151515;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.photo-uploader__item:focus {
+  outline: none;
+}
+
+.photo-uploader__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.photo-uploader__viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  box-sizing: border-box;
+  background: #000000;
+  cursor: default;
+  touch-action: none;
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.photo-uploader__viewer:focus {
+  outline: none;
+}
+
+.photo-uploader__viewer-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.photo-uploader__viewer-image {
+  display: block;
+  max-width: calc(100vw - 120px);
+  max-height: calc(100vh - 80px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  cursor: grab;
+  transform-origin: center center;
+  will-change: transform;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.photo-uploader__viewer-image:active {
+  cursor: grabbing;
+}
+
+.photo-uploader__viewer-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 3;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.photo-uploader__viewer-close:focus {
+  outline: none;
+}
+
+.photo-uploader__viewer-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.75);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 42px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.photo-uploader__viewer-nav:focus {
+  outline: none;
+}
+
+.photo-uploader__viewer-nav--previous {
+  left: 18px;
+}
+
+.photo-uploader__viewer-nav--next {
+  right: 18px;
+}
+
+@media (max-width: 600px) {
+  .photo-uploader__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .photo-uploader__viewer-image {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .photo-uploader__viewer-close {
+    top: 10px;
+    right: 10px;
+  }
+
+  .photo-uploader__viewer-nav {
+    width: 44px;
+    height: 44px;
+    font-size: 36px;
+  }
+
+  .photo-uploader__viewer-nav--previous {
+    left: 8px;
+  }
+
+  .photo-uploader__viewer-nav--next {
+    right: 8px;
+  }
+}
+.photo-uploader__viewer-delete {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.photo-uploader__viewer-delete:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

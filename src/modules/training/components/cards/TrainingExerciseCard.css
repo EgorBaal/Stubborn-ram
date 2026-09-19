@@ -539,6 +539,10 @@
 }
 
 .training-exercise-card__set-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
   margin-bottom: 24px;
 
   color: rgba(255, 255, 255, 0.88);
@@ -547,6 +551,26 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
+}
+
+.training-exercise-card__set-indicators {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: rgba(255, 255, 255, 0.48);
+
+  flex-shrink: 0;
+}
+
+.training-exercise-card__set-indicators svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.training-exercise-card__set-indicator--feedback {
+  color: #42d67a;
 }
 
 .training-exercise-card__set-values {
@@ -1307,4 +1331,450 @@
   background: #111111;
 
   color: #ff6200;
+}
+.training-exercise-card__materials-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.training-exercise-card__materials-modal {
+  width: min(100%, 520px);
+  max-height: 80vh;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+
+  background: #111111;
+  color: rgba(255, 255, 255, 0.9);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.training-exercise-card__materials-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 68px;
+  padding: 0 20px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.training-exercise-card__materials-edit {
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #ff6200;
+
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.training-exercise-card__materials-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.training-exercise-card__materials-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  max-height: calc(80vh - 68px);
+  overflow-y: auto;
+
+  padding: 24px 20px;
+}
+
+.training-exercise-card__materials-item {
+  width: 100%;
+}
+
+.training-exercise-card__materials-placeholder {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 150px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.training-exercise-card__materials-plus {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 0 !important;
+  border-radius: 50%;
+
+  background: #ff6200;
+  color: #ffffff;
+
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.training-exercise-card__materials-plus:hover,
+.training-exercise-card__materials-plus:focus,
+.training-exercise-card__materials-plus:focus-visible,
+.training-exercise-card__materials-plus:active {
+  border: 0 !important;
+  background: #ff6200;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.training-exercise-card__materials-comment {
+  position: relative;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 120px;
+
+  padding: 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.training-exercise-card__materials-comment textarea {
+  flex: 1;
+
+  min-width: 0;
+  min-height: 88px;
+
+  padding: 0;
+
+  border: 0;
+  outline: none;
+  resize: none;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.training-exercise-card__materials-comment textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.training-exercise-card__materials-comment textarea:disabled {
+  cursor: default;
+}
+
+.training-exercise-card__materials-voice {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+
+  cursor: pointer;
+}
+.training-exercise-card__materials-photo-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  width: 100%;
+}
+
+.training-exercise-card__materials-photo {
+  position: relative;
+
+  aspect-ratio: 1;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.training-exercise-card__materials-photo img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.training-exercise-card__materials-photo-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 24px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+
+  font-size: 18px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+.training-exercise-card__materials-photo-open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.training-exercise-card__materials-photo-add {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #ff6200;
+  color: #ffffff;
+
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.training-exercise-card__materials-photo-add:hover,
+.training-exercise-card__materials-photo-add:focus,
+.training-exercise-card__materials-photo-add:focus-visible,
+.training-exercise-card__materials-photo-add:active {
+  border: 0 !important;
+  background: #ff6200;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.training-exercise-card__photo-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+  touch-action: none;
+  overscroll-behavior: contain;
+  user-select: none;
+}
+
+.training-exercise-card__photo-viewer-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.training-exercise-card__photo-viewer-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.training-exercise-card__photo-viewer-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+  cursor: grab;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.training-exercise-card__photo-viewer-image:active {
+  cursor: grabbing;
+}
+
+.training-exercise-card__photo-viewer-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 72px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 48px;
+  line-height: 1;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.training-exercise-card__photo-viewer-nav--previous {
+  left: 20px;
+}
+
+.training-exercise-card__photo-viewer-nav--next {
+  right: 20px;
+}
+
+.training-exercise-card__photo-viewer-nav:hover,
+.training-exercise-card__photo-viewer-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 600px) {
+  .training-exercise-card__photo-viewer-close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .training-exercise-card__photo-viewer-nav {
+    width: 40px;
+    height: 60px;
+  }
+
+  .training-exercise-card__photo-viewer-nav--previous {
+    left: 10px;
+  }
+
+  .training-exercise-card__photo-viewer-nav--next {
+    right: 10px;
+  }
 }

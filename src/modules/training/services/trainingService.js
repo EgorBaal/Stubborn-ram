@@ -191,11 +191,13 @@ export async function updateWorkout({
         trainingType: trainingType || "Силовая",
         comment: comment?.trim() || null,
         exercises: preparedExercises.map((exercise) => ({
+          id: exercise.id,
           exerciseId: exercise.exerciseId,
           position: exercise.position,
           exerciseComment: exercise.exerciseComment?.trim() || null,
           supersetAfter: Boolean(exercise.supersetAfter),
           sets: (exercise.sets || []).map((set, index) => ({
+            id: set.id,
             position: index,
             weight: normalizeValue(set.weight),
             repetitions: normalizeValue(set.repetitions),

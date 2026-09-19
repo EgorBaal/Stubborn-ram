@@ -301,6 +301,72 @@ export default async function mediaRoutes(app) {
     };
   });
 
+  app.delete("/api/media/:id", async (request, reply) => {
+    const authUser = await getAuthenticatedUser(app.pg, request);
+
+    if (!authUser) {
+      return reply.code(401).send({
+        error: "UNAUTHENTICATED",
+        message: "Требуется авторизация.",
+      });
+    }
+
+    const { id } = request.params;
+
+    if (!id) {
+      return reply.code(400).send({
+        error: "INVALID_MEDIA_ID",
+        message: "Не указан ID Media.",
+      });
+    }
+
+    const result = await app.pg.query(
+      `
+        SELECT
+          id,
+          owner_id,
+          object_key,
+          status
+        FROM media
+        WHERE id = $1
+          AND owner_id = $2
+        LIMIT 1
+      `,
+      [id, authUser.userId],
+    );
+
+    if (result.rowCount === 0) {
+      return reply.code(404).send({
+        error: "MEDIA_NOT_FOUND",
+        message: "Media не найден.",
+      });
+    }
+
+    const media = result.rows[0];
+
+    try {
+      await app.storage.deleteObject({
+        key: media.object_key,
+      });
+    } catch (error) {
+      throw error;
+    }
+
+    await app.pg.query(
+      `
+        DELETE FROM media
+        WHERE id = $1
+          AND owner_id = $2
+      `,
+      [media.id, authUser.userId],
+    );
+
+    return {
+      ok: true,
+      id: media.id,
+    };
+  });
+
   app.get("/api/media/:id", async (request, reply) => {
     const authUser = await getAuthenticatedUser(app.pg, request);
 

@@ -49,8 +49,8 @@ app.get("/health", async () => {
 await app.register(authRoutes);
 await app.register(leadsRoutes);
 await app.register(trainingRoutes);
-await app.register(mediaRoutes);
 await app.register(storagePlugin);
+await app.register(mediaRoutes);
 
 const start = async () => {
   try {
