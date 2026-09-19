@@ -262,12 +262,29 @@ export default async function authRoutes(app) {
 
       const token = await createEmailVerificationToken(app.pg, user.id);
 
-      await sendVerificationEmail(user.email, token);
+      let verificationEmailSent = true;
+
+      try {
+        await sendVerificationEmail(user.email, token);
+      } catch (error) {
+        verificationEmailSent = false;
+
+        app.log.error(
+          {
+            error,
+            userId: user.id,
+            email: user.email,
+            flow: "auth/register/sendVerificationEmail",
+          },
+          "Verification email delivery failed after account creation",
+        );
+      }
 
       return reply.code(201).send({
         user,
         authenticated: false,
         emailVerificationRequired: true,
+        verificationEmailSent,
       });
     },
   );

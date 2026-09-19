@@ -50,10 +50,17 @@ export default function RegisterModal({ onClose }) {
       return;
     }
 
-    const { error } = await signUp(email, password);
+    const { data, error } = await signUp(email, password);
 
     if (error) {
       setError(getAuthErrorMessage(error));
+      return;
+    }
+
+    if (data?.verificationEmailSent === false) {
+      setSuccess(
+        "Аккаунт создан, но письмо подтверждения сейчас не отправлено. Войдите в аккаунт и используйте «Отправить письмо повторно».",
+      );
       return;
     }
 
