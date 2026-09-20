@@ -1,4 +1,4 @@
-# PERMISSIONS_ARCHITECTURE.md
+﻿# PERMISSIONS_ARCHITECTURE.md
 
 # Архитектура системы разрешений Stubborn Ram
 

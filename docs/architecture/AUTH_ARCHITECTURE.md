@@ -1,4 +1,4 @@
-# AUTH_ARCHITECTURE.md
+﻿# AUTH_ARCHITECTURE.md
 
 # Архитектура авторизации Stubborn Ram
 

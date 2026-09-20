@@ -1,4 +1,4 @@
-# PROMPT_STRUCTURE.md
+﻿# PROMPT_STRUCTURE.md
 
 # Стандарт формирования промптов для AI-разработчика
 
@@ -190,7 +190,7 @@ docs/modules/HOME.md
 
 ↓
 
-docs/modules/TRAINING.md
+docs/modules/Training/TRAINING.md
 
 Работа с базой данных:
 

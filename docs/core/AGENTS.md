@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 # Руководство по разработке с использованием AI
 
@@ -63,7 +63,7 @@
 Примеры:
 
 - Работа с Home → прочитать `docs/modules/HOME.md`
-- Работа с Training → прочитать `docs/modules/TRAINING.md`
+- Работа с Training → прочитать `docs/modules/Training/TRAINING.md`
 - Работа с базой данных → прочитать `docs/architecture/DATABASE_SCHEMA.md`
 - Работа с авторизацией → прочитать `docs/architecture/AUTH_ARCHITECTURE.md`
 - Работа с пользовательскими сценариями → прочитать документы из `docs/flows/`

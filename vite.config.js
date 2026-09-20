@@ -14,6 +14,10 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    watch: {
+      // Docs are not part of the frontend bundle and may be locked by external tools.
+      ignored: ["**/docs/**", "**/docs_archive/**", "**/*.md", "**/*.txt"],
+    },
   },
 
   base: "/",

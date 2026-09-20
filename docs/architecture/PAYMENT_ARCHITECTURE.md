@@ -1,4 +1,4 @@
-# PAYMENT_ARCHITECTURE.md
+﻿# PAYMENT_ARCHITECTURE.md
 
 # Архитектура платежей и подписок Stubborn Ram
 

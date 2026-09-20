@@ -1,4 +1,4 @@
-# AI_HISTORY.md
+﻿# AI_HISTORY.md
 
 # История архитектурных и продуктовых решений проекта Stubborn Ram
 

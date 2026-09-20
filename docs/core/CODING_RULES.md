@@ -1,4 +1,4 @@
-# CODING_RULES.md
+﻿# CODING_RULES.md
 
 # Правила разработки проекта Stubborn Ram
 

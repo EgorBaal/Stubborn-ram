@@ -1,4 +1,4 @@
-# DATABASE_SCHEMA.md
+﻿# DATABASE_SCHEMA.md
 
 # Схема базы данных Stubborn Ram
 

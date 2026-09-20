@@ -1,4 +1,4 @@
-# DESIGN_SYSTEM.md
+﻿# DESIGN_SYSTEM.md
 
 # Дизайн-система проекта Stubborn Ram
 
