@@ -1,0 +1,286 @@
+﻿============================================================
+DOCS — CURRENT AFTER COPILOT
+============================================================
+
+Folder PATH listing for volume Жесткий диск
+Volume serial number is 00000097 0043:8024
+D:\CRM-PLATFORM STUBBORN RAM\DOCS
++---architecture
+|       APP_STRUCTURE.md
+|       ARCHITECTURE.md
+|       AUTH_ARCHITECTURE.md
+|       DATABASE_SCHEMA.md
+|       LAYOUT.md
+|       PAYMENT_ARCHITECTURE.md
+|       PERMISSIONS_ARCHITECTURE.md
+|       PLATFORM.md
+|       SECURITY.md
+|       
++---ARCHIVE
+|       AUTH_DOLGS.md
+|       CHANGELOG.md
+|       INFRASTRUCTURE_MIGRATION.md
+|       MIGRATION_ARCHITECTURE.md
+|       PROJECT_CONTEXT_LEGACY_2026-09-19.md
+|       
++---AUDIT
+|       PROJECT_FOUNDATION_REMEDIATION_LOG_2026-09-19.md
+|       PROJECT_FULL_AUDIT_2026-09-19.md
+|       PROJECT_REMEDIATION_ROADMAP_2026-09-19.md
+|       
++---core
+|       AGENTS.md
+|       CODING_RULES.md
+|       DESIGN_SYSTEM.md
+|       
++---DECISIONS
+|       ARCHITECTURE_DECISIONS.md
+|       TRAINING_2_0_DECISIONS.md
+|       
++---flows
+|       CLIENT_LIFECYCLE.md
+|       COACH_LIFECYCLE.md
+|       
++---internal
+|       AI_HISTORY_v1.1.md
+|       PROMPT_STRUCTURE.md
+|       
++---modules
+|   |   ACTIVITY.md
+|   |   ANALYTICS.md
+|   |   CHAT.md
+|   |   COACH_CLIENT_RELATIONSHIP.md
+|   |   COMMENTS.md
+|   |   FOOD.md
+|   |   HOME.md
+|   |   LIBRARY.md
+|   |   NOTIFICATIONS.md
+|   |   PHOTO_AND_MEASUREMENTS.md
+|   |   PROFILE.md
+|   |   REPORT.md
+|   |   WEIGHT.md
+|   |   
+|   \---Training
+|           TRAINING.md
+|           TRAINING_2_0_DECISIONS.md
+|           TRAINING_API.md
+|           TRAINING_DATA_MODEL.md
+|           TRAINING_SOURCE_LEGACY_2026-09-19.md
+|           TRAINING_TEMPLATES.md
+|           TRAINING_TEMPLATES_SPEC.md
+|           TRAINING_UI.md
+|           
++---PROCESS
+|       AGENTS.md
+|       CODING_RULES.md
+|       DESIGN_SYSTEM.md
+|       DEVELOPMENT_RULES.md
+|       DOCS_UPDATE_MAP.md
+|       WORKFLOW.md
+|       
++---ROADMAP
+|       CURRENT_MVP.md
+|       ROADMAP.md
+|       STUBBORN_RAM_IMPLEMENTATION_PLAN.md
+|       
++---SERVER
+|       SERVER_STATE.md
+|       
++---SYSTEMS
+|       AUTH.md
+|       COACH_CLIENT_RELATIONSHIP.md
+|       DATABASE.md
+|       MEDIA.md
+|       MEDIA2.md
+|       PAYMENTS.md
+|       PERMISSIONS.md
+|       SECURITY.md
+|       SERVER.md
+|       
+\---SYSTEM_STATE
+        SYSTEM_STATE_FINAL.md
+        SYSTEM_STATE_UPDATED_FULL.md
+        
+
+
+============================================================
+DOCS UPDATED — OUR FINAL TARGET
+============================================================
+
+Folder PATH listing for volume Жесткий диск
+Volume serial number is 000000B9 0043:8024
+D:\CRM-PLATFORM STUBBORN RAM\DOCS UPDATED
++---architecture
+|       APP_STRUCTURE.md
+|       ARCHITECTURE.md
+|       LAYOUT.md
+|       PLATFORM.md
+|       
++---Archive
+|       CURRENT_MVP_LEGACY_2026-09-20.md
+|       STUBBORN_RAM_IMPLEMENTATION_PLAN_LEGACY_2026-09-20.md
+|       
++---AUDIT
+|       PROJECT_FOUNDATION_REMEDIATION_LOG_2026-09-19.md
+|       PROJECT_FULL_AUDIT_2026-09-19.md
+|       PROJECT_REMEDIATION_ROADMAP_2026-09-19.md
+|       
++---Flows
+|       CLIENT_LIFECYCLE(2).md
+|       COACH_LIFECYCLE(2).md
+|       
++---Internal
+|       AI_HISTORY_v1.1.md
+|       PROMPT_STRUCTURE.md
+|       
++---modules
+|   +---Activity
+|   |       ACTIVITY.md
+|   |       
+|   +---Analytics
+|   |       ANALYTICS.md
+|   |       
+|   +---Chat
+|   |       CHAT.md
+|   |       
+|   +---Coach-client Relationship
+|   |       COACH_CLIENT_RELATIONSHIP(5).md
+|   |       
+|   +---Comments
+|   |       COMMENTS.md
+|   |       
+|   +---Food
+|   |       FOOD.md
+|   |       
+|   +---Home
+|   |       HOME.md
+|   |       
+|   +---Library
+|   |       LIBRARY.md
+|   |       
+|   +---Notifications
+|   |       NOTIFICATIONS.md
+|   |       
+|   +---Photo And Measurements
+|   |       PHOTO_AND_MEASUREMENTS.md
+|   |       
+|   +---Profile
+|   |       PROFILE.md
+|   |       
+|   +---Report
+|   |       REPORT.md
+|   |       
+|   +---Training
+|   |       TRAINING(2).md
+|   |       TRAINING_2_0_DECISIONS(3).md
+|   |       TRAINING_API(1).md
+|   |       TRAINING_DATA_MODEL(1).md
+|   |       TRAINING_TEMPLATES(1).md
+|   |       TRAINING_UI(1).md
+|   |       
+|   \---Weight
+|           WEIGHT.md
+|           
++---Process
+|       AGENTS.md
+|       CODING_RULES.md
+|       DESIGN_SYSTEM.md
+|       DEVELOPMENT_RULES.md
+|       DOCS_UPDATE_MAP.md
+|       WORKFLOW.md
+|       
++---Roadmap
+|       ROADMAP(5).md
+|       
++---System state
+|       SYSTEM_STATE_FINAL.md
+|       
+\---Systems
+        AUTH_CANONICAL.md
+        DATABASE_CANONICAL.md
+        MEDIA_CANONICAL_FINAL.md
+        PAYMENTS_CANONICAL.md
+        PERMISSIONS_CANONICAL.md
+        SECURITY_CANONICAL.md
+        SERVER_CANONICAL_FINAL.md
+        
+
+
+============================================================
+DOCS ARCHIVE — ORIGINAL BEFORE COPILOT
+============================================================
+
+Folder PATH listing for volume Жесткий диск
+Volume serial number is 00000083 0043:8024
+D:\CRM-PLATFORM STUBBORN RAM\DOCS_ARCHIVE
+|   ARCHITECTURE_LAYOUT.md
+|   AUTH_DOLGS.md
+|   CHANGELOG.md
+|   CURRENT_MVP.md
+|   DOCS_UPDATE_MAP.md
+|   INFRASTRUCTURE_MIGRATION.md
+|   MEDIA.md
+|   MIGRATION_ARCHITECTURE.md
+|   PROJECT_STRUCTURE.md
+|   ROADMAP.md
+|   STUBBORN_RAM_IMPLEMENTATION_PLAN.md
+|   
++---architecture
+|       ARCHITECTURE_DECISIONS.md
+|       AUTH_ARCHITECTURE.md
+|       DATABASE_SCHEMA.md
+|       PAYMENT_ARCHITECTURE.md
+|       PERMISSIONS_ARCHITECTURE.md
+|       PLATFORM_ARCHITECTURE.md
+|       SECURITY.md
+|       
++---core
+|       AGENTS.md
+|       ARCHITECTURE.md
+|       CODING_RULES.md
+|       DESIGN_SYSTEM.md
+|       DEVELOPMENT_RULES.md
+|       PROJECT_CONTEXT.md
+|       WORKFLOW.md
+|       
++---flows
+|       CLIENT_LIFECYCLE.md
+|       COACH_LIFECYCLE.md
+|       
++---internal
+|       AI_HISTORY_v1.1.md
+|       PROMPT_STRUCTURE.md
+|       
++---modules
+|   |   ACTIVITY.md
+|   |   ANALYTICS.md
+|   |   CHAT.md
+|   |   COACH_CLIENT_RELATIONSHIP.md
+|   |   FOOD.md
+|   |   HOME.md
+|   |   LIBRARY.md
+|   |   NOTIFICATIONS.md
+|   |   PHOTO_AND_MEASUREMENTS.md
+|   |   PROFILE.md
+|   |   REPORT.md
+|   |   WEIGHT.md
+|   |   
+|   \---Training
+|           TRAINING.md
+|           TRAINING_2_0_DECISIONS.md
+|           TRAINING_TEMPLATES_SPEC.md
+|           
++---SERVER
+|       SERVER_STATE.md
+|       
+\---SYSTEM_STATE
+        SYSTEM_STATE_UPDATED_FULL.md
+        
+
+
+============================================================
+FILE COUNTS
+============================================================
+docs: 68
+Docs Updated: 47
+docs_archive: 46
