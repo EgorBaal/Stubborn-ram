@@ -89,7 +89,7 @@
   max-width: 100%;
   min-width: 0;
 
-  padding: 12px;
+  padding: 10px 12px;
 
   background: #101010;
 
@@ -263,5 +263,197 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* =========================
+   СОЗДАНИЕ СВОЕГО УПРАЖНЕНИЯ
+   ========================= */
+
+.exercise-list__create-action {
+  width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  background: #101010;
+}
+
+.exercise-list__create-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 98, 0, 0.35);
+  border-radius: 11px;
+  background: rgba(255, 98, 0, 0.08);
+  color: #ff6200;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.exercise-list__create-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 20px 12px 12px;
+  box-sizing: border-box;
+  background: #101010;
+}
+
+.exercise-list__create-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.exercise-list__create-input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.exercise-list__create-input:focus {
+  border-color: rgba(255, 98, 0, 0.45);
+}
+
+/* Отступ перед "Группа мышц" */
+.exercise-list__create-field:nth-child(2) {
+  margin-top: 14px;
+}
+
+/* Заголовок группы мышц */
+.exercise-list__create-label {
+  flex: 0 0 auto;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Группы мышц */
+.exercise-list__create-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, 82px);
+  gap: 6px;
+  width: 100%;
+  min-height: 0;
+  margin-top: 12px;
+}
+
+/* Карточки групп */
+.exercise-list__create-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: 82px;
+  min-width: 0;
+  min-height: 82px;
+  padding: 7px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(255, 255, 255, 0.65);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.exercise-list__create-group--active {
+  border-color: rgba(255, 98, 0, 0.45);
+  background: rgba(255, 98, 0, 0.13);
+  color: #ff6200;
+}
+
+/* Ошибка */
+.exercise-list__create-error {
+  width: 100%;
+  margin: 12px 0 0;
+  color: #ff8a66;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Кнопка создания */
+.exercise-list__create-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 98, 0, 0.45);
+  border-radius: 11px;
+  background: #ff6200;
+  color: #080808;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.exercise-list__create-button:disabled,
+.exercise-list__create-group:disabled,
+.exercise-list__create-submit:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .exercise-list__create-button:hover {
+    border-color: rgba(255, 98, 0, 0.55);
+    background: rgba(255, 98, 0, 0.14);
+  }
+
+  .exercise-list__create-group:hover {
+    border-color: rgba(255, 98, 0, 0.25);
+    background: rgba(255, 98, 0, 0.07);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .exercise-list__create-group--active:hover {
+    border-color: rgba(255, 98, 0, 0.45);
+    background: rgba(255, 98, 0, 0.15);
+    color: #ff6200;
   }
 }

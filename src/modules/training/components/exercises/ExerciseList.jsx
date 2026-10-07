@@ -1,59 +1,68 @@
 import { useEffect, useMemo, useState } from "react";
-
-const TRAINING_API_URL = "https://api.stubbornram.ru/api/training";
+import { useNavigate } from "react-router-dom";
 
 import "./ExerciseList.css";
+
+import { createExercise, getExercises } from "../../services/trainingService";
 
 const exerciseGroups = [
   {
     id: "chest",
     label: "Грудь",
-    muscleGroups: ["chest"],
+    category: "Грудь",
   },
   {
     id: "back",
     label: "Спина",
-    muscleGroups: ["back"],
+    category: "Спина",
   },
   {
     id: "legs_glutes",
     label: "Ноги",
     subLabel: "Ягодицы",
-    muscleGroups: ["legs_glutes"],
+    category: "Ноги / Ягодицы",
   },
   {
     id: "shoulders",
     label: "Дельты",
-    muscleGroups: ["shoulders"],
+    category: "Дельты",
   },
   {
     id: "arms",
     label: "Руки",
-    muscleGroups: ["arms"],
+    category: "Руки",
   },
   {
     id: "abs",
     label: "Пресс",
-    muscleGroups: ["abs"],
+    category: "Пресс",
   },
   {
     id: "cardio",
     label: "Кардио",
-    muscleGroups: ["cardio"],
+    category: "Кардио",
   },
   {
     id: "yoga",
     label: "Йога",
-    muscleGroups: ["yoga"],
+    category: "Йога",
   },
 ];
 
-export default function ExerciseList({ onSelect }) {
+export default function ExerciseList({ onSelect, onCreateModeChange }) {
+  const navigate = useNavigate();
+
   const [exercises, setExercises] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [newExerciseName, setNewExerciseName] = useState("");
+  const [newExerciseGroup, setNewExerciseGroup] = useState(null);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -62,30 +71,27 @@ export default function ExerciseList({ onSelect }) {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${TRAINING_API_URL}/exercises`, {
-        credentials: "include",
-      });
+      try {
+        const data = await getExercises();
 
-      if (!response.ok) {
-        throw new Error("Не удалось загрузить упражнения.");
-      }
+        if (!isMounted) {
+          return;
+        }
 
-      const { exercises: data } = await response.json();
-      const fetchError = null;
+        setExercises(data);
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
 
-      if (!isMounted) {
-        return;
-      }
-
-      if (fetchError) {
-        console.error("Ошибка загрузки упражнений:", fetchError);
-        setError("Не удалось загрузить упражнения");
+        console.error("Ошибка загрузки упражнений:", error);
+        setError(error.message || "Не удалось загрузить упражнения.");
         setExercises([]);
-      } else {
-        setExercises(data ?? []);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-
-      setLoading(false);
     };
 
     loadExercises();
@@ -103,10 +109,7 @@ export default function ExerciseList({ onSelect }) {
     );
 
     return exercises.filter((exercise) => {
-      if (
-        activeGroup &&
-        !activeGroup.muscleGroups.includes(exercise.muscle_group)
-      ) {
+      if (activeGroup && exercise.category !== activeGroup.category) {
         return false;
       }
 
@@ -128,6 +131,146 @@ export default function ExerciseList({ onSelect }) {
 
     setSearch("");
   };
+
+  const handleOpenCreate = () => {
+    setIsCreating(true);
+    setNewExerciseName("");
+    setNewExerciseGroup(selectedGroup);
+    setCreateError("");
+    onCreateModeChange?.(true);
+  };
+
+  const handleCreateExercise = async (event) => {
+    event.preventDefault();
+
+    const normalizedName = newExerciseName.trim();
+
+    if (!normalizedName) {
+      setCreateError("Введите название упражнения.");
+      return;
+    }
+
+    if (!newExerciseGroup) {
+      setCreateError("Выберите группу мышц.");
+      return;
+    }
+
+    const selectedExerciseGroup = exerciseGroups.find(
+      (group) => group.id === newExerciseGroup,
+    );
+
+    const category = selectedExerciseGroup?.category;
+
+    if (!category) {
+      setCreateError("Не удалось определить категорию.");
+      return;
+    }
+
+    setCreateLoading(true);
+    setCreateError("");
+
+    try {
+      const exercise = await createExercise({
+        name: normalizedName,
+        category,
+      });
+
+      if (!exercise) {
+        throw new Error("Не удалось получить созданное упражнение.");
+      }
+
+      setExercises((currentExercises) => [...currentExercises, exercise]);
+
+      setIsCreating(false);
+      setNewExerciseName("");
+      setNewExerciseGroup(null);
+      onCreateModeChange?.(false);
+
+      onSelect?.(exercise);
+    } catch (error) {
+      console.error("Ошибка создания упражнения:", error);
+      setCreateError(error.message || "Не удалось создать упражнение.");
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  const handleExerciseClick = (exercise) => {
+    if (onSelect) {
+      onSelect(exercise);
+      return;
+    }
+
+    navigate(`/app/training/exercises/${exercise.id}`);
+  };
+
+  if (isCreating) {
+    return (
+      <div className="exercise-list exercise-list--create">
+        <form
+          className="exercise-list__create-form"
+          onSubmit={handleCreateExercise}
+        >
+          <div className="exercise-list__create-field">
+            <input
+              id="new-exercise-name"
+              type="text"
+              className="exercise-list__create-input"
+              placeholder="Название упражнения"
+              value={newExerciseName}
+              onChange={(event) => {
+                setNewExerciseName(event.target.value);
+                setCreateError("");
+              }}
+              disabled={createLoading}
+              autoFocus
+            />
+          </div>
+
+          <div className="exercise-list__create-field">
+            <span className="exercise-list__create-label">Группа мышц</span>
+
+            <div className="exercise-list__create-groups">
+              {exerciseGroups.map((group) => {
+                const isActive = newExerciseGroup === group.id;
+
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    className={`exercise-list__create-group ${
+                      isActive ? "exercise-list__create-group--active" : ""
+                    }`}
+                    onClick={() => {
+                      setNewExerciseGroup(group.id);
+                      setCreateError("");
+                    }}
+                    disabled={createLoading}
+                  >
+                    <span>{group.label}</span>
+
+                    {group.subLabel && <span>{group.subLabel}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {createError && (
+            <div className="exercise-list__create-error">{createError}</div>
+          )}
+
+          <button
+            type="submit"
+            className="exercise-list__create-submit"
+            disabled={createLoading}
+          >
+            {createLoading ? "Создание..." : "Создать упражнение"}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="exercise-list">
@@ -152,6 +295,16 @@ export default function ExerciseList({ onSelect }) {
             </button>
           );
         })}
+      </div>
+
+      <div className="exercise-list__create-action">
+        <button
+          type="button"
+          className="exercise-list__create-button"
+          onClick={handleOpenCreate}
+        >
+          <span>Создать своё упражнение</span>
+        </button>
       </div>
 
       <div className="exercise-list__search">
@@ -184,7 +337,7 @@ export default function ExerciseList({ onSelect }) {
               key={exercise.id}
               type="button"
               className="exercise-list__item"
-              onClick={() => onSelect?.(exercise)}
+              onClick={() => handleExerciseClick(exercise)}
             >
               <span
                 style={{

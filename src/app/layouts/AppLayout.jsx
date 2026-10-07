@@ -6,10 +6,7 @@ import "./AppLayout.css";
 
 // Модули, которые используют локальную прокрутку контейнеров.
 // Все вложенные страницы автоматически наследуют это поведение.
-const STATIC_PREFIXES = [
-  "/app/home",
-  "/app/training",
-];
+const STATIC_PREFIXES = ["/app/home", "/app/training", "/app/weight"];
 
 // Исключения: если когда-нибудь понадобится,
 // сюда можно добавить страницу, которая должна
@@ -22,9 +19,7 @@ export default function AppLayout() {
   const location = useLocation();
 
   const isStaticPage =
-    STATIC_PREFIXES.some((prefix) =>
-      location.pathname.startsWith(prefix)
-    ) &&
+    STATIC_PREFIXES.some((prefix) => location.pathname.startsWith(prefix)) &&
     !SCROLL_EXCEPTIONS.includes(location.pathname);
 
   return (

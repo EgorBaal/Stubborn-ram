@@ -11,16 +11,25 @@ import {
   getCompletedWorkouts,
 } from "../services/trainingService";
 
+const LOADING_DELAY_MS = 100;
+
 export default function TrainingHistoryPage() {
   const navigate = useNavigate();
 
-  const [workouts, setWorkouts] = useState([]);
+  const [workouts, setWorkouts] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showLoadingState, setShowLoadingState] = useState(false);
   const [error, setError] = useState("");
   const [deletingWorkoutId, setDeletingWorkoutId] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
+
+    const loadingTimer = window.setTimeout(() => {
+      if (isMounted) {
+        setShowLoadingState(true);
+      }
+    }, LOADING_DELAY_MS);
 
     const loadWorkouts = async () => {
       setIsLoading(true);
@@ -47,6 +56,7 @@ export default function TrainingHistoryPage() {
       } finally {
         if (isMounted) {
           setIsLoading(false);
+          window.clearTimeout(loadingTimer);
         }
       }
     };
@@ -55,6 +65,7 @@ export default function TrainingHistoryPage() {
 
     return () => {
       isMounted = false;
+      window.clearTimeout(loadingTimer);
     };
   }, []);
 
@@ -68,7 +79,9 @@ export default function TrainingHistoryPage() {
     try {
       await deleteWorkout(workoutId);
 
-      setWorkouts((prev) => prev.filter((workout) => workout.id !== workoutId));
+      setWorkouts((prev) =>
+        prev ? prev.filter((workout) => workout.id !== workoutId) : prev,
+      );
     } catch (deleteError) {
       console.error("Ошибка удаления тренировки:", deleteError);
 
@@ -99,7 +112,7 @@ export default function TrainingHistoryPage() {
       </button>
 
       <TrainingContent>
-        {isLoading ? (
+        {isLoading && showLoadingState ? (
           <EmptyState
             title="История тренировок"
             description="Загружаем сохранённые тренировки."
@@ -109,7 +122,7 @@ export default function TrainingHistoryPage() {
             title="Не удалось загрузить историю"
             description={error}
           />
-        ) : workouts.length === 0 ? (
+        ) : workouts === null ? null : workouts.length === 0 ? (
           <EmptyState
             title="История тренировок"
             description="Создайте первую тренировку, чтобы начать вести историю."

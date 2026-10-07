@@ -1,11 +1,4 @@
 import { getAuthenticatedUser } from "../auth/auth.session.js";
-function combineDateAndTime(date, time) {
-  if (!time) {
-    return null;
-  }
-
-  return `${date}T${time}:00`;
-}
 
 export default async function trainingRoutes(app) {
   app.get("/api/training/exercises", async (request, reply) => {
@@ -20,18 +13,74 @@ export default async function trainingRoutes(app) {
 
     const result = await app.pg.query(
       `
-        SELECT
-          id,
-          name,
-          muscle_group
-        FROM exercises
-        WHERE user_id IS NULL
-        ORDER BY name ASC
-      `,
+    SELECT
+  id,
+  name,
+  category,
+  description,
+  primary_muscles,
+  secondary_muscles
+FROM exercises
+WHERE user_id IS NULL
+   OR user_id = $1
+ORDER BY name ASC
+  `,
+      [authUser.userId],
     );
 
     return {
       exercises: result.rows,
+    };
+  });
+  app.get("/api/training/exercises/:id", async (request, reply) => {
+    const authUser = await getAuthenticatedUser(app.pg, request);
+
+    if (!authUser) {
+      return reply.code(401).send({
+        error: "UNAUTHENTICATED",
+        message: "Требуется авторизация.",
+      });
+    }
+
+    const { id } = request.params;
+
+    if (!id) {
+      return reply.code(400).send({
+        error: "INVALID_EXERCISE_ID",
+        message: "Не указан ID упражнения.",
+      });
+    }
+
+    const result = await app.pg.query(
+      `
+                SELECT
+          id,
+          name,
+          category,
+          description,
+          primary_muscles,
+          secondary_muscles,
+          CASE
+            WHEN user_id = $2 THEN true
+            ELSE false
+          END AS can_edit
+        FROM exercises
+WHERE id = $1
+  AND (user_id IS NULL OR user_id = $2)
+        LIMIT 1
+      `,
+      [id, authUser.userId],
+    );
+
+    if (result.rowCount === 0) {
+      return reply.code(404).send({
+        error: "EXERCISE_NOT_FOUND",
+        message: "Упражнение не найдено.",
+      });
+    }
+
+    return {
+      exercise: result.rows[0],
     };
   });
   app.get("/api/training/workouts", async (request, reply) => {
@@ -68,6 +117,181 @@ export default async function trainingRoutes(app) {
     };
   });
 
+  app.post("/api/training/exercises", async (request, reply) => {
+    const authUser = await getAuthenticatedUser(app.pg, request);
+
+    if (!authUser) {
+      return reply.code(401).send({
+        error: "UNAUTHENTICATED",
+        message: "Требуется авторизация.",
+      });
+    }
+
+    const { name, category, description, primaryMuscles, secondaryMuscles } =
+      request.body ?? {};
+
+    const normalizedName = typeof name === "string" ? name.trim() : "";
+    const normalizedCategory =
+      typeof category === "string" ? category.trim() : "";
+    const normalizedPrimaryMuscles = Array.isArray(primaryMuscles)
+      ? primaryMuscles.filter(
+          (muscle) => typeof muscle === "string" && muscle.trim(),
+        )
+      : [];
+
+    const normalizedSecondaryMuscles = Array.isArray(secondaryMuscles)
+      ? secondaryMuscles.filter(
+          (muscle) => typeof muscle === "string" && muscle.trim(),
+        )
+      : [];
+
+    if (!normalizedName) {
+      return reply.code(400).send({
+        error: "INVALID_EXERCISE_NAME",
+        message: "Не указано название упражнения.",
+      });
+    }
+
+    if (!normalizedCategory) {
+      return reply.code(400).send({
+        error: "INVALID_CATEGORY",
+        message: "Не указана категория упражнения.",
+      });
+    }
+
+    const result = await app.pg.query(
+      `
+                INSERT INTO exercises (
+          name,
+          category,
+          description,
+          primary_muscles,
+          secondary_muscles,
+          user_id
+        )
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING
+          id,
+          name,
+          category,
+          description,
+          primary_muscles,
+          secondary_muscles
+      `,
+      [
+        normalizedName,
+        normalizedCategory,
+        description?.trim() || null,
+        normalizedPrimaryMuscles,
+        normalizedSecondaryMuscles,
+        authUser.userId,
+      ],
+    );
+
+    return reply.code(201).send({
+      exercise: result.rows[0],
+    });
+  });
+
+  app.put("/api/training/exercises/:id", async (request, reply) => {
+    const authUser = await getAuthenticatedUser(app.pg, request);
+
+    if (!authUser) {
+      return reply.code(401).send({
+        error: "UNAUTHENTICATED",
+        message: "Требуется авторизация.",
+      });
+    }
+
+    const { id } = request.params;
+
+    if (!id) {
+      return reply.code(400).send({
+        error: "INVALID_EXERCISE_ID",
+        message: "Не указан ID упражнения.",
+      });
+    }
+
+    const { name, category, description, primaryMuscles, secondaryMuscles } =
+      request.body ?? {};
+
+    const normalizedName = typeof name === "string" ? name.trim() : "";
+
+    const normalizedCategory =
+      typeof category === "string" ? category.trim() : "";
+
+    const normalizedDescription =
+      typeof description === "string" ? description.trim() : null;
+
+    const normalizedPrimaryMuscles = Array.isArray(primaryMuscles)
+      ? primaryMuscles.filter(
+          (muscle) => typeof muscle === "string" && muscle.trim(),
+        )
+      : [];
+
+    const normalizedSecondaryMuscles = Array.isArray(secondaryMuscles)
+      ? secondaryMuscles.filter(
+          (muscle) => typeof muscle === "string" && muscle.trim(),
+        )
+      : [];
+
+    if (!normalizedName) {
+      return reply.code(400).send({
+        error: "INVALID_EXERCISE_NAME",
+        message: "Не указано название упражнения.",
+      });
+    }
+
+    if (!normalizedCategory) {
+      return reply.code(400).send({
+        error: "INVALID_CATEGORY",
+        message: "Не указана категория упражнения.",
+      });
+    }
+
+    const result = await app.pg.query(
+      `
+                UPDATE exercises
+        SET
+          name = $1,
+          category = $2,
+          description = $3,
+          primary_muscles = $4,
+          secondary_muscles = $5,
+          updated_at = current_timestamp
+        WHERE id = $6
+          AND user_id = $7
+        RETURNING
+          id,
+          name,
+          category,
+          description,
+          primary_muscles,
+          secondary_muscles
+      `,
+      [
+        normalizedName,
+        normalizedCategory,
+        normalizedDescription || null,
+        normalizedPrimaryMuscles,
+        normalizedSecondaryMuscles,
+        id,
+        authUser.userId,
+      ],
+    );
+
+    if (result.rowCount === 0) {
+      return reply.code(404).send({
+        error: "EXERCISE_NOT_FOUND",
+        message: "Личное упражнение не найдено.",
+      });
+    }
+
+    return {
+      exercise: result.rows[0],
+    };
+  });
+
   app.get("/api/training/workouts/:id", async (request, reply) => {
     const authUser = await getAuthenticatedUser(app.pg, request);
 
@@ -90,19 +314,19 @@ export default async function trainingRoutes(app) {
     const workoutResult = await app.pg.query(
       `
         SELECT
-          id,
-          user_id,
-          title,
-          training_date,
-          start_time,
-          end_time,
-          training_type,
-          comment,
-          status,
-          completed_at,
-          created_at,
-          updated_at
-        FROM workouts
+  id,
+  user_id,
+  title,
+  training_date::text AS training_date,
+start_time::text AS start_time,
+end_time::text AS end_time,
+  training_type,
+  comment,
+  status,
+  completed_at,
+  created_at,
+  updated_at
+FROM workouts
         WHERE id = $1
           AND user_id = $2
         LIMIT 1
@@ -121,7 +345,7 @@ export default async function trainingRoutes(app) {
 
     const exercisesResult = await app.pg.query(
       `
-        SELECT
+                SELECT
           we.id,
           we.workout_id,
           we.exercise_id,
@@ -129,7 +353,7 @@ export default async function trainingRoutes(app) {
           we.exercise_comment,
           we.superset_after,
           e.name,
-          e.muscle_group
+          e.category
         FROM workout_exercises we
         JOIN exercises e ON e.id = we.exercise_id
         WHERE we.workout_id = $1
@@ -203,7 +427,7 @@ export default async function trainingRoutes(app) {
         exercises: {
           id: exercise.exercise_id,
           name: exercise.name,
-          muscle_group: exercise.muscle_group,
+          category: exercise.category,
         },
         workout_sets: setsByExerciseId.get(exercise.id) || [],
       })),
@@ -585,8 +809,8 @@ export default async function trainingRoutes(app) {
           authUser.userId,
           title?.trim() || "Новая тренировка",
           trainingDate,
-          combineDateAndTime(trainingDate, startTime),
-          combineDateAndTime(trainingDate, endTime),
+          startTime || null,
+          endTime || null,
           trainingType || "Силовая",
           comment?.trim() || null,
         ],
@@ -764,8 +988,8 @@ export default async function trainingRoutes(app) {
         [
           title?.trim() || "Новая тренировка",
           trainingDate,
-          combineDateAndTime(trainingDate, startTime),
-          combineDateAndTime(trainingDate, endTime),
+          startTime || null,
+          endTime || null,
           trainingType || "Силовая",
           comment?.trim() || null,
           id,

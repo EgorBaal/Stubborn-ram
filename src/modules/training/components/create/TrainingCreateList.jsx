@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import TrainingCreateCard from "./TrainingCreateCard";
 
-export default function TrainingCreateList() {
+export default function TrainingCreateList({ templates = [] }) {
   const navigate = useNavigate();
 
   return (
@@ -15,7 +15,9 @@ export default function TrainingCreateList() {
           <TrainingCreateCard
             key={template.id}
             title={template.title}
-            onClick={() => navigate(`/app/training/template/${template.id}`)}
+            onClick={() =>
+              navigate(`/app/training/template/${template.id}`)
+            }
           />
         ))}
       </div>

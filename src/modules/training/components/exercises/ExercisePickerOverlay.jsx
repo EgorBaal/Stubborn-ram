@@ -1,10 +1,12 @@
 import { createPortal } from "react-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import ExerciseList from "./ExerciseList";
 import "./ExercisePickerOverlay.css";
 
 export default function ExercisePickerOverlay({ onClose, onSelect }) {
+  const [isCreating, setIsCreating] = useState(false);
+
   useEffect(() => {
     const scrollY = window.scrollY;
 
@@ -38,7 +40,9 @@ export default function ExercisePickerOverlay({ onClose, onSelect }) {
     <div className="exercise-picker-overlay" onMouseDown={handleBackdropClick}>
       <section className="exercise-picker" aria-label="Выбор упражнения">
         <header className="exercise-picker__header">
-          <h2 className="exercise-picker__title">Выбрать упражнение</h2>
+          <h2 className="exercise-picker__title">
+            {isCreating ? "Создание упражнения" : "Выбрать упражнение"}
+          </h2>
 
           <button
             type="button"
@@ -51,7 +55,10 @@ export default function ExercisePickerOverlay({ onClose, onSelect }) {
         </header>
 
         <div className="exercise-picker__content">
-          <ExerciseList onSelect={onSelect} />
+          <ExerciseList
+            onSelect={onSelect}
+            onCreateModeChange={setIsCreating}
+          />
         </div>
       </section>
     </div>

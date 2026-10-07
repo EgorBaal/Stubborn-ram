@@ -6,7 +6,15 @@ import ConfirmDeletePopover from "../popovers/ConfirmDeletePopover";
 
 import ExercisePickerOverlay from "../exercises/ExercisePickerOverlay";
 import "./TrainingExerciseCard.css";
-import { getSetMaterials } from "../../services/trainingMaterialsService";
+import {
+  getSetMaterials,
+  saveSetMaterials,
+} from "../../services/trainingMaterialsService";
+import {
+  deleteMedia,
+  getMedia,
+  uploadMediaFile,
+} from "../../../media/services/mediaService";
 
 const MIN_PHOTO_ZOOM = 1;
 const MAX_PHOTO_ZOOM = 4;
@@ -61,6 +69,8 @@ export default function TrainingExerciseCard({
   const [setMaterials, setSetMaterials] = useState({});
   const [feedbackSetId, setFeedbackSetId] = useState(null);
   const [materialsModalSetId, setMaterialsModalSetId] = useState(null);
+  const [materialComment, setMaterialComment] = useState("");
+  const [isSavingMaterials, setIsSavingMaterials] = useState(false);
   const [swipedSetId, setSwipedSetId] = useState(null);
   const [swipedSetSide, setSwipedSetSide] = useState(null);
 
@@ -89,6 +99,7 @@ export default function TrainingExerciseCard({
   const deleteButtonRef = useRef(null);
   const photoInputRef = useRef(null);
   const [photoFiles, setPhotoFiles] = useState([]);
+  const [savedPhotos, setSavedPhotos] = useState({});
   const photoViewerRef = useRef(null);
 
   const photoTouchState = useRef({
@@ -109,7 +120,6 @@ export default function TrainingExerciseCard({
     y: 0,
   });
 
-  const exerciseNameInputRef = useRef(null);
   const exerciseCommentInputRef = useRef(null);
   const onChangeRef = useRef(onChange);
   const hasHydratedInitialDataRef = useRef(false);
@@ -117,17 +127,6 @@ export default function TrainingExerciseCard({
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
-
-  useEffect(() => {
-    const textarea = exerciseNameInputRef.current;
-
-    if (!textarea) {
-      return;
-    }
-
-    textarea.style.height = "0px";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }, [exerciseName]);
 
   useEffect(() => {
     const textarea = exerciseCommentInputRef.current;
@@ -204,9 +203,56 @@ export default function TrainingExerciseCard({
             return;
           }
 
+          const materials = result.data?.materials ?? [];
+
           setSetMaterials((prev) => ({
             ...prev,
-            [set.id]: result.data?.materials ?? [],
+            [set.id]: materials,
+          }));
+
+          const clientMedia = materials
+            .filter((material) => material.type === "CLIENT_NOTE")
+            .flatMap((material) => material.media ?? [])
+            .filter((media) => media.mimeType?.startsWith("image/"));
+
+          if (clientMedia.length === 0) {
+            setSavedPhotos((prev) => ({
+              ...prev,
+              [set.id]: [],
+            }));
+            return;
+          }
+
+          const photoResults = await Promise.all(
+            clientMedia.map(async (media) => {
+              const mediaResult = await getMedia(media.id);
+
+              if (mediaResult.error) {
+                console.error(
+                  `Ошибка загрузки фотографии ${media.id}:`,
+                  mediaResult.error,
+                );
+                return null;
+              }
+
+              const downloadUrl = mediaResult.data?.media?.downloadUrl;
+
+              if (!downloadUrl) {
+                return null;
+              }
+
+              return {
+                id: media.id,
+                name: media.originalName,
+                mimeType: media.mimeType,
+                downloadUrl,
+              };
+            }),
+          );
+
+          setSavedPhotos((prev) => ({
+            ...prev,
+            [set.id]: photoResults.filter(Boolean),
           }));
         }),
       );
@@ -232,7 +278,14 @@ export default function TrainingExerciseCard({
     setSelectedPhotoIndex(null);
     resetPhotoViewerTransform();
   };
+  const getDisplayedPhotosCount = () => {
+    const savedPhotosForSet =
+      materialsModalSetId !== null
+        ? (savedPhotos[materialsModalSetId] ?? [])
+        : [];
 
+    return savedPhotosForSet.length + photoFiles.length;
+  };
   const handlePreviousPhoto = () => {
     setSelectedPhotoIndex((current) => {
       if (current === null || current <= 0) {
@@ -246,7 +299,7 @@ export default function TrainingExerciseCard({
 
   const handleNextPhoto = () => {
     setSelectedPhotoIndex((current) => {
-      if (current === null || current >= photoFiles.length - 1) {
+      if (current === null || current >= getDisplayedPhotosCount() - 1) {
         return current;
       }
 
@@ -519,8 +572,25 @@ export default function TrainingExerciseCard({
     photoViewerRef.current?.focus();
   }, [selectedPhotoIndex]);
 
+  const currentSavedPhotos =
+    materialsModalSetId !== null
+      ? (savedPhotos[materialsModalSetId] ?? [])
+      : [];
+
+  const displayedPhotos = [
+    ...currentSavedPhotos.map((photo) => ({
+      ...photo,
+      source: "saved",
+      previewUrl: photo.downloadUrl,
+    })),
+    ...photoFiles.map((photo) => ({
+      ...photo,
+      source: "local",
+    })),
+  ];
+
   const selectedPhoto =
-    selectedPhotoIndex !== null ? photoFiles[selectedPhotoIndex] : null;
+    selectedPhotoIndex !== null ? displayedPhotos[selectedPhotoIndex] : null;
   const handleToggle = () => {
     setIsCollapsed((prev) => !prev);
   };
@@ -770,7 +840,131 @@ export default function TrainingExerciseCard({
       ),
     );
   };
+  const handleSaveMaterials = async (setId) => {
+    if (!setId || isSavingMaterials) {
+      return;
+    }
 
+    setIsSavingMaterials(true);
+
+    const uploadedMediaIds = [];
+    let materialsSaved = false;
+
+    try {
+      for (const photo of photoFiles) {
+        const result = await uploadMediaFile(photo.file);
+
+        if (result.error) {
+          throw new Error(
+            result.error.message || "Не удалось загрузить фотографию.",
+          );
+        }
+
+        const mediaId = result.data?.media?.id;
+
+        if (!mediaId) {
+          throw new Error("Сервер не вернул ID загруженного файла.");
+        }
+
+        uploadedMediaIds.push(mediaId);
+      }
+
+      const savedPhotosForSet = savedPhotos[setId] ?? [];
+
+      const savedMediaIds = savedPhotosForSet
+        .map((photo) => photo.id)
+        .filter(Boolean);
+
+      const mediaIds = [...new Set([...savedMediaIds, ...uploadedMediaIds])];
+
+      const result = await saveSetMaterials(setId, {
+        comment: materialComment,
+        mediaIds,
+      });
+
+      if (result.error) {
+        throw new Error(
+          result.error.message || "Не удалось сохранить материалы.",
+        );
+      }
+
+      materialsSaved = true;
+
+      const refreshedResult = await getSetMaterials(setId);
+
+      if (refreshedResult.error) {
+        throw new Error(
+          refreshedResult.error.message ||
+            "Материалы сохранены, но не удалось обновить данные.",
+        );
+      }
+
+      setSetMaterials((prev) => ({
+        ...prev,
+        [setId]: refreshedResult.data?.materials ?? [],
+      }));
+
+      const refreshedMaterials = refreshedResult.data?.materials ?? [];
+
+      const refreshedClientMedia = refreshedMaterials
+        .filter((material) => material.type === "CLIENT_NOTE")
+        .flatMap((material) => material.media ?? [])
+        .filter((media) => media.mimeType?.startsWith("image/"));
+
+      const refreshedPhotos = await Promise.all(
+        refreshedClientMedia.map(async (media) => {
+          const mediaResult = await getMedia(media.id);
+
+          if (mediaResult.error) {
+            console.error(
+              `Ошибка обновления фотографии ${media.id}:`,
+              mediaResult.error,
+            );
+            return null;
+          }
+
+          const downloadUrl = mediaResult.data?.media?.downloadUrl;
+
+          if (!downloadUrl) {
+            return null;
+          }
+
+          return {
+            id: media.id,
+            name: media.originalName,
+            mimeType: media.mimeType,
+            downloadUrl,
+          };
+        }),
+      );
+
+      setSavedPhotos((prev) => ({
+        ...prev,
+        [setId]: refreshedPhotos.filter(Boolean),
+      }));
+
+      photoFiles.forEach((photo) => {
+        URL.revokeObjectURL(photo.previewUrl);
+      });
+
+      setPhotoFiles([]);
+      setFeedbackSetId(null);
+    } catch (error) {
+      if (!materialsSaved) {
+        for (const mediaId of uploadedMediaIds) {
+          try {
+            await deleteMedia(mediaId);
+          } catch {
+            // Не перекрываем исходную ошибку сохранения.
+          }
+        }
+      }
+
+      console.error("Ошибка сохранения материалов подхода:", error);
+    } finally {
+      setIsSavingMaterials(false);
+    }
+  };
   return (
     <article
       className={`training-exercise-card${
@@ -785,14 +979,13 @@ export default function TrainingExerciseCard({
 
       <div className="training-exercise-card__exercise-content">
         <div className="training-exercise-card__row training-exercise-card__row--title">
-          <textarea
-            ref={exerciseNameInputRef}
-            className="training-exercise-card__name-input"
-            placeholder="Название упражнения"
-            value={exerciseName}
-            onChange={(event) => setExerciseName(event.target.value)}
-            rows={1}
-          ></textarea>
+          <div
+            className={`training-exercise-card__name-input${
+              exerciseName ? "" : " training-exercise-card__name--placeholder"
+            }`}
+          >
+            {exerciseName || "Выберите упражнение"}
+          </div>
 
           {!isCollapsed && (
             <button
@@ -1294,11 +1487,19 @@ export default function TrainingExerciseCard({
                 type="button"
                 className="training-exercise-card__materials-edit"
                 onClick={() => {
-                  setFeedbackSetId((currentId) =>
-                    currentId === materialsModalSetId
-                      ? null
-                      : materialsModalSetId,
+                  if (feedbackSetId === materialsModalSetId) {
+                    handleSaveMaterials(materialsModalSetId);
+                    return;
+                  }
+
+                  const materials = setMaterials[materialsModalSetId] ?? [];
+
+                  const clientNote = materials.find(
+                    (material) => material.type === "CLIENT_NOTE",
                   );
+
+                  setMaterialComment(clientNote?.comment ?? "");
+                  setFeedbackSetId(materialsModalSetId);
                 }}
               >
                 {feedbackSetId === materialsModalSetId
@@ -1344,11 +1545,15 @@ export default function TrainingExerciseCard({
                 />
 
                 <div className="training-exercise-card__materials-placeholder">
-                  {photoFiles.length > 0 ? (
+                  {displayedPhotos.length > 0 ? (
                     <div className="training-exercise-card__materials-photo-grid">
-                      {photoFiles.map((photo, index) => (
+                      {displayedPhotos.map((photo, index) => (
                         <div
-                          key={`${photo.file.name}-${photo.file.lastModified}-${index}`}
+                          key={
+                            photo.source === "saved"
+                              ? `saved-${photo.id}`
+                              : `${photo.file.name}-${photo.file.lastModified}-${index}`
+                          }
                           className="training-exercise-card__materials-photo"
                         >
                           <button
@@ -1369,11 +1574,25 @@ export default function TrainingExerciseCard({
                               className="training-exercise-card__materials-photo-delete"
                               aria-label={`Удалить фото ${index + 1}`}
                               onClick={() => {
+                                if (photo.source === "saved") {
+                                  setSavedPhotos((prev) => ({
+                                    ...prev,
+                                    [materialsModalSetId]: (
+                                      prev[materialsModalSetId] ?? []
+                                    ).filter(
+                                      (savedPhoto) =>
+                                        savedPhoto.id !== photo.id,
+                                    ),
+                                  }));
+
+                                  return;
+                                }
+
                                 URL.revokeObjectURL(photo.previewUrl);
 
                                 setPhotoFiles((prev) =>
                                   prev.filter(
-                                    (_, photoIndex) => photoIndex !== index,
+                                    (localPhoto) => localPhoto !== photo,
                                   ),
                                 );
                               }}
@@ -1431,6 +1650,8 @@ export default function TrainingExerciseCard({
                 <textarea
                   placeholder="Комментарий"
                   disabled={feedbackSetId !== materialsModalSetId}
+                  value={materialComment}
+                  onChange={(event) => setMaterialComment(event.target.value)}
                 />
 
                 {feedbackSetId === materialsModalSetId && (
@@ -1499,7 +1720,7 @@ export default function TrainingExerciseCard({
                   />
                 </div>
 
-                {selectedPhotoIndex < photoFiles.length - 1 && (
+                {selectedPhotoIndex < getDisplayedPhotosCount() - 1 && (
                   <button
                     type="button"
                     className="training-exercise-card__photo-viewer-nav training-exercise-card__photo-viewer-nav--next"

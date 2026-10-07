@@ -26,12 +26,16 @@ export default function TrainingPage() {
   const [trainingTitle, setTrainingTitle] = useState("Новая тренировка");
   const [trainingDate, setTrainingDate] = useState(new Date());
 
-  const [startTime, setStartTime] = useState(() =>
-    new Date().toLocaleTimeString("ru-RU", {
+  const [startTime, setStartTime] = useState(() => {
+    if (isHistoryTraining) {
+      return "";
+    }
+
+    return new Date().toLocaleTimeString("ru-RU", {
       hour: "2-digit",
       minute: "2-digit",
-    }),
-  );
+    });
+  });
 
   const [endTime, setEndTime] = useState("");
   const [trainingType, setTrainingType] = useState("Силовая");
@@ -45,6 +49,7 @@ export default function TrainingPage() {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isStartTimePickerOpen, setIsStartTimePickerOpen] = useState(false);
   const [isEndTimePickerOpen, setIsEndTimePickerOpen] = useState(false);
+
   useEffect(() => {
     if (!isHistoryTraining || !id) {
       return;
@@ -116,7 +121,9 @@ export default function TrainingPage() {
           return;
         }
 
-        window.alert(loadError?.message || "Не удалось загрузить тренировку.");
+        window.alert(
+          loadError?.message || "Не удалось загрузить тренировку.",
+        );
       } finally {
         if (isMounted) {
           setIsLoadingWorkout(false);
