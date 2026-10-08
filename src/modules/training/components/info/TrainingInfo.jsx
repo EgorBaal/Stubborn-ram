@@ -39,6 +39,8 @@ export default function TrainingInfo({
 
   isEndTimePickerOpen,
   setIsEndTimePickerOpen,
+
+  isReadOnly = false,
 }) {
   const dateButtonRef = useRef(null);
   const startTimeButtonRef = useRef(null);
@@ -65,7 +67,31 @@ export default function TrainingInfo({
     }
   }, [isTrainingTypePickerOpen]);
 
+  useEffect(() => {
+    if (!isReadOnly) {
+      return;
+    }
+
+    setIsDateButtonOpen(false);
+    setIsTrainingTypeButtonOpen(false);
+    setIsStartTimeButtonOpen(false);
+    setIsEndTimeButtonOpen(false);
+    setIsDatePickerOpen(false);
+    setIsStartTimePickerOpen(false);
+    setIsEndTimePickerOpen(false);
+    setIsTrainingTypePickerOpen(false);
+  }, [
+    isReadOnly,
+    setIsDatePickerOpen,
+    setIsStartTimePickerOpen,
+    setIsEndTimePickerOpen,
+  ]);
+
   const handleDateToggle = () => {
+    if (isReadOnly) {
+      return;
+    }
+
     setIsTrainingTypePickerOpen(false);
     setIsTrainingTypeButtonOpen(false);
     setIsStartTimeButtonOpen(false);
@@ -80,6 +106,10 @@ export default function TrainingInfo({
   };
 
   const handleStartTimeToggle = () => {
+    if (isReadOnly) {
+      return;
+    }
+
     setIsTrainingTypePickerOpen(false);
     setIsTrainingTypeButtonOpen(false);
     setIsDatePickerOpen(false);
@@ -94,6 +124,10 @@ export default function TrainingInfo({
   };
 
   const handleEndTimeToggle = () => {
+    if (isReadOnly) {
+      return;
+    }
+
     setIsTrainingTypePickerOpen(false);
     setIsTrainingTypeButtonOpen(false);
     setIsDatePickerOpen(false);
@@ -108,6 +142,10 @@ export default function TrainingInfo({
   };
 
   const handleTrainingTypeToggle = () => {
+    if (isReadOnly) {
+      return;
+    }
+
     setIsDatePickerOpen(false);
     setIsDateButtonOpen(false);
     setIsStartTimeButtonOpen(false);
@@ -200,7 +238,12 @@ export default function TrainingInfo({
             className="training-info__input"
             value={trainingTitle}
             maxLength={60}
+            readOnly={isReadOnly}
             onFocus={(e) => {
+              if (isReadOnly) {
+                return;
+              }
+
               const input = e.target;
               const length = input.value.length;
 
@@ -208,8 +251,18 @@ export default function TrainingInfo({
                 input.setSelectionRange(length, length);
               });
             }}
-            onChange={(e) => setTrainingTitle(e.target.value)}
+            onChange={(e) => {
+              if (isReadOnly) {
+                return;
+              }
+
+              setTrainingTitle(e.target.value);
+            }}
             onBlur={() => {
+              if (isReadOnly) {
+                return;
+              }
+
               if (trainingTitle.trim() === "") {
                 setTrainingTitle("Новая тренировка");
               }
@@ -225,6 +278,7 @@ export default function TrainingInfo({
             type="button"
             className={`training-info__button training-info__button--date${isDateButtonOpen ? " training-info__button--open" : ""}`}
             onClick={handleDateToggle}
+            disabled={isReadOnly}
             aria-expanded={isDateButtonOpen}
           >
             {formattedTrainingDate}
@@ -253,6 +307,7 @@ export default function TrainingInfo({
               type="button"
               className={`training-info__button training-info__button--time${isStartTimeButtonOpen ? " training-info__button--open" : ""}`}
               onClick={handleStartTimeToggle}
+              disabled={isReadOnly}
               aria-expanded={isStartTimeButtonOpen}
             >
               {startTime}
@@ -265,6 +320,7 @@ export default function TrainingInfo({
               type="button"
               className={`training-info__button training-info__button--time${isEndTimeButtonOpen ? " training-info__button--open" : ""}`}
               onClick={handleEndTimeToggle}
+              disabled={isReadOnly}
               aria-expanded={isEndTimeButtonOpen}
             >
               {endTime || "--:--"}
@@ -312,6 +368,7 @@ export default function TrainingInfo({
             type="button"
             className={`training-info__button training-info__button--type${isTrainingTypeButtonOpen ? " training-info__button--open" : ""}`}
             onClick={handleTrainingTypeToggle}
+            disabled={isReadOnly}
             aria-expanded={isTrainingTypeButtonOpen}
           >
             {trainingType}

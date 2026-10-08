@@ -56,6 +56,7 @@ export default function TrainingExerciseCard({
   initialSets = [],
   isSupersetActionSelected = false,
   isSupersetMember = false,
+  isReadOnly = false,
   onToggleSuperset,
   onRemoveExercise,
   onChange,
@@ -109,6 +110,15 @@ export default function TrainingExerciseCard({
     pinchDistance: null,
     pinchZoom: MIN_PHOTO_ZOOM,
     pinchCenter: null,
+  });
+
+  const photoTapState = useRef({
+    active: false,
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    moved: false,
+    wasHandled: false,
   });
 
   const photoPointerState = useRef(null);
@@ -277,6 +287,58 @@ export default function TrainingExerciseCard({
   const handleClosePhotoViewer = () => {
     setSelectedPhotoIndex(null);
     resetPhotoViewerTransform();
+    photoTapState.current = {
+      active: false,
+      startX: 0,
+      startY: 0,
+      startTime: 0,
+      moved: false,
+      wasHandled: false,
+    };
+  };
+
+  const handlePhotoViewerClick = (event) => {
+    if (event.target === event.currentTarget) {
+      const state = photoTapState.current;
+
+      if (!state.active || state.wasHandled || state.moved) {
+        return;
+      }
+
+      if (photoZoom > MIN_PHOTO_ZOOM) {
+        return;
+      }
+
+      const elapsed = Date.now() - state.startTime;
+
+      if (elapsed <= 300) {
+        state.wasHandled = true;
+        handleClosePhotoViewer();
+      }
+
+      return;
+    }
+
+    if (event.target instanceof HTMLElement && event.target.closest("button")) {
+      return;
+    }
+
+    const state = photoTapState.current;
+
+    if (!state.active || state.wasHandled || state.moved) {
+      return;
+    }
+
+    if (photoZoom > MIN_PHOTO_ZOOM) {
+      return;
+    }
+
+    const elapsed = Date.now() - state.startTime;
+
+    if (elapsed <= 300) {
+      state.wasHandled = true;
+      handleClosePhotoViewer();
+    }
   };
   const getDisplayedPhotosCount = () => {
     const savedPhotosForSet =
@@ -382,6 +444,14 @@ export default function TrainingExerciseCard({
       photoTouchState.current.pinchDistance = distance;
       photoTouchState.current.pinchZoom = photoZoom;
       photoTouchState.current.pinchCenter = center;
+      photoTapState.current = {
+        active: false,
+        startX: 0,
+        startY: 0,
+        startTime: 0,
+        moved: false,
+        wasHandled: false,
+      };
 
       return;
     }
@@ -395,11 +465,28 @@ export default function TrainingExerciseCard({
     photoTouchState.current.startX = touch.clientX;
     photoTouchState.current.startY = touch.clientY;
     photoTouchState.current.startTime = Date.now();
+    photoTapState.current = {
+      active: true,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startTime: Date.now(),
+      moved: false,
+      wasHandled: false,
+    };
   };
 
   const handlePhotoTouchMove = (event) => {
     if (event.touches.length >= 2) {
       event.preventDefault();
+
+      photoTapState.current = {
+        active: false,
+        startX: 0,
+        startY: 0,
+        startTime: 0,
+        moved: true,
+        wasHandled: false,
+      };
 
       const distance = getPhotoTouchDistance(event.touches);
       const center = getPhotoTouchCenter(event.touches);
@@ -449,6 +536,10 @@ export default function TrainingExerciseCard({
       const deltaX = touch.clientX - photoTouchState.current.startX;
       const deltaY = touch.clientY - photoTouchState.current.startY;
 
+      if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+        photoTapState.current.moved = true;
+      }
+
       setPhotoPosition((current) => ({
         x: current.x + deltaX,
         y: current.y + deltaY,
@@ -469,10 +560,6 @@ export default function TrainingExerciseCard({
       return;
     }
 
-    if (photoZoom > MIN_PHOTO_ZOOM) {
-      return;
-    }
-
     const touch = event.changedTouches[0];
 
     if (!touch) {
@@ -484,20 +571,57 @@ export default function TrainingExerciseCard({
 
     const elapsed = Date.now() - photoTouchState.current.startTime;
 
+    if (photoZoom > MIN_PHOTO_ZOOM) {
+      return;
+    }
+
     if (
       Math.abs(deltaX) >= PHOTO_SWIPE_THRESHOLD &&
       Math.abs(deltaX) > Math.abs(deltaY) &&
       elapsed < 700
     ) {
+      photoTapState.current.wasHandled = true;
+      photoTapState.current.active = false;
+
       if (deltaX < 0) {
         handleNextPhoto();
       } else {
         handlePreviousPhoto();
       }
+
+      return;
     }
+
+    if (!photoTapState.current.active || photoTapState.current.wasHandled) {
+      return;
+    }
+
+    if (Math.abs(deltaX) <= 10 && Math.abs(deltaY) <= 10 && elapsed <= 300) {
+      photoTapState.current.wasHandled = true;
+      handleClosePhotoViewer();
+      return;
+    }
+
+    photoTapState.current.active = false;
   };
 
   const handlePhotoPointerDown = (event) => {
+    if (event.target instanceof Element && event.target.closest("button")) {
+      return;
+    }
+
+    if (photoZoom <= MIN_PHOTO_ZOOM && event.pointerType !== "touch") {
+      photoTapState.current = {
+        active: true,
+        startX: event.clientX,
+        startY: event.clientY,
+        startTime: Date.now(),
+        moved: false,
+        wasHandled: false,
+      };
+      return;
+    }
+
     if (photoZoom <= MIN_PHOTO_ZOOM || event.pointerType === "touch") {
       return;
     }
@@ -511,6 +635,21 @@ export default function TrainingExerciseCard({
   };
 
   const handlePhotoPointerMove = (event) => {
+    if (event.target instanceof Element && event.target.closest("button")) {
+      return;
+    }
+
+    if (photoZoom <= MIN_PHOTO_ZOOM && photoTapState.current.active) {
+      const deltaX = event.clientX - photoTapState.current.startX;
+      const deltaY = event.clientY - photoTapState.current.startY;
+
+      if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+        photoTapState.current.moved = true;
+      }
+
+      return;
+    }
+
     if (!photoPointerState.current || photoZoom <= MIN_PHOTO_ZOOM) {
       return;
     }
@@ -529,8 +668,48 @@ export default function TrainingExerciseCard({
     };
   };
 
-  const handlePhotoPointerUp = () => {
+  const handlePhotoPointerUp = (event) => {
+    if (event?.target instanceof Element && event.target.closest("button")) {
+      photoTapState.current.active = false;
+      return;
+    }
+
+    if (photoZoom <= MIN_PHOTO_ZOOM && photoTapState.current.active) {
+      const state = photoTapState.current;
+      const deltaX = event?.clientX ? event.clientX - state.startX : 0;
+      const deltaY = event?.clientY ? event.clientY - state.startY : 0;
+      const elapsed = Date.now() - state.startTime;
+
+      if (
+        Math.abs(deltaX) >= PHOTO_SWIPE_THRESHOLD &&
+        Math.abs(deltaX) > Math.abs(deltaY) &&
+        elapsed < 700
+      ) {
+        state.wasHandled = true;
+        state.active = false;
+
+        if (deltaX < 0) {
+          handleNextPhoto();
+        } else {
+          handlePreviousPhoto();
+        }
+
+        photoPointerState.current = null;
+        return;
+      }
+
+      if (!state.wasHandled && !state.moved) {
+        if (elapsed <= 300) {
+          state.wasHandled = true;
+          handleClosePhotoViewer();
+          photoPointerState.current = null;
+          return;
+        }
+      }
+    }
+
     photoPointerState.current = null;
+    photoTapState.current.active = false;
   };
 
   const handlePhotoWheel = (event) => {
@@ -566,10 +745,16 @@ export default function TrainingExerciseCard({
 
   useEffect(() => {
     if (selectedPhotoIndex === null) {
+      document.body.classList.remove("training-photo-viewer-open");
       return;
     }
 
+    document.body.classList.add("training-photo-viewer-open");
     photoViewerRef.current?.focus();
+
+    return () => {
+      document.body.classList.remove("training-photo-viewer-open");
+    };
   }, [selectedPhotoIndex]);
 
   const currentSavedPhotos =
@@ -780,27 +965,45 @@ export default function TrainingExerciseCard({
     ) {
       const currentSide = swipedSetId === setId ? swipedSetSide : null;
 
-      if (deltaX < 0) {
-        // Свайп влево
-        if (currentSide === "left") {
-          // Из левого состояния возвращаемся в центр
-          setSwipedSetId(null);
-          setSwipedSetSide(null);
-        } else if (currentSide === null) {
-          // Из центра открываем правое меню
+      if (isReadOnly) {
+        if (currentSide === null) {
+          if (deltaX < 0) {
+            setSwipedSetId(setId);
+            setSwipedSetSide("right");
+          }
+
+          return;
+        }
+
+        if (currentSide === "right") {
+          if (deltaX > 0) {
+            setSwipedSetId(null);
+            setSwipedSetSide(null);
+          }
+
+          return;
+        }
+
+        return;
+      }
+
+      if (currentSide === null) {
+        if (deltaX < 0) {
           setSwipedSetId(setId);
           setSwipedSetSide("right");
-        }
-      } else {
-        // Свайп вправо
-        if (currentSide === "right") {
-          // Из правого состояния возвращаемся в центр
-          setSwipedSetId(null);
-          setSwipedSetSide(null);
-        } else if (currentSide === null) {
-          // Из центра открываем левое меню
+        } else if (deltaX > 0) {
           setSwipedSetId(setId);
           setSwipedSetSide("left");
+        }
+      } else if (currentSide === "right") {
+        if (deltaX > 0) {
+          setSwipedSetId(null);
+          setSwipedSetSide(null);
+        }
+      } else if (currentSide === "left") {
+        if (deltaX < 0) {
+          setSwipedSetId(null);
+          setSwipedSetSide(null);
         }
       }
     }
@@ -1114,30 +1317,32 @@ export default function TrainingExerciseCard({
                 onTouchEnd={() => handleSetTouchEnd(set.id)}
                 onTouchCancel={handleSetTouchCancel}
               >
-                <div
-                  className="training-exercise-card__set-actions training-exercise-card__set-actions--left"
-                  aria-hidden={
-                    swipedSetId !== set.id || swipedSetSide !== "left"
-                  }
-                >
-                  <button
-                    type="button"
-                    className="training-exercise-card__set-action"
-                    aria-label="Скопировать подход"
-                    onClick={() => handleCopySet(set.id)}
+                {!isReadOnly && (
+                  <div
+                    className="training-exercise-card__set-actions training-exercise-card__set-actions--left"
+                    aria-hidden={
+                      swipedSetId !== set.id || swipedSetSide !== "left"
+                    }
                   >
-                    Скопировать
-                  </button>
+                    <button
+                      type="button"
+                      className="training-exercise-card__set-action"
+                      aria-label="Скопировать подход"
+                      onClick={() => handleCopySet(set.id)}
+                    >
+                      Скопировать
+                    </button>
 
-                  <button
-                    type="button"
-                    className="training-exercise-card__set-action training-exercise-card__set-action--delete"
-                    aria-label="Удалить подход"
-                    onClick={() => handleDeleteSet(set.id)}
-                  >
-                    Удалить
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="training-exercise-card__set-action training-exercise-card__set-action--delete"
+                      aria-label="Удалить подход"
+                      onClick={() => handleDeleteSet(set.id)}
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                )}
                 <div
                   className={`training-exercise-card__set-content${
                     swipedSetId === set.id
@@ -1678,12 +1883,19 @@ export default function TrainingExerciseCard({
                 onTouchMove={handlePhotoTouchMove}
                 onTouchEnd={handlePhotoTouchEnd}
                 onWheel={handlePhotoWheel}
-                onClick={handleClosePhotoViewer}
+                onPointerDown={handlePhotoPointerDown}
+                onPointerMove={handlePhotoPointerMove}
+                onPointerUp={handlePhotoPointerUp}
+                onPointerCancel={handlePhotoPointerUp}
+                onClick={handlePhotoViewerClick}
               >
                 <button
                   type="button"
                   className="training-exercise-card__photo-viewer-close"
-                  onClick={handleClosePhotoViewer}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleClosePhotoViewer();
+                  }}
                   aria-label="Закрыть"
                 >
                   ×
@@ -1712,7 +1924,6 @@ export default function TrainingExerciseCard({
                     style={{
                       transform: `translate3d(${photoPosition.x}px, ${photoPosition.y}px, 0) scale(${photoZoom})`,
                     }}
-                    onClick={(event) => event.stopPropagation()}
                     onPointerDown={handlePhotoPointerDown}
                     onPointerMove={handlePhotoPointerMove}
                     onPointerUp={handlePhotoPointerUp}

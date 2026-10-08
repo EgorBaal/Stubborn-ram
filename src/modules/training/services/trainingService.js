@@ -20,69 +20,214 @@ function normalizeValue(value) {
   return value;
 }
 
-export async function saveCompletedWorkout({
+function getLocalDateValue(date = new Date()) {
+  const nextDate = date instanceof Date ? date : new Date(date);
+
+  const year = nextDate.getFullYear();
+  const month = String(nextDate.getMonth() + 1).padStart(2, "0");
+  const day = String(nextDate.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getLocalTimeValue(date = new Date()) {
+  const nextDate = date instanceof Date ? date : new Date(date);
+
+  return nextDate.toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+export async function startWorkout({
   title,
   trainingDate,
   startTime,
   endTime,
   trainingType,
   comment,
-  exercises,
-}) {
-  const preparedExercises = exercises
-    .map((exercise, index) => ({
-      ...exercise,
-      position: index,
-    }))
-    .filter((exercise) => exercise.exerciseId);
+} = {}) {
+  const now = new Date();
+  const resolvedTrainingDate = trainingDate ?? now;
+  const resolvedStartTime = normalizeValue(startTime) ?? getLocalTimeValue(now);
 
-  const { data, error } = await request("/training/workouts", {
+  const { data, error, status } = await request("/training/workouts/start", {
     method: "POST",
     body: JSON.stringify({
       title: title?.trim() || "Новая тренировка",
-      trainingDate: formatDateForDatabase(trainingDate),
-      startTime: normalizeValue(startTime),
+      trainingDate: formatDateForDatabase(resolvedTrainingDate),
+      startTime: resolvedStartTime,
       endTime: normalizeValue(endTime),
       trainingType: trainingType || "Силовая",
       comment: comment?.trim() || null,
-      exercises: preparedExercises.map((exercise) => ({
-        exerciseId: exercise.exerciseId,
-        position: exercise.position,
-        exerciseComment: exercise.exerciseComment?.trim() || null,
-        supersetAfter: Boolean(exercise.supersetAfter),
-        sets: (exercise.sets || []).map((set, index) => ({
-          position: index,
-          weight: normalizeValue(set.weight),
-          repetitions: normalizeValue(set.repetitions),
-          difficulty: normalizeValue(set.difficulty),
-          distance: normalizeValue(set.distance),
-          calories: normalizeValue(set.calories),
-          speed: normalizeValue(set.speed),
-          power: normalizeValue(set.power),
-          incline: normalizeValue(set.incline),
-          time: normalizeValue(set.time),
-          rir: normalizeValue(set.rir),
-          rpe: normalizeValue(set.rpe),
-          rest: normalizeValue(set.rest),
-          intensityMethods: Array.isArray(set.intensityMethods)
-            ? set.intensityMethods
-            : [],
-        })),
-      })),
     }),
   });
 
   if (error) {
-    if (error.error === "UNAUTHORIZED") {
+    if (status === 401 || error.error === "UNAUTHORIZED") {
       throw new Error("Пользователь не авторизован.");
     }
 
     throw new Error(
-      error.message || error.error || "Не удалось сохранить тренировку.",
+      error.message || error.error || "Не удалось создать тренировку.",
     );
   }
 
   return data;
+}
+
+export async function createWorkoutExercise(
+  workoutId,
+  { exerciseId, exerciseComment, supersetAfter },
+) {
+  if (!workoutId) {
+    throw new Error("Не указан ID тренировки.");
+  }
+
+  const { data, error, status } = await request(
+    `/training/workouts/${workoutId}/exercises`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        exerciseId,
+        exerciseComment: exerciseComment?.trim() || null,
+        supersetAfter: Boolean(supersetAfter),
+      }),
+    },
+  );
+
+  if (error) {
+    if (status === 401 || error.error === "UNAUTHORIZED") {
+      throw new Error("Пользователь не авторизован.");
+    }
+
+    if (status === 404) {
+      throw new Error("Тренировка не найдена.");
+    }
+
+    throw new Error(
+      error.message ||
+        error.error ||
+        "Не удалось создать упражнение в тренировке.",
+    );
+  }
+
+  return data;
+}
+
+export async function createWorkoutSet(
+  workoutId,
+  workoutExerciseId,
+  setPayload = {},
+) {
+  if (!workoutId || !workoutExerciseId) {
+    throw new Error("Не указан ID тренировки или упражнения.");
+  }
+
+  const { data, error, status } = await request(
+    `/training/workouts/${workoutId}/exercises/${workoutExerciseId}/sets`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        weight: normalizeValue(setPayload.weight),
+        repetitions: normalizeValue(setPayload.repetitions),
+        difficulty: normalizeValue(setPayload.difficulty),
+        distance: normalizeValue(setPayload.distance),
+        calories: normalizeValue(setPayload.calories),
+        speed: normalizeValue(setPayload.speed),
+        power: normalizeValue(setPayload.power),
+        incline: normalizeValue(setPayload.incline),
+        time: normalizeValue(setPayload.time),
+        rir: normalizeValue(setPayload.rir),
+        rpe: normalizeValue(setPayload.rpe),
+        rest: normalizeValue(setPayload.rest),
+        intensityMethods: Array.isArray(setPayload.intensityMethods)
+          ? setPayload.intensityMethods
+          : [],
+      }),
+    },
+  );
+
+  if (error) {
+    if (status === 401 || error.error === "UNAUTHORIZED") {
+      throw new Error("Пользователь не авторизован.");
+    }
+
+    if (status === 404) {
+      throw new Error("Подход не найден.");
+    }
+
+    throw new Error(
+      error.message || error.error || "Не удалось создать подход.",
+    );
+  }
+
+  return data;
+}
+
+function buildSetPatch(setPayload = {}) {
+  const patch = {};
+
+  for (const field of [
+    "weight",
+    "repetitions",
+    "difficulty",
+    "distance",
+    "calories",
+    "speed",
+    "power",
+    "incline",
+    "time",
+    "rir",
+    "rpe",
+    "rest",
+  ]) {
+    if (Object.prototype.hasOwnProperty.call(setPayload, field)) {
+      patch[field] = normalizeValue(setPayload[field]);
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(setPayload, "intensityMethods")) {
+    patch.intensityMethods = Array.isArray(setPayload.intensityMethods)
+      ? setPayload.intensityMethods
+      : [];
+  }
+
+  return patch;
+}
+
+export async function updateWorkoutSet(setId, setPayload = {}) {
+  if (!setId) {
+    throw new Error("Не указан ID подхода.");
+  }
+
+  const patch = buildSetPatch(setPayload);
+
+  if (Object.keys(patch).length === 0) {
+    return null;
+  }
+
+  const { data, error, status } = await request(`/training/sets/${setId}`, {
+    method: "PUT",
+    body: JSON.stringify(patch),
+  });
+
+  if (error) {
+    if (status === 401 || error.error === "UNAUTHORIZED") {
+      throw new Error("Пользователь не авторизован.");
+    }
+
+    if (status === 404) {
+      throw new Error("Подход не найден.");
+    }
+
+    throw new Error(
+      error.message || error.error || "Не удалось сохранить параметры подхода.",
+    );
+  }
+
+  return data?.set ?? data ?? null;
 }
 
 export async function getExercises() {
@@ -249,7 +394,7 @@ export async function createExercise({
   return data?.exercise ?? null;
 }
 
-export async function getCompletedWorkouts() {
+export async function getWorkouts() {
   const { data, error } = await request("/training/workouts");
 
   if (error) {
@@ -270,6 +415,7 @@ export async function getCompletedWorkouts() {
     id: workout.id,
     title: workout.title,
     createdAt: new Date(`${workout.createdAt}`),
+    status: null,
   }));
 }
 
@@ -329,53 +475,54 @@ export async function updateWorkout({
     }))
     .filter((exercise) => exercise.exerciseId);
 
-  const { data, error, status } = await request(
-    `/training/workouts/${workoutId}`,
-    {
-      method: "PUT",
-      body: JSON.stringify({
-        title: title?.trim() || "Новая тренировка",
-        trainingDate: formatDateForDatabase(trainingDate),
-        startTime: normalizeValue(startTime),
-        endTime: normalizeValue(endTime),
-        trainingType: trainingType || "Силовая",
-        comment: comment?.trim() || null,
-        exercises: preparedExercises.map((exercise) => ({
-          id: exercise.id,
-          exerciseId: exercise.exerciseId,
-          position: exercise.position,
-          exerciseComment: exercise.exerciseComment?.trim() || null,
-          supersetAfter: Boolean(exercise.supersetAfter),
-          sets: (exercise.sets || []).map((set, index) => ({
-            id: set.id,
-            position: index,
-            weight: normalizeValue(set.weight),
-            repetitions: normalizeValue(set.repetitions),
-            difficulty: normalizeValue(set.difficulty),
-            distance: normalizeValue(set.distance),
-            calories: normalizeValue(set.calories),
-            speed: normalizeValue(set.speed),
-            power: normalizeValue(set.power),
-            incline: normalizeValue(set.incline),
-            time: normalizeValue(set.time),
-            rir: normalizeValue(set.rir),
-            rpe: normalizeValue(set.rpe),
-            rest: normalizeValue(set.rest),
-            intensityMethods: Array.isArray(set.intensityMethods)
-              ? set.intensityMethods
-              : [],
-          })),
+  const {
+    data,
+    error,
+    status: responseStatus,
+  } = await request(`/training/workouts/${workoutId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      title: title?.trim() || "Новая тренировка",
+      trainingDate: formatDateForDatabase(trainingDate),
+      startTime: normalizeValue(startTime),
+      endTime: normalizeValue(endTime),
+      trainingType: trainingType || "Силовая",
+      comment: comment?.trim() || null,
+      exercises: preparedExercises.map((exercise) => ({
+        id: exercise.id,
+        exerciseId: exercise.exerciseId,
+        position: exercise.position,
+        exerciseComment: exercise.exerciseComment?.trim() || null,
+        supersetAfter: Boolean(exercise.supersetAfter),
+        sets: (exercise.sets || []).map((set, index) => ({
+          id: set.id,
+          position: index,
+          weight: normalizeValue(set.weight),
+          repetitions: normalizeValue(set.repetitions),
+          difficulty: normalizeValue(set.difficulty),
+          distance: normalizeValue(set.distance),
+          calories: normalizeValue(set.calories),
+          speed: normalizeValue(set.speed),
+          power: normalizeValue(set.power),
+          incline: normalizeValue(set.incline),
+          time: normalizeValue(set.time),
+          rir: normalizeValue(set.rir),
+          rpe: normalizeValue(set.rpe),
+          rest: normalizeValue(set.rest),
+          intensityMethods: Array.isArray(set.intensityMethods)
+            ? set.intensityMethods
+            : [],
         })),
-      }),
-    },
-  );
+      })),
+    }),
+  });
 
   if (error) {
-    if (status === 401 || error.error === "UNAUTHORIZED") {
+    if (responseStatus === 401 || error.error === "UNAUTHORIZED") {
       throw new Error("Пользователь не авторизован.");
     }
 
-    if (status === 404) {
+    if (responseStatus === 404) {
       throw new Error("Тренировка не найдена.");
     }
 

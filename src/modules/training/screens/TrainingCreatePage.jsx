@@ -5,9 +5,40 @@ import "../styles/TrainingPage.css";
 
 import TrainingContent from "../components/common/TrainingContent";
 import TrainingCreateList from "../components/create/TrainingCreateList";
+import { startWorkout } from "../services/trainingService";
 
 export default function TrainingCreatePage() {
   const navigate = useNavigate();
+
+  const handleCreateNewWorkout = async () => {
+    const now = new Date();
+
+    try {
+      const data = await startWorkout({
+        title: "Новая тренировка",
+        trainingDate: now,
+        startTime: now.toLocaleTimeString("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      });
+
+      if (!data?.id) {
+        throw new Error("Сервер не вернул ID новой тренировки.");
+      }
+
+      navigate(`/app/training/${data.id}`, {
+        replace: true,
+        state: {
+          trainingMode: "edit",
+        },
+      });
+    } catch (error) {
+      console.error("Ошибка создания новой тренировки:", error);
+      window.alert(error?.message || "Не удалось создать новую тренировку.");
+    }
+  };
 
   return (
     <main className="training-view training-create-view">
@@ -29,7 +60,7 @@ export default function TrainingCreatePage() {
       <button
         type="button"
         className="training-primary-action"
-        onClick={() => navigate("/app/training/new")}
+        onClick={handleCreateNewWorkout}
       >
         Новая тренировка
       </button>

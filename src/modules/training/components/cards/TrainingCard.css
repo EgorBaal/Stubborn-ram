@@ -2,7 +2,8 @@
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  overflow: visible;
+  max-width: 100%;
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   background:
@@ -23,8 +24,11 @@
   z-index: 2;
   box-sizing: border-box;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 56px;
   display: flex;
+  overflow: hidden;
   justify-content: flex-start;
   align-items: center;
   gap: 16px;
@@ -82,8 +86,10 @@
 }
 
 .training-card__title {
-  flex: 1;
+  flex: 1 1 0;
+  width: 0;
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -98,12 +104,15 @@
   align-items: center;
   gap: 20px;
   margin-left: auto;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .training-card__date {
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.62);
   font-size: clamp(12px, 3vw, 15px);
+  flex-shrink: 0;
 }
 
 .training-card__arrow {
@@ -127,46 +136,39 @@
 }
 
 .training-card__title {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
-
+  max-width: 100%;
   margin: 0;
-
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-
   font-size: clamp(14px, 3.4vw, 17px);
   font-weight: 700;
-
   color: rgba(255, 255, 255, 0.9);
 }
 
 .training-card__right {
   display: flex;
   align-items: center;
-
   gap: 20px;
-
   margin-left: auto;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .training-card__date {
   white-space: nowrap;
-
   color: rgba(255, 255, 255, 0.62);
-
   font-size: clamp(12px, 3vw, 15px);
+  flex-shrink: 0;
 }
 
 .training-card__arrow {
   width: 20px;
   height: 20px;
-
   flex-shrink: 0;
-
   color: rgba(255, 255, 255, 0.55);
-
   display: block;
 }
 

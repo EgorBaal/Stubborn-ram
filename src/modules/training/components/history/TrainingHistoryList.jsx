@@ -6,6 +6,7 @@ export default function TrainingHistoryList({
   workouts,
   onDeleteWorkout,
   deletingWorkoutId,
+  onOpenWorkout,
 }) {
   const sortedWorkouts = [...workouts].sort(
     (a, b) => b.createdAt - a.createdAt,
@@ -38,6 +39,7 @@ export default function TrainingHistoryList({
             <TrainingCard
               key={workout.id}
               workout={workout}
+              onClick={() => onOpenWorkout?.(workout)}
               onDelete={() => onDeleteWorkout?.(workout.id)}
               isDeleting={deletingWorkoutId === workout.id}
             />

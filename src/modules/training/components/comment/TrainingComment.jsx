@@ -2,8 +2,13 @@ import { useLayoutEffect, useRef } from "react";
 
 import "./TrainingComment.css";
 
-export default function TrainingComment({ value, onChange }) {
+export default function TrainingComment({
+  value,
+  onChange,
+  isReadOnly = false,
+}) {
   const fieldRef = useRef(null);
+  const hasValue = Boolean(value?.trim());
 
   useLayoutEffect(() => {
     const field = fieldRef.current;
@@ -16,6 +21,10 @@ export default function TrainingComment({ value, onChange }) {
     field.style.height = `${field.scrollHeight}px`;
   }, [value]);
 
+  if (isReadOnly && !hasValue) {
+    return null;
+  }
+
   return (
     <div className="training-comment">
       <h2 className="training-comment__title">Комментарий к тренировке</h2>
@@ -23,9 +32,14 @@ export default function TrainingComment({ value, onChange }) {
       <textarea
         ref={fieldRef}
         className="training-comment__field"
-        placeholder="Введите комментарий"
-        value={value}
+        placeholder={isReadOnly ? undefined : "Введите комментарий"}
+        readOnly={isReadOnly}
+        value={value ?? ""}
         onChange={(event) => {
+          if (isReadOnly) {
+            return;
+          }
+
           onChange(event.target.value);
         }}
         rows={3}

@@ -320,51 +320,103 @@ export default async function mediaRoutes(app) {
       });
     }
 
-    const result = await app.pg.query(
-      `
-        SELECT
-          id,
-          owner_id,
-          object_key,
-          status
-        FROM media
-        WHERE id = $1
-          AND owner_id = $2
-        LIMIT 1
-      `,
-      [id, authUser.userId],
-    );
-
-    if (result.rowCount === 0) {
-      return reply.code(404).send({
-        error: "MEDIA_NOT_FOUND",
-        message: "Media не найден.",
-      });
-    }
-
-    const media = result.rows[0];
+    const client = await app.pg.connect();
 
     try {
-      await app.storage.deleteObject({
-        key: media.object_key,
-      });
+      await client.query("BEGIN");
+
+      const mediaResult = await client.query(
+        `
+          SELECT
+            id,
+            owner_id,
+            object_key,
+            status
+          FROM media
+          WHERE id = $1
+            AND owner_id = $2
+          LIMIT 1
+        `,
+        [id, authUser.userId],
+      );
+
+      if (mediaResult.rowCount === 0) {
+        await client.query("ROLLBACK");
+
+        return reply.code(404).send({
+          error: "MEDIA_NOT_FOUND",
+          message: "Media не найден.",
+        });
+      }
+
+      const media = mediaResult.rows[0];
+
+      const linkCountResult = await client.query(
+        `
+          SELECT COUNT(*)::int AS link_count
+          FROM media_links
+          WHERE media_id = $1
+        `,
+        [media.id],
+      );
+
+      const linkCount = Number(linkCountResult.rows[0]?.link_count ?? 0);
+
+      if (linkCount > 0) {
+        await client.query("ROLLBACK");
+
+        return reply.code(409).send({
+          error: "MEDIA_IN_USE",
+          message:
+            "Media используется в ссылках и не может быть удалён до очистки связей.",
+          linkCount,
+        });
+      }
+
+      await client.query(
+        `
+          DELETE FROM media
+          WHERE id = $1
+            AND owner_id = $2
+        `,
+        [media.id, authUser.userId],
+      );
+
+      await client.query("COMMIT");
+
+      try {
+        await app.storage.deleteObject({
+          key: media.object_key,
+        });
+      } catch (storageError) {
+        app.log.error(
+          {
+            error: storageError,
+            mediaId: media.id,
+            objectKey: media.object_key,
+          },
+          "Media DB row deleted but object storage cleanup failed",
+        );
+
+        return reply.code(500).send({
+          error: "MEDIA_STORAGE_DELETE_FAILED",
+          message:
+            "Media уже удалён из БД, но физический объект в Object Storage не удалось удалить.",
+          mediaId: media.id,
+          objectKey: media.object_key,
+        });
+      }
+
+      return {
+        ok: true,
+        id: media.id,
+      };
     } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
       throw error;
+    } finally {
+      client.release();
     }
-
-    await app.pg.query(
-      `
-        DELETE FROM media
-        WHERE id = $1
-          AND owner_id = $2
-      `,
-      [media.id, authUser.userId],
-    );
-
-    return {
-      ok: true,
-      id: media.id,
-    };
   });
 
   app.get("/api/media/:id", async (request, reply) => {

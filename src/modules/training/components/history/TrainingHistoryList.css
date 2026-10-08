@@ -1,14 +1,18 @@
 .training-history-list {
   display: flex;
   flex-direction: column;
-
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: 6px;
 }
 
 .training-history-group {
   display: flex;
   flex-direction: column;
-
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   gap: 5px;
 }
 
@@ -21,7 +25,7 @@
 
   text-align: center;
 
-  color: rgba(255,255,255,.58);
+  color: rgba(255, 255, 255, 0.58);
 
   font-size: 16px;
   font-weight: 700;

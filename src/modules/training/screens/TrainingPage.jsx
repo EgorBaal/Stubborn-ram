@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import "../styles/TrainingPage.css";
@@ -8,7 +7,7 @@ import TrainingComment from "../components/comment/TrainingComment";
 import TrainingInfo from "../components/info/TrainingInfo";
 import {
   getWorkoutById,
-  saveCompletedWorkout,
+  startWorkout,
   updateWorkout,
 } from "../services/trainingService";
 
@@ -20,8 +19,18 @@ export default function TrainingPage() {
   const isTemplateTraining = location.pathname.startsWith(
     "/app/training/template/",
   );
-
+  const isNewWorkoutRoute = location.pathname === "/app/training/new";
   const isHistoryTraining = Boolean(id) && !isTemplateTraining;
+
+  const getInitialScreenMode = () => {
+    if (isNewWorkoutRoute || isTemplateTraining) {
+      return "edit";
+    }
+
+    return location.state?.trainingMode === "edit" ? "edit" : "view";
+  };
+
+  const preloadedWorkout = location.state?.preloadedWorkout ?? null;
 
   const [trainingTitle, setTrainingTitle] = useState("Новая тренировка");
   const [trainingDate, setTrainingDate] = useState(new Date());
@@ -42,24 +51,225 @@ export default function TrainingPage() {
   const [trainingComment, setTrainingComment] = useState("");
 
   const [exerciseCards, setExerciseCards] = useState([]);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isLoadingWorkout, setIsLoadingWorkout] = useState(false);
+  const [workoutId, setWorkoutId] = useState(id || null);
+  const [screenMode, setScreenMode] = useState(getInitialScreenMode);
+  const [isExistingWorkoutLoading, setIsExistingWorkoutLoading] = useState(
+    isHistoryTraining && !preloadedWorkout,
+  );
+  const hasStartedWorkoutRef = useRef(false);
+  const hasCompletedInitialHydrationRef = useRef(false);
+  const skipNextAutosaveRef = useRef(false);
   const [addButtonRipple, setAddButtonRipple] = useState(null);
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isStartTimePickerOpen, setIsStartTimePickerOpen] = useState(false);
   const [isEndTimePickerOpen, setIsEndTimePickerOpen] = useState(false);
+  const hasManualEndTimeRef = useRef(false);
+
+  const isEditMode = screenMode === "edit";
+  const isViewMode = screenMode === "view";
+
+  const hydrateWorkoutState = (workout) => {
+    if (!workout) {
+      return;
+    }
+
+    hasCompletedInitialHydrationRef.current = false;
+
+    setTrainingTitle(workout.title || "Новая тренировка");
+
+    if (workout.training_date) {
+      const [year, month, day] = workout.training_date.split("-").map(Number);
+
+      setTrainingDate(new Date(year, month - 1, day));
+    }
+
+    setStartTime(workout.start_time || "");
+    setEndTime(workout.end_time || "");
+    setTrainingType(workout.training_type || "Силовая");
+    setTrainingComment(workout.comment || "");
+
+    setWorkoutId(workout.id);
+
+    const loadedExercises = [...(workout.workout_exercises || [])]
+      .sort((a, b) => a.position - b.position)
+      .map((exercise) => ({
+        id: exercise.id,
+        exerciseId: exercise.exercise_id,
+        exerciseName: exercise.exercises?.name || "",
+        exerciseComment: exercise.exercise_comment || "",
+        supersetAfter: Boolean(exercise.superset_after),
+        sets: [...(exercise.workout_sets || [])]
+          .sort((a, b) => a.position - b.position)
+          .map((set) => ({
+            id: set.id,
+            weight: set.weight ?? "",
+            repetitions: set.repetitions ?? "",
+            difficulty: set.difficulty ?? null,
+            distance: set.distance ?? "",
+            calories: set.calories ?? "",
+            speed: set.speed ?? "",
+            power: set.power ?? "",
+            incline: set.incline ?? "",
+            time: set.time ?? "",
+            rir: set.rir ?? "",
+            rpe: set.rpe ?? "",
+            rest: set.rest ?? 0,
+            intensityMethods: Array.isArray(set.intensity_methods)
+              ? set.intensity_methods
+              : [],
+            isExtraOpen: false,
+          })),
+      }));
+
+    setExerciseCards(loadedExercises);
+    hasCompletedInitialHydrationRef.current = true;
+    skipNextAutosaveRef.current = true;
+  };
+
+  useEffect(() => {
+    if (isNewWorkoutRoute || isTemplateTraining) {
+      setScreenMode("edit");
+      setIsExistingWorkoutLoading(false);
+      return;
+    }
+
+    if (isHistoryTraining) {
+      const nextMode =
+        location.state?.trainingMode === "edit" ? "edit" : "view";
+
+      setScreenMode(nextMode);
+
+      if (preloadedWorkout) {
+        hydrateWorkoutState(preloadedWorkout);
+        setIsExistingWorkoutLoading(false);
+        return;
+      }
+
+      setIsExistingWorkoutLoading(true);
+    }
+  }, [
+    isHistoryTraining,
+    isNewWorkoutRoute,
+    isTemplateTraining,
+    location.state,
+    preloadedWorkout,
+  ]);
+
+  useEffect(() => {
+    if (
+      isHistoryTraining ||
+      isTemplateTraining ||
+      workoutId ||
+      hasStartedWorkoutRef.current
+    ) {
+      return;
+    }
+
+    hasStartedWorkoutRef.current = true;
+
+    const createNewWorkout = async () => {
+      try {
+        const data = await startWorkout({
+          title: trainingTitle,
+          trainingDate,
+          startTime,
+          endTime,
+          trainingType,
+          comment: trainingComment,
+        });
+
+        if (!data?.id) {
+          return;
+        }
+
+        hasCompletedInitialHydrationRef.current = true;
+        setWorkoutId(data.id);
+        skipNextAutosaveRef.current = true;
+        navigate(`/app/training/${data.id}`, {
+          replace: true,
+          state: {
+            trainingMode: "edit",
+          },
+        });
+      } catch (startError) {
+        console.error("Ошибка создания новой тренировки:", startError);
+
+        window.alert(
+          startError?.message || "Не удалось создать новую тренировку.",
+        );
+      }
+    };
+
+    createNewWorkout();
+  }, [
+    isHistoryTraining,
+    isTemplateTraining,
+    workoutId,
+    trainingTitle,
+    trainingDate,
+    startTime,
+    endTime,
+    trainingType,
+    trainingComment,
+    navigate,
+  ]);
+
+  useEffect(() => {
+    if (!isEditMode || !workoutId || !hasCompletedInitialHydrationRef.current) {
+      return;
+    }
+
+    if (skipNextAutosaveRef.current) {
+      skipNextAutosaveRef.current = false;
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        await updateWorkout({
+          workoutId,
+          title: trainingTitle,
+          trainingDate,
+          startTime,
+          endTime,
+          trainingType,
+          comment: trainingComment,
+          exercises: exerciseCards,
+        });
+      } catch (autosaveError) {
+        console.error("Ошибка автосохранения тренировки:", autosaveError);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [
+    isEditMode,
+    workoutId,
+    trainingTitle,
+    trainingDate,
+    startTime,
+    endTime,
+    trainingType,
+    trainingComment,
+    exerciseCards,
+  ]);
 
   useEffect(() => {
     if (!isHistoryTraining || !id) {
+      setIsExistingWorkoutLoading(false);
+      return;
+    }
+
+    if (preloadedWorkout) {
+      setIsExistingWorkoutLoading(false);
       return;
     }
 
     let isMounted = true;
+    setIsExistingWorkoutLoading(true);
 
     const loadWorkout = async () => {
-      setIsLoadingWorkout(true);
-
       try {
         const workout = await getWorkoutById(id);
 
@@ -67,53 +277,8 @@ export default function TrainingPage() {
           return;
         }
 
-        setTrainingTitle(workout.title || "Новая тренировка");
-
-        if (workout.training_date) {
-          const [year, month, day] = workout.training_date
-            .split("-")
-            .map(Number);
-
-          setTrainingDate(new Date(year, month - 1, day));
-        }
-
-        setStartTime(workout.start_time || "");
-        setEndTime(workout.end_time || "");
-        setTrainingType(workout.training_type || "Силовая");
-        setTrainingComment(workout.comment || "");
-
-        const loadedExercises = [...(workout.workout_exercises || [])]
-          .sort((a, b) => a.position - b.position)
-          .map((exercise) => ({
-            id: exercise.id,
-            exerciseId: exercise.exercise_id,
-            exerciseName: exercise.exercises?.name || "",
-            exerciseComment: exercise.exercise_comment || "",
-            supersetAfter: Boolean(exercise.superset_after),
-            sets: [...(exercise.workout_sets || [])]
-              .sort((a, b) => a.position - b.position)
-              .map((set) => ({
-                id: set.id,
-                weight: set.weight ?? "",
-                repetitions: set.repetitions ?? "",
-                difficulty: set.difficulty ?? null,
-                distance: set.distance ?? "",
-                calories: set.calories ?? "",
-                speed: set.speed ?? "",
-                power: set.power ?? "",
-                incline: set.incline ?? "",
-                time: set.time ?? "",
-                rir: set.rir ?? "",
-                rpe: set.rpe ?? "",
-                rest: set.rest ?? 0,
-                intensityMethods: Array.isArray(set.intensity_methods)
-                  ? set.intensity_methods
-                  : [],
-                isExtraOpen: false,
-              })),
-          }));
-
-        setExerciseCards(loadedExercises);
+        hydrateWorkoutState(workout);
+        setIsExistingWorkoutLoading(false);
       } catch (loadError) {
         console.error("Ошибка загрузки тренировки:", loadError);
 
@@ -121,13 +286,8 @@ export default function TrainingPage() {
           return;
         }
 
-        window.alert(
-          loadError?.message || "Не удалось загрузить тренировку.",
-        );
-      } finally {
-        if (isMounted) {
-          setIsLoadingWorkout(false);
-        }
+        setIsExistingWorkoutLoading(false);
+        window.alert(loadError?.message || "Не удалось загрузить тренировку.");
       }
     };
 
@@ -136,9 +296,13 @@ export default function TrainingPage() {
     return () => {
       isMounted = false;
     };
-  }, [id, isHistoryTraining]);
+  }, [id, isHistoryTraining, preloadedWorkout]);
 
   const handleAddExercise = (event) => {
+    if (!isEditMode || !workoutId) {
+      return;
+    }
+
     const button = event.currentTarget;
     const rect = button.getBoundingClientRect();
 
@@ -151,20 +315,42 @@ export default function TrainingPage() {
       id: Date.now(),
     });
 
-    setTimeout(() => {
-      setExerciseCards((prev) => [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          supersetAfter: false,
-        },
-      ]);
+    setExerciseCards((prev) => [
+      ...prev,
+      {
+        id: `local-${crypto.randomUUID()}`,
+        exerciseId: null,
+        exerciseName: "",
+        exerciseComment: "",
+        sets: [],
+        supersetAfter: false,
+      },
+    ]);
 
-      setAddButtonRipple(null);
-    }, 180);
+    setAddButtonRipple(null);
+  };
+
+  const handleExerciseChange = (exerciseId, data) => {
+    setExerciseCards((prev) =>
+      prev.map((item) =>
+        item.id === exerciseId
+          ? {
+              ...item,
+              exerciseId: data.exerciseId,
+              exerciseName: data.exerciseName,
+              exerciseComment: data.exerciseComment,
+              sets: data.sets,
+            }
+          : item,
+      ),
+    );
   };
 
   const handleToggleSuperset = (exerciseId) => {
+    if (!isEditMode) {
+      return;
+    }
+
     setExerciseCards((prev) =>
       prev.map((exercise) =>
         exercise.id === exerciseId
@@ -178,6 +364,10 @@ export default function TrainingPage() {
   };
 
   const handleRemoveExercise = (exerciseId) => {
+    if (!isEditMode) {
+      return;
+    }
+
     setExerciseCards((prev) => {
       const index = prev.findIndex((exercise) => exercise.id === exerciseId);
 
@@ -205,59 +395,64 @@ export default function TrainingPage() {
     });
   };
 
-  const handleFinishWorkout = async () => {
-    if (isSaving) {
+  const handleEnableEditMode = () => {
+    setScreenMode("edit");
+  };
+
+  const handleEndTimeChange = (nextValue) => {
+    setEndTime(nextValue);
+
+    if (nextValue && nextValue !== "--:--") {
+      hasManualEndTimeRef.current = true;
       return;
     }
 
-    const invalidExercise = exerciseCards.find(
-      (exercise) => !exercise.exerciseId,
-    );
+    hasManualEndTimeRef.current = false;
+  };
 
-    if (invalidExercise) {
-      window.alert(
-        "Выберите упражнение из списка перед завершением тренировки.",
-      );
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      if (isHistoryTraining) {
-        await updateWorkout({
-          workoutId: id,
-          title: trainingTitle,
-          trainingDate,
-          startTime,
-          endTime,
-          trainingType,
-          comment: trainingComment,
-          exercises: exerciseCards,
-        });
-      } else {
-        await saveCompletedWorkout({
-          title: trainingTitle,
-          trainingDate,
-          startTime,
-          endTime,
-          trainingType,
-          comment: trainingComment,
-          exercises: exerciseCards,
-        });
-      }
-
+  const handleCloseWorkout = async () => {
+    if (!workoutId) {
       navigate("/app/training");
-    } catch (error) {
-      console.error("Ошибка сохранения тренировки:", error);
-
-      window.alert(
-        error?.message ||
-          "Не удалось сохранить тренировку. Попробуйте ещё раз.",
-      );
-    } finally {
-      setIsSaving(false);
+      return;
     }
+
+    const closeEndTime = new Date().toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+    const finalEndTime = hasManualEndTimeRef.current ? endTime : closeEndTime;
+
+    if (isEditMode && workoutId) {
+      const nextEndTime = finalEndTime || "";
+
+      setEndTime(nextEndTime);
+
+      try {
+        await updateWorkout({
+          workoutId,
+          title: trainingTitle,
+          trainingDate,
+          startTime,
+          endTime: nextEndTime,
+          trainingType,
+          comment: trainingComment,
+          exercises: exerciseCards,
+        });
+      } catch (closeError) {
+        console.error(
+          "Ошибка сохранения end_time при закрытии тренировки:",
+          closeError,
+        );
+        window.alert(
+          closeError?.message ||
+            "Не удалось сохранить время завершения тренировки.",
+        );
+      }
+    }
+
+    navigate("/app/training");
   };
 
   const getExerciseNumbers = (exercises) => {
@@ -299,30 +494,59 @@ export default function TrainingPage() {
 
   const exerciseNumbers = getExerciseNumbers(exerciseCards);
 
+  if (isHistoryTraining && isExistingWorkoutLoading) {
+    return (
+      <main className="training-builder-view">
+        <header className="training-builder-topbar">
+          <div className="training-builder-side training-builder-side--left" />
+
+          <h1 className="training-builder-title">Загрузка тренировки...</h1>
+
+          <div className="training-builder-side training-builder-side--actions" />
+        </header>
+
+        <section
+          className="training-builder-content"
+          aria-label="Загрузка тренировки"
+        >
+          <div className="training-info">
+            <h2 className="training-info__title">Информация</h2>
+            <div className="training-info__card">
+              <div className="training-info__row">
+                <span className="training-info__label">Название</span>
+                <span className="training-info__value">Загрузка...</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="training-builder-view">
       <header className="training-builder-topbar">
-        <div className="training-builder-side">
-          <button
-            type="button"
-            className="training-builder-back"
-            onClick={() => navigate(-1)}
-            aria-label="Назад"
-          >
-            <ChevronLeft aria-hidden="true" />
-          </button>
+        <div className="training-builder-side training-builder-side--left">
+          {isViewMode && (
+            <button
+              type="button"
+              className="training-builder-edit"
+              onClick={handleEnableEditMode}
+            >
+              Изменить
+            </button>
+          )}
         </div>
 
         <h1 className="training-builder-title">{trainingTitle}</h1>
 
-        <div className="training-builder-side">
+        <div className="training-builder-side training-builder-side--actions">
           <button
             type="button"
             className="training-builder-edit"
-            onClick={handleFinishWorkout}
-            disabled={isSaving}
+            onClick={handleCloseWorkout}
           >
-            {isSaving ? "Сохранение..." : "Завершить"}
+            Закрыть
           </button>
         </div>
       </header>
@@ -336,7 +560,7 @@ export default function TrainingPage() {
           startTime={startTime}
           setStartTime={setStartTime}
           endTime={endTime}
-          setEndTime={setEndTime}
+          setEndTime={handleEndTimeChange}
           trainingType={trainingType}
           setTrainingType={setTrainingType}
           isDatePickerOpen={isDatePickerOpen}
@@ -345,11 +569,13 @@ export default function TrainingPage() {
           setIsStartTimePickerOpen={setIsStartTimePickerOpen}
           isEndTimePickerOpen={isEndTimePickerOpen}
           setIsEndTimePickerOpen={setIsEndTimePickerOpen}
+          isReadOnly={isViewMode}
         />
 
         <TrainingComment
           value={trainingComment}
           onChange={setTrainingComment}
+          isReadOnly={isViewMode}
         />
 
         {exerciseCards.map((exercise, index) => {
@@ -360,6 +586,7 @@ export default function TrainingPage() {
           return (
             <TrainingExerciseCard
               key={exercise.id}
+              workoutId={workoutId}
               exerciseId={exercise.id}
               exerciseNumber={exerciseNumbers[index]}
               initialExerciseId={exercise.exerciseId}
@@ -370,45 +597,35 @@ export default function TrainingPage() {
               isSupersetMember={isSupersetMember}
               onToggleSuperset={handleToggleSuperset}
               onRemoveExercise={handleRemoveExercise}
-              onChange={(data) => {
-                setExerciseCards((prev) =>
-                  prev.map((item) =>
-                    item.id === exercise.id
-                      ? {
-                          ...item,
-                          exerciseId: data.exerciseId,
-                          exerciseName: data.exerciseName,
-                          exerciseComment: data.exerciseComment,
-                          sets: data.sets,
-                        }
-                      : item,
-                  ),
-                );
-              }}
+              isReadOnly={isViewMode}
+              onChange={(data) => handleExerciseChange(exercise.id, data)}
             />
           );
         })}
 
-        <button
-          type="button"
-          className="training-exercise-add-button"
-          onClick={handleAddExercise}
-        >
-          {addButtonRipple && (
-            <span
-              key={addButtonRipple.id}
-              className="training-exercise-add-button__ripple"
-              style={{
-                left: `${addButtonRipple.x}px`,
-                top: `${addButtonRipple.y}px`,
-              }}
-            />
-          )}
+        {isEditMode && (
+          <button
+            type="button"
+            className="training-exercise-add-button"
+            onClick={handleAddExercise}
+            disabled={!workoutId}
+          >
+            {addButtonRipple && (
+              <span
+                key={addButtonRipple.id}
+                className="training-exercise-add-button__ripple"
+                style={{
+                  left: `${addButtonRipple.x}px`,
+                  top: `${addButtonRipple.y}px`,
+                }}
+              />
+            )}
 
-          <span className="training-exercise-add-button__text">
-            Добавить упражнение
-          </span>
-        </button>
+            <span className="training-exercise-add-button__text">
+              Добавить упражнение
+            </span>
+          </button>
+        )}
       </section>
     </main>
   );

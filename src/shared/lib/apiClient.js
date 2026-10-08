@@ -3,12 +3,17 @@
 async function request(path, options = {}) {
   let response;
 
+  const hasBody =
+    options.body !== undefined &&
+    options.body !== null &&
+    !(typeof options.body === "string" && options.body.length === 0);
+
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
       credentials: "include",
       headers: {
-        "Content-Type": "application/json",
+        ...(hasBody ? { "Content-Type": "application/json" } : {}),
         ...(options.headers ?? {}),
       },
     });

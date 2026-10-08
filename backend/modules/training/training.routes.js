@@ -99,11 +99,12 @@ WHERE id = $1
           id,
           title,
           training_date,
-          created_at
+          created_at,
+          updated_at,
+          comment
         FROM workouts
         WHERE user_id = $1
-          AND status = 'completed'
-        ORDER BY training_date DESC, created_at DESC
+        ORDER BY training_date DESC, created_at DESC, id DESC
       `,
       [authUser.userId],
     );
@@ -112,9 +113,70 @@ WHERE id = $1
       workouts: result.rows.map((workout) => ({
         id: workout.id,
         title: workout.title,
+        trainingDate: workout.training_date,
         createdAt: workout.created_at,
+        updatedAt: workout.updated_at,
+        status: null,
+        completed_at: null,
+        comment: workout.comment,
       })),
     };
+  });
+
+  app.post("/api/training/workouts/start", async (request, reply) => {
+    const authUser = await getAuthenticatedUser(app.pg, request);
+
+    if (!authUser) {
+      return reply.code(401).send({
+        error: "UNAUTHENTICATED",
+        message: "Требуется авторизация.",
+      });
+    }
+
+    const { title, trainingDate, startTime, endTime, trainingType, comment } =
+      request.body ?? {};
+
+    const client = await app.pg.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const workoutResult = await client.query(
+        `
+          INSERT INTO workouts (
+            user_id,
+            title,
+            training_date,
+            start_time,
+            end_time,
+            training_type,
+            comment
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING id
+        `,
+        [
+          authUser.userId,
+          title?.trim() || "Новая тренировка",
+          trainingDate || new Date().toISOString().slice(0, 10),
+          startTime || null,
+          endTime || null,
+          trainingType || "Силовая",
+          comment?.trim() || null,
+        ],
+      );
+
+      await client.query("COMMIT");
+
+      return reply.code(201).send({
+        id: workoutResult.rows[0].id,
+      });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   });
 
   app.post("/api/training/exercises", async (request, reply) => {
@@ -322,8 +384,6 @@ start_time::text AS start_time,
 end_time::text AS end_time,
   training_type,
   comment,
-  status,
-  completed_at,
   created_at,
   updated_at
 FROM workouts
@@ -413,8 +473,8 @@ FROM workouts
       end_time: workout.end_time,
       training_type: workout.training_type,
       comment: workout.comment,
-      status: workout.status,
-      completed_at: workout.completed_at,
+      status: null,
+      completed_at: null,
       created_at: workout.created_at,
       updated_at: workout.updated_at,
       workout_exercises: exercisesResult.rows.map((exercise) => ({
@@ -432,6 +492,170 @@ FROM workouts
         workout_sets: setsByExerciseId.get(exercise.id) || [],
       })),
     };
+  });
+
+  app.put("/api/training/sets/:setId", async (request, reply) => {
+    const authUser = await getAuthenticatedUser(app.pg, request);
+
+    if (!authUser) {
+      return reply.code(401).send({
+        error: "UNAUTHENTICATED",
+        message: "Требуется авторизация.",
+      });
+    }
+
+    const { setId } = request.params;
+    const patch = request.body ?? {};
+
+    if (!setId) {
+      return reply.code(400).send({
+        error: "INVALID_SET_ID",
+        message: "Не указан ID подхода.",
+      });
+    }
+
+    if (!patch || typeof patch !== "object" || Array.isArray(patch)) {
+      return reply.code(400).send({
+        error: "INVALID_SET_PAYLOAD",
+        message: "Невалидный payload для подхода.",
+      });
+    }
+
+    const setCheckResult = await app.pg.query(
+      `
+        SELECT ws.id
+        FROM workout_sets ws
+        JOIN workout_exercises we
+          ON we.id = ws.workout_exercise_id
+        JOIN workouts w
+          ON w.id = we.workout_id
+        WHERE ws.id = $1
+          AND w.user_id = $2
+        LIMIT 1
+      `,
+      [setId, authUser.userId],
+    );
+
+    if (setCheckResult.rowCount === 0) {
+      return reply.code(404).send({
+        error: "SET_NOT_FOUND",
+        message: "Подход не найден.",
+      });
+    }
+
+    const assignments = [];
+    const values = [];
+    let counter = 3;
+
+    const addAssignment = (fieldName, value) => {
+      if (Object.hasOwn(patch, fieldName)) {
+        assignments.push(`${fieldName} = $${counter}`);
+        values.push(value);
+        counter += 1;
+      }
+    };
+
+    addAssignment(
+      "position",
+      Number.isInteger(patch.position) ? patch.position : null,
+    );
+    addAssignment(
+      "weight",
+      patch.weight === "" || patch.weight === undefined ? null : patch.weight,
+    );
+    addAssignment(
+      "repetitions",
+      patch.repetitions === "" || patch.repetitions === undefined
+        ? null
+        : patch.repetitions,
+    );
+    addAssignment(
+      "difficulty",
+      patch.difficulty === "" || patch.difficulty === undefined
+        ? null
+        : patch.difficulty,
+    );
+    addAssignment(
+      "distance",
+      patch.distance === "" || patch.distance === undefined
+        ? null
+        : patch.distance,
+    );
+    addAssignment(
+      "calories",
+      patch.calories === "" || patch.calories === undefined
+        ? null
+        : patch.calories,
+    );
+    addAssignment(
+      "speed",
+      patch.speed === "" || patch.speed === undefined ? null : patch.speed,
+    );
+    addAssignment(
+      "power",
+      patch.power === "" || patch.power === undefined ? null : patch.power,
+    );
+    addAssignment(
+      "incline",
+      patch.incline === "" || patch.incline === undefined
+        ? null
+        : patch.incline,
+    );
+    addAssignment(
+      "time",
+      patch.time === "" || patch.time === undefined ? null : patch.time,
+    );
+    addAssignment(
+      "rir",
+      patch.rir === "" || patch.rir === undefined ? null : patch.rir,
+    );
+    addAssignment(
+      "rpe",
+      patch.rpe === "" || patch.rpe === undefined ? null : patch.rpe,
+    );
+    addAssignment(
+      "rest",
+      patch.rest === "" || patch.rest === undefined ? null : patch.rest,
+    );
+
+    if (Object.hasOwn(patch, "intensityMethods")) {
+      assignments.push(`intensity_methods = $${counter}`);
+      values.push(
+        JSON.stringify(
+          Array.isArray(patch.intensityMethods) ? patch.intensityMethods : [],
+        ),
+      );
+      counter += 1;
+    }
+
+    if (assignments.length === 0) {
+      return reply.code(400).send({
+        error: "NO_SET_FIELDS_TO_UPDATE",
+        message: "Нет полей для обновления.",
+      });
+    }
+
+    const result = await app.pg.query(
+      `
+        UPDATE workout_sets ws
+        SET ${assignments.join(", ")}
+        WHERE ws.id = $1
+          AND EXISTS (
+            SELECT 1
+            FROM workout_exercises we
+            JOIN workouts w
+              ON w.id = we.workout_id
+            WHERE we.id = ws.workout_exercise_id
+              AND w.user_id = $2
+          )
+        RETURNING ws.*
+      `,
+      [setId, authUser.userId, ...values],
+    );
+
+    return reply.send({
+      set: result.rows[0] ?? null,
+    });
   });
 
   app.get("/api/training/sets/:setId/materials", async (request, reply) => {
@@ -750,7 +974,7 @@ FROM workouts
     }
   });
 
-  app.post("/api/training/workouts", async (request, reply) => {
+  app.post("/api/training/workouts/:id/exercises", async (request, reply) => {
     const authUser = await getAuthenticatedUser(app.pg, request);
 
     if (!authUser) {
@@ -760,166 +984,231 @@ FROM workouts
       });
     }
 
-    const {
-      title,
-      trainingDate,
-      startTime,
-      endTime,
-      trainingType,
-      comment,
-      exercises,
-    } = request.body ?? {};
+    const { id } = request.params;
 
-    if (!trainingDate) {
+    if (!id) {
       return reply.code(400).send({
-        error: "INVALID_TRAINING_DATE",
-        message: "Не указана дата тренировки.",
+        error: "INVALID_WORKOUT_ID",
+        message: "Не указан ID тренировки.",
       });
     }
 
-    if (!Array.isArray(exercises)) {
+    const { exerciseId, exerciseComment, supersetAfter } = request.body ?? {};
+
+    if (!exerciseId) {
       return reply.code(400).send({
-        error: "INVALID_EXERCISES",
-        message: "Поле exercises должно быть массивом.",
+        error: "INVALID_EXERCISE_ID",
+        message: "Не указан ID упражнения.",
       });
     }
 
-    const client = await app.pg.connect();
+    const workoutResult = await app.pg.query(
+      `
+        SELECT id
+        FROM workouts
+        WHERE id = $1
+          AND user_id = $2
+        LIMIT 1
+      `,
+      [id, authUser.userId],
+    );
 
-    try {
-      await client.query("BEGIN");
+    if (workoutResult.rowCount === 0) {
+      return reply.code(404).send({
+        error: "WORKOUT_NOT_FOUND",
+        message: "Тренировка не найдена.",
+      });
+    }
 
-      const workoutResult = await client.query(
+    const exerciseExists = await app.pg.query(
+      `
+        SELECT id
+        FROM exercises
+        WHERE id = $1
+          AND (user_id IS NULL OR user_id = $2)
+        LIMIT 1
+      `,
+      [exerciseId, authUser.userId],
+    );
+
+    if (exerciseExists.rowCount === 0) {
+      return reply.code(404).send({
+        error: "EXERCISE_NOT_FOUND",
+        message: "Упражнение не найдено.",
+      });
+    }
+
+    const positionResult = await app.pg.query(
+      `
+        SELECT COALESCE(MAX(position), -1) + 1 AS next_position
+        FROM workout_exercises
+        WHERE workout_id = $1
+      `,
+      [id],
+    );
+
+    const workoutExerciseResult = await app.pg.query(
+      `
+        INSERT INTO workout_exercises (
+          workout_id,
+          exercise_id,
+          position,
+          exercise_comment,
+          superset_after
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, position
+      `,
+      [
+        id,
+        exerciseId,
+        Number(positionResult.rows[0].next_position),
+        typeof exerciseComment === "string"
+          ? exerciseComment.trim() || null
+          : null,
+        Boolean(supersetAfter),
+      ],
+    );
+
+    return reply.code(201).send({
+      id: workoutExerciseResult.rows[0].id,
+      position: workoutExerciseResult.rows[0].position,
+    });
+  });
+
+  app.post(
+    "/api/training/workouts/:id/exercises/:exerciseRowId/sets",
+    async (request, reply) => {
+      const authUser = await getAuthenticatedUser(app.pg, request);
+
+      if (!authUser) {
+        return reply.code(401).send({
+          error: "UNAUTHENTICATED",
+          message: "Требуется авторизация.",
+        });
+      }
+
+      const { id, exerciseRowId } = request.params;
+      const {
+        weight,
+        repetitions,
+        difficulty,
+        distance,
+        calories,
+        speed,
+        power,
+        incline,
+        time,
+        rir,
+        rpe,
+        rest,
+        intensityMethods,
+      } = request.body ?? {};
+
+      if (!exerciseRowId) {
+        return reply.code(400).send({
+          error: "INVALID_EXERCISE_ROW_ID",
+          message: "Не указан ID упражнения в тренировке.",
+        });
+      }
+
+      const exerciseResult = await app.pg.query(
         `
-          INSERT INTO workouts (
-            user_id,
-            title,
-            training_date,
-            start_time,
-            end_time,
-            training_type,
-            comment,
-            status,
-            completed_at
-          )
-          VALUES ($1, $2, $3, $4, $5, $6, $7, 'completed', now())
-          RETURNING id
-        `,
+        SELECT we.id
+        FROM workout_exercises we
+        JOIN workouts w ON w.id = we.workout_id
+        WHERE we.id = $1
+          AND we.workout_id = $2
+          AND w.user_id = $3
+        LIMIT 1
+      `,
+        [exerciseRowId, id, authUser.userId],
+      );
+
+      if (exerciseResult.rowCount === 0) {
+        return reply.code(404).send({
+          error: "WORKOUT_EXERCISE_NOT_FOUND",
+          message: "Упражнение в тренировке не найдено.",
+        });
+      }
+
+      const positionResult = await app.pg.query(
+        `
+        SELECT COALESCE(MAX(position), -1) + 1 AS next_position
+        FROM workout_sets
+        WHERE workout_exercise_id = $1
+      `,
+        [exerciseRowId],
+      );
+
+      const setResult = await app.pg.query(
+        `
+        INSERT INTO workout_sets (
+          workout_exercise_id,
+          position,
+          weight,
+          repetitions,
+          difficulty,
+          distance,
+          calories,
+          speed,
+          power,
+          incline,
+          time,
+          rir,
+          rpe,
+          rest,
+          intensity_methods
+        )
+        VALUES (
+          $1, $2, $3, $4, $5,
+          $6, $7, $8, $9, $10,
+          $11, $12, $13, $14, $15
+        )
+        RETURNING id, position
+      `,
         [
-          authUser.userId,
-          title?.trim() || "Новая тренировка",
-          trainingDate,
-          startTime || null,
-          endTime || null,
-          trainingType || "Силовая",
-          comment?.trim() || null,
+          exerciseRowId,
+          Number(positionResult.rows[0].next_position),
+          weight === "" || weight === undefined || weight === null
+            ? null
+            : weight,
+          repetitions === "" ||
+          repetitions === undefined ||
+          repetitions === null
+            ? null
+            : repetitions,
+          difficulty === "" || difficulty === undefined || difficulty === null
+            ? null
+            : difficulty,
+          distance === "" || distance === undefined || distance === null
+            ? null
+            : distance,
+          calories === "" || calories === undefined || calories === null
+            ? null
+            : calories,
+          speed === "" || speed === undefined || speed === null ? null : speed,
+          power === "" || power === undefined || power === null ? null : power,
+          incline === "" || incline === undefined || incline === null
+            ? null
+            : incline,
+          time === "" || time === undefined || time === null ? null : time,
+          rir === "" || rir === undefined || rir === null ? null : rir,
+          rpe === "" || rpe === undefined || rpe === null ? null : rpe,
+          rest === "" || rest === undefined || rest === null ? null : rest,
+          JSON.stringify(
+            Array.isArray(intensityMethods) ? intensityMethods : [],
+          ),
         ],
       );
 
-      const workoutId = workoutResult.rows[0].id;
-
-      const preparedExercises = exercises
-        .map((exercise, index) => ({
-          ...exercise,
-          position: index,
-        }))
-        .filter((exercise) => exercise.exerciseId);
-
-      for (const exercise of preparedExercises) {
-        const workoutExerciseResult = await client.query(
-          `
-            INSERT INTO workout_exercises (
-              workout_id,
-              exercise_id,
-              position,
-              exercise_comment,
-              superset_after
-            )
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id
-          `,
-          [
-            workoutId,
-            exercise.exerciseId,
-            exercise.position,
-            exercise.exerciseComment?.trim() || null,
-            Boolean(exercise.supersetAfter),
-          ],
-        );
-
-        const workoutExerciseId = workoutExerciseResult.rows[0].id;
-
-        const preparedSets = (exercise.sets || []).map((set, index) => [
-          workoutExerciseId,
-          index,
-          set.weight === "" || set.weight === undefined ? null : set.weight,
-          set.repetitions === "" || set.repetitions === undefined
-            ? null
-            : set.repetitions,
-          set.difficulty === "" || set.difficulty === undefined
-            ? null
-            : set.difficulty,
-          set.distance === "" || set.distance === undefined
-            ? null
-            : set.distance,
-          set.calories === "" || set.calories === undefined
-            ? null
-            : set.calories,
-          set.speed === "" || set.speed === undefined ? null : set.speed,
-          set.power === "" || set.power === undefined ? null : set.power,
-          set.incline === "" || set.incline === undefined ? null : set.incline,
-          set.time === "" || set.time === undefined ? null : set.time,
-          set.rir === "" || set.rir === undefined ? null : set.rir,
-          set.rpe === "" || set.rpe === undefined ? null : set.rpe,
-          set.rest === "" || set.rest === undefined ? null : set.rest,
-          JSON.stringify(
-            Array.isArray(set.intensityMethods) ? set.intensityMethods : [],
-          ),
-        ]);
-
-        for (const setValues of preparedSets) {
-          await client.query(
-            `
-              INSERT INTO workout_sets (
-                workout_exercise_id,
-                position,
-                weight,
-                repetitions,
-                difficulty,
-                distance,
-                calories,
-                speed,
-                power,
-                incline,
-                time,
-                rir,
-                rpe,
-                rest,
-                intensity_methods
-              )
-              VALUES (
-                $1, $2, $3, $4, $5,
-                $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15
-              )
-            `,
-            setValues,
-          );
-        }
-      }
-
-      await client.query("COMMIT");
-
       return reply.code(201).send({
-        id: workoutId,
+        id: setResult.rows[0].id,
+        position: setResult.rows[0].position,
       });
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
-    }
-  });
+    },
+  );
+
   app.put("/api/training/workouts/:id", async (request, reply) => {
     const authUser = await getAuthenticatedUser(app.pg, request);
 
@@ -978,8 +1267,6 @@ FROM workouts
             end_time = $4,
             training_type = $5,
             comment = $6,
-            status = 'completed',
-            completed_at = now(),
             updated_at = now()
           WHERE id = $7
             AND user_id = $8
@@ -1260,25 +1547,174 @@ FROM workouts
       });
     }
 
-    const result = await app.pg.query(
-      `
-        DELETE FROM workouts
-        WHERE id = $1
-          AND user_id = $2
-        RETURNING id
-      `,
-      [id, authUser.userId],
-    );
+    const client = await app.pg.connect();
 
-    if (result.rowCount === 0) {
-      return reply.code(404).send({
-        error: "WORKOUT_NOT_FOUND",
-        message: "Тренировка не найдена.",
-      });
+    try {
+      await client.query("BEGIN");
+
+      const workoutCheck = await client.query(
+        `
+          SELECT id
+          FROM workouts
+          WHERE id = $1
+            AND user_id = $2
+          LIMIT 1
+        `,
+        [id, authUser.userId],
+      );
+
+      if (workoutCheck.rowCount === 0) {
+        await client.query("ROLLBACK");
+
+        return reply.code(404).send({
+          error: "WORKOUT_NOT_FOUND",
+          message: "Тренировка не найдена.",
+        });
+      }
+
+      const setIdsResult = await client.query(
+        `
+          SELECT ws.id AS set_id
+          FROM workout_sets ws
+          JOIN workout_exercises we
+            ON we.id = ws.workout_exercise_id
+          WHERE we.workout_id = $1
+        `,
+        [id],
+      );
+
+      const setIds = setIdsResult.rows.map((row) => row.set_id);
+
+      const mediaIdsResult = await client.query(
+        `
+          SELECT DISTINCT ml.media_id
+          FROM media_links ml
+          WHERE ml.entity_type = 'workout_set'
+            AND ml.entity_id = ANY($1::uuid[])
+        `,
+        [setIds],
+      );
+
+      const mediaIdsToDelete = mediaIdsResult.rows
+        .map((row) => row.media_id)
+        .filter(Boolean);
+
+      if (setIds.length > 0) {
+        await client.query(
+          `
+            DELETE FROM media_links
+            WHERE entity_type = 'workout_set'
+              AND entity_id = ANY($1::uuid[])
+          `,
+          [setIds],
+        );
+      }
+
+      const mediaToDeleteResult = await client.query(
+        `
+          SELECT m.id, m.object_key
+          FROM media m
+          WHERE m.id = ANY($1::uuid[])
+            AND m.owner_id = $2
+            AND NOT EXISTS (
+              SELECT 1
+              FROM media_links ml
+              WHERE ml.media_id = m.id
+            )
+        `,
+        [mediaIdsToDelete, authUser.userId],
+      );
+
+      const mediaToDelete = mediaToDeleteResult.rows;
+
+      if (mediaToDelete.length > 0) {
+        await client.query(
+          `
+            DELETE FROM media
+            WHERE id = ANY($1::uuid[])
+              AND owner_id = $2
+          `,
+          [mediaToDelete.map((media) => media.id), authUser.userId],
+        );
+      }
+
+      await client.query(
+        `
+          DELETE FROM workout_sets
+          WHERE workout_exercise_id IN (
+            SELECT id
+            FROM workout_exercises
+            WHERE workout_id = $1
+          )
+        `,
+        [id],
+      );
+
+      await client.query(
+        `
+          DELETE FROM workout_exercises
+          WHERE workout_id = $1
+        `,
+        [id],
+      );
+
+      const deleteResult = await client.query(
+        `
+          DELETE FROM workouts
+          WHERE id = $1
+            AND user_id = $2
+          RETURNING id
+        `,
+        [id, authUser.userId],
+      );
+
+      await client.query("COMMIT");
+
+      const objectDeleteFailures = [];
+
+      for (const media of mediaToDelete) {
+        try {
+          await app.storage.deleteObject({
+            key: media.object_key,
+          });
+        } catch (storageError) {
+          objectDeleteFailures.push({
+            mediaId: media.id,
+            objectKey: media.object_key,
+            error: storageError,
+          });
+        }
+      }
+
+      if (objectDeleteFailures.length > 0) {
+        app.log.error(
+          {
+            workoutId: id,
+            media: objectDeleteFailures,
+          },
+          "Workout deleted from DB but object storage cleanup failed for some media",
+        );
+
+        return reply.code(500).send({
+          error: "WORKOUT_MEDIA_STORAGE_DELETE_FAILED",
+          message:
+            "Тренировка удалена из БД, но часть физических объектов в Object Storage не удалось удалить.",
+          workoutId: id,
+          failures: objectDeleteFailures.map(({ mediaId, objectKey }) => ({
+            mediaId,
+            objectKey,
+          })),
+        });
+      }
+
+      return {
+        id: deleteResult.rows[0].id,
+      };
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
+      throw error;
+    } finally {
+      client.release();
     }
-
-    return {
-      id: result.rows[0].id,
-    };
   });
 }

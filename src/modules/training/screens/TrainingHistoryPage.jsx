@@ -8,7 +8,9 @@ import TrainingTabs from "../components/common/TrainingTabs";
 import TrainingHistoryList from "../components/history/TrainingHistoryList";
 import {
   deleteWorkout,
-  getCompletedWorkouts,
+  getWorkoutById,
+  getWorkouts,
+  startWorkout,
 } from "../services/trainingService";
 
 const LOADING_DELAY_MS = 100;
@@ -36,7 +38,7 @@ export default function TrainingHistoryPage() {
       setError("");
 
       try {
-        const data = await getCompletedWorkouts();
+        const data = await getWorkouts();
 
         if (!isMounted) {
           return;
@@ -94,6 +96,60 @@ export default function TrainingHistoryPage() {
     }
   };
 
+  const handleOpenWorkout = async (workout) => {
+    if (!workout?.id) {
+      return;
+    }
+
+    try {
+      const fullWorkout = await getWorkoutById(workout.id);
+
+      navigate(`/app/training/${workout.id}`, {
+        replace: false,
+        state: {
+          trainingMode: "view",
+          preloadedWorkout: fullWorkout,
+        },
+      });
+    } catch (error) {
+      console.error(
+        "Ошибка загрузки тренировки при открытии из истории:",
+        error,
+      );
+      window.alert(error?.message || "Не удалось открыть тренировку.");
+    }
+  };
+
+  const handleCreateNewWorkout = async () => {
+    const now = new Date();
+
+    try {
+      const data = await startWorkout({
+        title: "Новая тренировка",
+        trainingDate: now,
+        startTime: now.toLocaleTimeString("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+      });
+
+      if (!data?.id) {
+        throw new Error("Сервер не вернул ID новой тренировки.");
+      }
+
+      navigate(`/app/training/${data.id}`, {
+        replace: true,
+        state: {
+          trainingMode: "edit",
+        },
+      });
+    } catch (error) {
+      console.error("Ошибка создания новой тренировки:", error);
+      window.alert(error?.message || "Не удалось создать новую тренировку.");
+    }
+  };
+
   return (
     <main className="training-view training-history-view">
       <TrainingTabs
@@ -106,7 +162,7 @@ export default function TrainingHistoryPage() {
       <button
         type="button"
         className="training-primary-action"
-        onClick={() => navigate("/app/training/create")}
+        onClick={handleCreateNewWorkout}
       >
         Создать тренировку
       </button>
@@ -132,6 +188,7 @@ export default function TrainingHistoryPage() {
             workouts={workouts}
             onDeleteWorkout={handleDeleteWorkout}
             deletingWorkoutId={deletingWorkoutId}
+            onOpenWorkout={handleOpenWorkout}
           />
         )}
       </TrainingContent>
