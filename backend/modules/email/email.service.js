@@ -38,10 +38,11 @@ export async function sendEmail({ email, subject, html, text }) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
+    const safeDetail = data
+      ? JSON.stringify({ code: data?.code, message: data?.message })
+      : "empty response";
     const error = new Error(
-      `Unisender Go error: ${response.status} ${
-        data ? JSON.stringify(data) : "empty response"
-      }`,
+      `Unisender Go error: ${response.status} ${safeDetail}`,
     );
 
     error.status = response.status;

@@ -1,4 +1,4 @@
-exports.up = (pgm) => {
+﻿exports.up = (pgm) => {
   pgm.sql(`
     UPDATE exercises
     SET category = CASE category
@@ -14,14 +14,8 @@ exports.up = (pgm) => {
     END
     WHERE user_id IS NULL
       AND category IN (
-        'chest',
-        'back',
-        'legs_glutes',
-        'shoulders',
-        'arms',
-        'abs',
-        'cardio',
-        'yoga'
+        'chest', 'back', 'legs_glutes', 'shoulders',
+        'arms', 'abs', 'cardio', 'yoga'
       );
   `);
 };
@@ -42,14 +36,8 @@ exports.down = (pgm) => {
     END
     WHERE user_id IS NULL
       AND category IN (
-        'Грудь',
-        'Спина',
-        'Ноги / Ягодицы',
-        'Дельты',
-        'Руки',
-        'Пресс',
-        'Кардио',
-        'Йога'
+        'Грудь', 'Спина', 'Ноги / Ягодицы', 'Дельты',
+        'Руки', 'Пресс', 'Кардио', 'Йога'
       );
   `);
 };

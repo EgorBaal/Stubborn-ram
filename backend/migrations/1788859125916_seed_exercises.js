@@ -1,6 +1,6 @@
 /**
- * Seed system training exercises from legacy Supabase.
- * Original UUIDs are preserved.
+ * Seed system training exercises.
+ * Original UUIDs are preserved from legacy import.
  */
 
 export async function up(pgm) {

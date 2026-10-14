@@ -469,7 +469,18 @@ export default async function authRoutes(app) {
       const user = result.rows[0];
       const token = await createEmailVerificationToken(app.pg, user.id);
 
-      await sendVerificationEmail(user.email, token);
+      try {
+        await sendVerificationEmail(user.email, token);
+      } catch (error) {
+        app.log.error(
+          {
+            error,
+            userId: user.id,
+            flow: "auth/resend-verification/sendVerificationEmail",
+          },
+          "Verification email delivery failed",
+        );
+      }
 
       return {
         ok: true,
@@ -604,7 +615,18 @@ export default async function authRoutes(app) {
 
       const token = await createPasswordResetToken(app.pg, user.id);
 
-      await sendPasswordResetEmail(user.email, token);
+      try {
+        await sendPasswordResetEmail(user.email, token);
+      } catch (error) {
+        app.log.error(
+          {
+            error,
+            userId: user.id,
+            flow: "auth/forgot-password/sendPasswordResetEmail",
+          },
+          "Password reset email delivery failed",
+        );
+      }
 
       return {
         ok: true,

@@ -32,14 +32,11 @@ Stubborn Ram/
 ├── docs/
 ├── public/
 ├── src/
-├── supabase/          ← LEGACY / migration residue
 ├── index.html
 ├── package.json
 ├── README.md
 └── vite.config.js
 ```
-
-`supabase/` относится к legacy migration surface и не является целевой архитектурой новых функций.
 
 ---
 
@@ -150,21 +147,21 @@ Module не должен менять global shell ради локальной �
 
 По текущему verified baseline:
 
-| Module | Фактическая зрелость |
-|---|---|
-| `home` | shell/navigation, partial |
-| `profile` | partial |
-| `training` | core persistence verified, domain partial |
-| `media` | repository/runtime foundation verified, broader domain partial |
-| `report` | placeholder |
-| `chat` | placeholder / backend flow absent |
-| `comments` | placeholder |
-| `nutrition` | placeholder |
-| `activity` | PLACEHOLDER / FRONT-ONLY |
-| `weight` | PLACEHOLDER / FRONT-ONLY |
-| `photos` | partial/product shell |
-| `analytics` | placeholder |
-| `library` | placeholder/partial |
+| Module      | Фактическая зрелость                                           |
+| ----------- | -------------------------------------------------------------- |
+| `home`      | shell/navigation, partial                                      |
+| `profile`   | partial                                                        |
+| `training`  | core persistence verified, domain partial                      |
+| `media`     | repository/runtime foundation verified, broader domain partial |
+| `report`    | placeholder                                                    |
+| `chat`      | placeholder / backend flow absent                              |
+| `comments`  | placeholder                                                    |
+| `nutrition` | placeholder                                                    |
+| `activity`  | PLACEHOLDER / FRONT-ONLY                                       |
+| `weight`    | PLACEHOLDER / FRONT-ONLY                                       |
+| `photos`    | partial/product shell                                          |
+| `analytics` | placeholder                                                    |
+| `library`   | placeholder/partial                                            |
 
 Подробный runtime status хранится в `SYSTEM_STATE`.
 
@@ -515,15 +512,15 @@ Layout-specific ownership подробно описан в `LAYOUT.md`.
 
 # 24. Source of Truth
 
-| Область | Канонический документ |
-|---|---|
-| Codebase structure | `APP_STRUCTURE.md` |
-| Runtime architecture | `ARCHITECTURE.md` |
-| Platform model | `PLATFORM.md` |
-| Layout contracts | `LAYOUT.md` |
+| Область                | Канонический документ                          |
+| ---------------------- | ---------------------------------------------- |
+| Codebase structure     | `APP_STRUCTURE.md`                             |
+| Runtime architecture   | `ARCHITECTURE.md`                              |
+| Platform model         | `PLATFORM.md`                                  |
+| Layout contracts       | `LAYOUT.md`                                    |
 | Current verified state | `../SYSTEM_STATE/SYSTEM_STATE_UPDATED_FULL.md` |
-| Development rules | `../PROCESS/CODING_RULES.md` |
-| Security rules | `../SYSTEMS/SECURITY.md` |
+| Development rules      | `../PROCESS/CODING_RULES.md`                   |
+| Security rules         | `../SYSTEMS/SECURITY.md`                       |
 
 ---
 

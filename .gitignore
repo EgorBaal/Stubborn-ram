@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local secrets (never commit real secrets)
+backend/.env
+.env.local
+.env.*.local
+
+# Supabase CLI artifacts (Supabase is decommissioned)
+supabase/
+
+# Local cookie jars (no sensitive cookies should be committed)
+cookies.txt
+
+# Service snapshots / project trees (generated reports, not source)
+backend-files.txt
+project-tree-current.txt
+src-tree.txt
+PROJECT_TREE.md
