@@ -24,6 +24,11 @@ dist-ssr
 *.sw?
 
 # Local secrets (never commit real secrets)
+.env
+.env.*
+!.env.example
+!.env.development
+!.env.production
 backend/.env
 .env.local
 .env.*.local

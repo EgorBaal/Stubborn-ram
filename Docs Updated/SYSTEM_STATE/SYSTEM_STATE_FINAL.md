@@ -1623,6 +1623,22 @@ workout_sets
 - update existing workout;
 - UI lock через `isSaving`.
 
+## Training View / Preview mode
+
+Подтверждено локально:
+
+```text
+History → Preview
+↓
+read-only mode
+↓
+edit controls hidden / blocked
+↓
+Edit toggle re-enables mutation flow
+```
+
+В `TrainingPage` и `TrainingExerciseCard` режим просмотра и редактирования остаётся разделённым: `view` закрывает изменение полей, `edit` восстанавливает автосохранение и редактирование. Источник ошибки был в локальном UI-коде, а не в backend/API или PostgreSQL.
+
 ## Training persistence verification
 
 Подтвержден runtime smoke:

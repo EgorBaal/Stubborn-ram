@@ -781,6 +781,10 @@ export default function TrainingExerciseCard({
   };
 
   const handleAddSet = () => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) => [
       ...prev,
       {
@@ -804,6 +808,10 @@ export default function TrainingExerciseCard({
   };
 
   const updateSet = (setId, field, value) => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) =>
       prev.map((set) =>
         set.id === setId
@@ -817,6 +825,10 @@ export default function TrainingExerciseCard({
   };
 
   const toggleSetExtra = (setId) => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) =>
       prev.map((set) =>
         set.id === setId
@@ -830,6 +842,10 @@ export default function TrainingExerciseCard({
   };
 
   const toggleIntensityMethod = (setId, methodId) => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) =>
       prev.map((set) => {
         if (set.id !== setId) {
@@ -851,6 +867,10 @@ export default function TrainingExerciseCard({
   };
 
   const handleCopySet = (setId) => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) => {
       const sourceIndex = prev.findIndex((set) => set.id === setId);
 
@@ -879,6 +899,10 @@ export default function TrainingExerciseCard({
   };
 
   const handleDeleteSet = (setId) => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) => prev.filter((set) => set.id !== setId));
 
     setSwipedSetId(null);
@@ -1032,6 +1056,10 @@ export default function TrainingExerciseCard({
   };
 
   const setDifficulty = (setId, difficulty) => {
+    if (isReadOnly) {
+      return;
+    }
+
     setSets((prev) =>
       prev.map((set) =>
         set.id === setId
@@ -1044,7 +1072,7 @@ export default function TrainingExerciseCard({
     );
   };
   const handleSaveMaterials = async (setId) => {
-    if (!setId || isSavingMaterials) {
+    if (isReadOnly || !setId || isSavingMaterials) {
       return;
     }
 
@@ -1190,7 +1218,7 @@ export default function TrainingExerciseCard({
             {exerciseName || "Выберите упражнение"}
           </div>
 
-          {!isCollapsed && (
+          {!isCollapsed && !isReadOnly && (
             <button
               type="button"
               className="training-exercise-card__select"
@@ -1239,61 +1267,76 @@ export default function TrainingExerciseCard({
               <textarea
                 ref={exerciseCommentInputRef}
                 className="training-exercise-card__comment-input"
-                placeholder="Введите комментарий к упражнению"
+                placeholder={
+                  isReadOnly ? undefined : "Введите комментарий к упражнению"
+                }
                 value={exerciseComment}
-                onChange={(event) => setExerciseComment(event.target.value)}
+                readOnly={isReadOnly}
+                onChange={(event) => {
+                  if (isReadOnly) {
+                    return;
+                  }
+
+                  setExerciseComment(event.target.value);
+                }}
                 rows={1}
               />
             </div>
 
-            <div className="training-exercise-card__row training-exercise-card__row--tools">
-              <button
-                type="button"
-                className="training-exercise-card__tool training-exercise-card__tool--history"
-              >
-                <span>История</span>
-
-                <svg
-                  className="training-exercise-card__history-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
+            {!isReadOnly && (
+              <div className="training-exercise-card__row training-exercise-card__row--tools">
+                <button
+                  type="button"
+                  className="training-exercise-card__tool training-exercise-card__tool--history"
                 >
-                  <path
-                    d="M12 8V12L15 14"
-                    stroke="currentColor"
-                    strokeWidth="2.1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                  <span>История</span>
 
-                  <path
-                    d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12"
-                    stroke="currentColor"
-                    strokeWidth="2.1"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="training-exercise-card__history-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 8V12L15 14"
+                      stroke="currentColor"
+                      strokeWidth="2.1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
 
-              <span
-                className="training-exercise-card__tools-divider"
-                aria-hidden="true"
-              />
+                    <path
+                      d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12"
+                      stroke="currentColor"
+                      strokeWidth="2.1"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
 
-              <button
-                ref={parametersButtonRef}
-                type="button"
-                className="training-exercise-card__tool training-exercise-card__tool--parameters"
-                onClick={() => {
-                  setIsParametersPopoverOpen((isOpen) => !isOpen);
-                }}
-                aria-label="Открыть параметры упражнения"
-                aria-expanded={isParametersPopoverOpen}
-              >
-                <span>Параметры</span>
-              </button>
-            </div>
+                <span
+                  className="training-exercise-card__tools-divider"
+                  aria-hidden="true"
+                />
+
+                <button
+                  ref={parametersButtonRef}
+                  type="button"
+                  className="training-exercise-card__tool training-exercise-card__tool--parameters"
+                  onClick={() => {
+                    if (isReadOnly) {
+                      return;
+                    }
+
+                    setIsParametersPopoverOpen((isOpen) => !isOpen);
+                  }}
+                  aria-label="Открыть параметры упражнения"
+                  aria-expanded={isParametersPopoverOpen}
+                >
+                  <span>Параметры</span>
+                </button>
+              </div>
+            )}
 
             {sets.map((set, index) => (
               <section
@@ -1437,7 +1480,12 @@ export default function TrainingExerciseCard({
                                 }`}
                                 aria-label={`Выбрать сложность, подход ${index + 1}`}
                                 aria-expanded={openDifficultySetId === set.id}
+                                disabled={isReadOnly}
                                 onClick={() => {
+                                  if (isReadOnly) {
+                                    return;
+                                  }
+
                                   setOpenDifficultySetId((currentId) =>
                                     currentId === set.id ? null : set.id,
                                   );
@@ -1474,9 +1522,19 @@ export default function TrainingExerciseCard({
                             inputMode="decimal"
                             value={set[parameterId] ?? ""}
                             placeholder="x"
-                            onChange={(event) =>
-                              updateSet(set.id, parameterId, event.target.value)
-                            }
+                            readOnly={isReadOnly}
+                            disabled={isReadOnly}
+                            onChange={(event) => {
+                              if (isReadOnly) {
+                                return;
+                              }
+
+                              updateSet(
+                                set.id,
+                                parameterId,
+                                event.target.value,
+                              );
+                            }}
                             aria-label={`${parameterLabels[parameterId]}, подход ${index + 1}`}
                           />
                         </div>
@@ -1534,9 +1592,14 @@ export default function TrainingExerciseCard({
                                   ? " training-exercise-card__intensity-method--selected"
                                   : ""
                               }`}
-                              onClick={() =>
-                                toggleIntensityMethod(set.id, method.id)
-                              }
+                              disabled={isReadOnly}
+                              onClick={() => {
+                                if (isReadOnly) {
+                                  return;
+                                }
+
+                                toggleIntensityMethod(set.id, method.id);
+                              }}
                               aria-pressed={isSelected}
                             >
                               {method.label}
@@ -1554,7 +1617,14 @@ export default function TrainingExerciseCard({
                         ? " training-exercise-card__set-settings--open"
                         : ""
                     }`}
-                    onClick={() => toggleSetExtra(set.id)}
+                    disabled={isReadOnly}
+                    onClick={() => {
+                      if (isReadOnly) {
+                        return;
+                      }
+
+                      toggleSetExtra(set.id);
+                    }}
                     aria-label={
                       set.isExtraOpen
                         ? "Скрыть дополнительные параметры"
@@ -1570,25 +1640,27 @@ export default function TrainingExerciseCard({
                     />
                   </button>
                 </div>
-                <div
-                  className="training-exercise-card__set-actions"
-                  aria-hidden={
-                    swipedSetId !== set.id || swipedSetSide !== "right"
-                  }
-                >
-                  <button
-                    type="button"
-                    className="training-exercise-card__set-action"
-                    aria-label="Материалы подхода"
-                    onClick={() => {
-                      setMaterialsModalSetId(set.id);
-                      setSwipedSetId(null);
-                      setSwipedSetSide(null);
-                    }}
+                {!isReadOnly && (
+                  <div
+                    className="training-exercise-card__set-actions"
+                    aria-hidden={
+                      swipedSetId !== set.id || swipedSetSide !== "right"
+                    }
                   >
-                    <MessageSquare size={20} strokeWidth={1.8} />
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="training-exercise-card__set-action"
+                      aria-label="Материалы подхода"
+                      onClick={() => {
+                        setMaterialsModalSetId(set.id);
+                        setSwipedSetId(null);
+                        setSwipedSetSide(null);
+                      }}
+                    >
+                      <MessageSquare size={20} strokeWidth={1.8} />
+                    </button>
+                  </div>
+                )}
               </section>
             ))}
 
@@ -1625,42 +1697,46 @@ export default function TrainingExerciseCard({
               />
             )}
 
-            <button
-              type="button"
-              className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__add-set"
-              onClick={handleAddSet}
-            >
-              <span className="training-exercise-card__action-text">
-                Добавить подход
-              </span>
-            </button>
-
-            <div className="training-exercise-card__delete-wrapper">
+            {!isReadOnly && (
               <button
-                ref={deleteButtonRef}
                 type="button"
-                className="training-exercise-card__row training-exercise-card__row--danger"
-                onClick={() => {
-                  setIsDeletePopoverOpen(true);
-                }}
+                className="training-exercise-card__row training-exercise-card__row--accent training-exercise-card__add-set"
+                onClick={handleAddSet}
               >
                 <span className="training-exercise-card__action-text">
-                  Удалить упражнение
+                  Добавить подход
                 </span>
               </button>
+            )}
 
-              <ConfirmDeletePopover
-                anchorRef={deleteButtonRef}
-                open={isDeletePopoverOpen}
-                onConfirm={() => {
-                  onRemoveExercise?.(exerciseId);
-                  setIsDeletePopoverOpen(false);
-                }}
-                onCancel={() => {
-                  setIsDeletePopoverOpen(false);
-                }}
-              />
-            </div>
+            {!isReadOnly && (
+              <div className="training-exercise-card__delete-wrapper">
+                <button
+                  ref={deleteButtonRef}
+                  type="button"
+                  className="training-exercise-card__row training-exercise-card__row--danger"
+                  onClick={() => {
+                    setIsDeletePopoverOpen(true);
+                  }}
+                >
+                  <span className="training-exercise-card__action-text">
+                    Удалить упражнение
+                  </span>
+                </button>
+
+                <ConfirmDeletePopover
+                  anchorRef={deleteButtonRef}
+                  open={isDeletePopoverOpen}
+                  onConfirm={() => {
+                    onRemoveExercise?.(exerciseId);
+                    setIsDeletePopoverOpen(false);
+                  }}
+                  onCancel={() => {
+                    setIsDeletePopoverOpen(false);
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

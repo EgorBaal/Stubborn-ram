@@ -1230,21 +1230,9 @@ REPORT
 
 # 20. Training Templates
 
-В repository существует migration:
+В текущем репозитории отсутствует активная migration для шаблонов тренировок. Планируемые таблицы шаблонов будут созданы новой миграцией с новым уникальным идентификатором, когда функциональность будет фактически реализована.
 
-```text
-1788859125918_training_templates.js
-```
-
-Целевые таблицы:
-
-```text
-training_templates
-training_template_exercises
-training_template_sets
-```
-
-Однако эти таблицы отсутствуют в текущем Production snapshot.
+Текущие таблицы шаблонов в production не существуют.
 
 ## 20.1 Migration state
 

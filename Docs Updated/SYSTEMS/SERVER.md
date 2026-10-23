@@ -575,21 +575,7 @@ npm run migrate
 node-pg-migrate
 ```
 
-Repository migration chain включает:
-
-```text
-1788859125911_init.js
-1788859125912_sessions.js
-1788859125913_auth_tokens.js
-1788859125914_leads.js
-1788859125915_training.js
-1788859125916_seed_exercises.js
-1788859125917_auth_tokens_active_unique.js
-1788859125918_training_templates.js
-1788859125919_media.js
-1788859125920_media_status.js
-1788859125921_training_set_notes.js
-```
+Текущая repository migration chain включает актуальные миграции для backend-проектного state. Отложенная migration шаблонов была удалена из активного репозитория; будущая реализация шаблонов будет добавлена новой миграцией с новым идентификатором в момент реализации.
 
 На Production подтверждены migrations:
 
