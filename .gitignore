@@ -44,3 +44,6 @@ backend-files.txt
 project-tree-current.txt
 src-tree.txt
 PROJECT_TREE.md
+
+# Local database backups
+backups/
