@@ -11,6 +11,11 @@ import {
   saveSetMaterials,
 } from "../../services/trainingMaterialsService";
 import {
+  DEFAULT_TRACKED_PARAMETER_IDS,
+  TRACKED_PARAMETERS,
+  normalizeTrackedParameters,
+} from "../../constants/trackedParameters";
+import {
   deleteMedia,
   getMedia,
   uploadMediaFile,
@@ -54,6 +59,7 @@ export default function TrainingExerciseCard({
   initialExerciseName = "",
   initialExerciseComment = "",
   initialSets = [],
+  initialTrackedParameters = DEFAULT_TRACKED_PARAMETER_IDS,
   isSupersetActionSelected = false,
   isSupersetMember = false,
   isReadOnly = false,
@@ -90,11 +96,9 @@ export default function TrainingExerciseCard({
   const [isParametersPopoverOpen, setIsParametersPopoverOpen] = useState(false);
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = useState(false);
 
-  const [selectedParameters, setSelectedParameters] = useState([
-    "weight",
-    "repetitions",
-    "difficulty",
-  ]);
+  const [selectedParameters, setSelectedParameters] = useState(() =>
+    normalizeTrackedParameters(initialTrackedParameters),
+  );
 
   const parametersButtonRef = useRef(null);
   const deleteButtonRef = useRef(null);
@@ -155,8 +159,15 @@ export default function TrainingExerciseCard({
       exerciseName,
       exerciseComment,
       sets,
+      trackedParameters: selectedParameters,
     });
-  }, [selectedExerciseId, exerciseName, exerciseComment, sets]);
+  }, [
+    selectedExerciseId,
+    exerciseName,
+    exerciseComment,
+    sets,
+    selectedParameters,
+  ]);
 
   useEffect(() => {
     if (hasHydratedInitialDataRef.current) {
@@ -178,6 +189,7 @@ export default function TrainingExerciseCard({
     setSelectedExerciseId(initialExerciseId);
     setExerciseName(initialExerciseName);
     setExerciseComment(initialExerciseComment);
+    setSelectedParameters(normalizeTrackedParameters(initialTrackedParameters));
     setSets(
       initialSets.map((set) => ({
         ...set,
@@ -191,6 +203,7 @@ export default function TrainingExerciseCard({
     initialExerciseName,
     initialExerciseComment,
     initialSets,
+    initialTrackedParameters,
   ]);
 
   useEffect(() => {
@@ -1196,6 +1209,10 @@ export default function TrainingExerciseCard({
       setIsSavingMaterials(false);
     }
   };
+  const parameterLabels = Object.fromEntries(
+    TRACKED_PARAMETERS.map((parameter) => [parameter.id, parameter.label]),
+  );
+
   return (
     <article
       className={`training-exercise-card${
@@ -1495,19 +1512,6 @@ export default function TrainingExerciseCard({
                           </div>
                         );
                       }
-
-                      const parameterLabels = {
-                        weight: "Вес",
-                        repetitions: "Повторения",
-                        distance: "Расстояние",
-                        calories: "Калории",
-                        speed: "Скорость",
-                        power: "Мощность",
-                        incline: "Наклон",
-                        time: "Время",
-                        rir: "RIR",
-                        rpe: "RPE",
-                      };
 
                       return (
                         <div

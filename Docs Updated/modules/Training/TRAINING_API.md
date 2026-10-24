@@ -165,8 +165,11 @@ exerciseId
 position
 exerciseComment
 supersetAfter
+trackedParameters[]
 sets[]
 ```
+
+`trackedParameters` is the exercise-level UI configuration used by `WorkoutExercise` and stored as `tracked_parameters` in PostgreSQL when the migration is applied. It is independent from `WorkoutSet` values and does not affect `intensityMethods`.
 
 Set payload contains supported performance fields and intensity methods.
 
@@ -310,7 +313,7 @@ Materials access/update is checked through the set → workout ownership relatio
 Current backend style includes:
 
 ```text
-400 INVALID_* 
+400 INVALID_*
 401 UNAUTHENTICATED
 404 WORKOUT_NOT_FOUND
 404 SET_NOT_FOUND

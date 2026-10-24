@@ -10,6 +10,10 @@ import {
   startWorkout,
   updateWorkout,
 } from "../services/trainingService";
+import {
+  DEFAULT_TRACKED_PARAMETER_IDS,
+  normalizeTrackedParameters,
+} from "../constants/trackedParameters";
 
 export default function TrainingPage() {
   const navigate = useNavigate();
@@ -98,6 +102,9 @@ export default function TrainingPage() {
         exerciseId: exercise.exercise_id,
         exerciseName: exercise.exercises?.name || "",
         exerciseComment: exercise.exercise_comment || "",
+        trackedParameters: normalizeTrackedParameters(
+          exercise.tracked_parameters ?? exercise.trackedParameters,
+        ),
         supersetAfter: Boolean(exercise.superset_after),
         sets: [...(exercise.workout_sets || [])]
           .sort((a, b) => a.position - b.position)
@@ -322,6 +329,7 @@ export default function TrainingPage() {
         exerciseId: null,
         exerciseName: "",
         exerciseComment: "",
+        trackedParameters: [...DEFAULT_TRACKED_PARAMETER_IDS],
         sets: [],
         supersetAfter: false,
       },
@@ -339,6 +347,8 @@ export default function TrainingPage() {
               exerciseId: data.exerciseId,
               exerciseName: data.exerciseName,
               exerciseComment: data.exerciseComment,
+              trackedParameters:
+                data.trackedParameters ?? item.trackedParameters,
               sets: data.sets,
             }
           : item,
@@ -593,6 +603,7 @@ export default function TrainingPage() {
               initialExerciseName={exercise.exerciseName}
               initialExerciseComment={exercise.exerciseComment}
               initialSets={exercise.sets}
+              initialTrackedParameters={exercise.trackedParameters}
               isSupersetActionSelected={exercise.supersetAfter}
               isSupersetMember={isSupersetMember}
               onToggleSuperset={handleToggleSuperset}

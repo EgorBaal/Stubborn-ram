@@ -1,4 +1,5 @@
 import { request } from "../../../shared/lib/apiClient";
+import { normalizeTrackedParameters } from "../constants/trackedParameters";
 
 function formatDateForDatabase(date) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
@@ -79,7 +80,7 @@ export async function startWorkout({
 
 export async function createWorkoutExercise(
   workoutId,
-  { exerciseId, exerciseComment, supersetAfter },
+  { exerciseId, exerciseComment, supersetAfter, trackedParameters },
 ) {
   if (!workoutId) {
     throw new Error("Не указан ID тренировки.");
@@ -93,6 +94,7 @@ export async function createWorkoutExercise(
         exerciseId,
         exerciseComment: exerciseComment?.trim() || null,
         supersetAfter: Boolean(supersetAfter),
+        trackedParameters: normalizeTrackedParameters(trackedParameters),
       }),
     },
   );
@@ -493,6 +495,9 @@ export async function updateWorkout({
         exerciseId: exercise.exerciseId,
         position: exercise.position,
         exerciseComment: exercise.exerciseComment?.trim() || null,
+        trackedParameters: normalizeTrackedParameters(
+          exercise.trackedParameters ?? exercise.tracked_parameters,
+        ),
         supersetAfter: Boolean(exercise.supersetAfter),
         sets: (exercise.sets || []).map((set, index) => ({
           id: set.id,

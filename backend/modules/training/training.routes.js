@@ -1,5 +1,55 @@
 import { getAuthenticatedUser } from "../auth/auth.session.js";
 
+const defaultTrackedParameters = ["weight", "repetitions", "difficulty"];
+const supportedTrackedParameterIds = new Set([
+  "weight",
+  "repetitions",
+  "difficulty",
+  "distance",
+  "calories",
+  "speed",
+  "power",
+  "incline",
+  "time",
+  "rir",
+  "rpe",
+]);
+
+function normalizeTrackedParameters(value) {
+  if (Array.isArray(value)) {
+    const next = [];
+
+    for (const parameterId of value) {
+      if (
+        typeof parameterId === "string" &&
+        supportedTrackedParameterIds.has(parameterId) &&
+        !next.includes(parameterId)
+      ) {
+        next.push(parameterId);
+      }
+    }
+
+    return next;
+  }
+
+  return [...defaultTrackedParameters];
+}
+
+async function workoutExerciseTrackedParametersEnabled(app) {
+  const result = await app.pg.query(
+    `
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'workout_exercises'
+        AND column_name = 'tracked_parameters'
+      LIMIT 1
+    `,
+  );
+
+  return result.rowCount > 0;
+}
+
 export default async function trainingRoutes(app) {
   app.get("/api/training/exercises", async (request, reply) => {
     const authUser = await getAuthenticatedUser(app.pg, request);
@@ -402,6 +452,8 @@ FROM workouts
     }
 
     const workout = workoutResult.rows[0];
+    const trackedParametersEnabled =
+      await workoutExerciseTrackedParametersEnabled(app);
 
     const exercisesResult = await app.pg.query(
       `
@@ -412,6 +464,7 @@ FROM workouts
           we.position,
           we.exercise_comment,
           we.superset_after,
+          ${trackedParametersEnabled ? "we.tracked_parameters" : "NULL::jsonb AS tracked_parameters"},
           e.name,
           e.category
         FROM workout_exercises we
@@ -484,6 +537,11 @@ FROM workouts
         position: exercise.position,
         exercise_comment: exercise.exercise_comment,
         superset_after: exercise.superset_after,
+        tracked_parameters: Array.isArray(exercise.tracked_parameters)
+          ? exercise.tracked_parameters
+          : exercise.tracked_parameters
+            ? JSON.parse(exercise.tracked_parameters)
+            : [...defaultTrackedParameters],
         exercises: {
           id: exercise.exercise_id,
           name: exercise.name,
@@ -993,7 +1051,8 @@ FROM workouts
       });
     }
 
-    const { exerciseId, exerciseComment, supersetAfter } = request.body ?? {};
+    const { exerciseId, exerciseComment, supersetAfter, trackedParameters } =
+      request.body ?? {};
 
     if (!exerciseId) {
       return reply.code(400).send({
@@ -1047,8 +1106,25 @@ FROM workouts
       [id],
     );
 
-    const workoutExerciseResult = await app.pg.query(
+    const normalizedTrackedParameters =
+      normalizeTrackedParameters(trackedParameters);
+
+    const trackedParametersEnabled =
+      await workoutExerciseTrackedParametersEnabled(app);
+    const workoutExerciseQuery = trackedParametersEnabled
+      ? `
+        INSERT INTO workout_exercises (
+          workout_id,
+          exercise_id,
+          position,
+          exercise_comment,
+          superset_after,
+          tracked_parameters
+        )
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id, position
       `
+      : `
         INSERT INTO workout_exercises (
           workout_id,
           exercise_id,
@@ -1058,16 +1134,32 @@ FROM workouts
         )
         VALUES ($1, $2, $3, $4, $5)
         RETURNING id, position
-      `,
-      [
-        id,
-        exerciseId,
-        Number(positionResult.rows[0].next_position),
-        typeof exerciseComment === "string"
-          ? exerciseComment.trim() || null
-          : null,
-        Boolean(supersetAfter),
-      ],
+      `;
+
+    const workoutExerciseArgs = trackedParametersEnabled
+      ? [
+          id,
+          exerciseId,
+          Number(positionResult.rows[0].next_position),
+          typeof exerciseComment === "string"
+            ? exerciseComment.trim() || null
+            : null,
+          Boolean(supersetAfter),
+          JSON.stringify(normalizedTrackedParameters),
+        ]
+      : [
+          id,
+          exerciseId,
+          Number(positionResult.rows[0].next_position),
+          typeof exerciseComment === "string"
+            ? exerciseComment.trim() || null
+            : null,
+          Boolean(supersetAfter),
+        ];
+
+    const workoutExerciseResult = await app.pg.query(
+      workoutExerciseQuery,
+      workoutExerciseArgs,
     );
 
     return reply.code(201).send({
@@ -1321,29 +1413,75 @@ FROM workouts
         if (exerciseId && existingExerciseIds.has(exerciseId)) {
           incomingExerciseIds.add(exerciseId);
 
-          await client.query(
-            `
-              UPDATE workout_exercises
-              SET
-                exercise_id = $1,
-                position = $2,
-                exercise_comment = $3,
-                superset_after = $4
-              WHERE id = $5
-                AND workout_id = $6
-            `,
-            [
-              exercise.exerciseId,
-              exercise.position,
-              exercise.exerciseComment?.trim() || null,
-              Boolean(exercise.supersetAfter),
-              exerciseId,
-              id,
-            ],
-          );
+          const trackedParametersEnabled =
+            await workoutExerciseTrackedParametersEnabled(app);
+
+          if (trackedParametersEnabled) {
+            await client.query(
+              `
+                UPDATE workout_exercises
+                SET
+                  exercise_id = $1,
+                  position = $2,
+                  exercise_comment = $3,
+                  superset_after = $4,
+                  tracked_parameters = $5
+                WHERE id = $6
+                  AND workout_id = $7
+              `,
+              [
+                exercise.exerciseId,
+                exercise.position,
+                exercise.exerciseComment?.trim() || null,
+                Boolean(exercise.supersetAfter),
+                JSON.stringify(
+                  normalizeTrackedParameters(
+                    exercise.trackedParameters ?? exercise.tracked_parameters,
+                  ),
+                ),
+                exerciseId,
+                id,
+              ],
+            );
+          } else {
+            await client.query(
+              `
+                UPDATE workout_exercises
+                SET
+                  exercise_id = $1,
+                  position = $2,
+                  exercise_comment = $3,
+                  superset_after = $4
+                WHERE id = $5
+                  AND workout_id = $6
+              `,
+              [
+                exercise.exerciseId,
+                exercise.position,
+                exercise.exerciseComment?.trim() || null,
+                Boolean(exercise.supersetAfter),
+                exerciseId,
+                id,
+              ],
+            );
+          }
         } else {
-          const workoutExerciseResult = await client.query(
+          const trackedParametersEnabled =
+            await workoutExerciseTrackedParametersEnabled(app);
+          const workoutExerciseQuery = trackedParametersEnabled
+            ? `
+              INSERT INTO workout_exercises (
+                workout_id,
+                exercise_id,
+                position,
+                exercise_comment,
+                superset_after,
+                tracked_parameters
+              )
+              VALUES ($1, $2, $3, $4, $5, $6)
+              RETURNING id
             `
+            : `
               INSERT INTO workout_exercises (
                 workout_id,
                 exercise_id,
@@ -1353,14 +1491,32 @@ FROM workouts
               )
               VALUES ($1, $2, $3, $4, $5)
               RETURNING id
-            `,
-            [
-              id,
-              exercise.exerciseId,
-              exercise.position,
-              exercise.exerciseComment?.trim() || null,
-              Boolean(exercise.supersetAfter),
-            ],
+            `;
+
+          const workoutExerciseArgs = trackedParametersEnabled
+            ? [
+                id,
+                exercise.exerciseId,
+                exercise.position,
+                exercise.exerciseComment?.trim() || null,
+                Boolean(exercise.supersetAfter),
+                JSON.stringify(
+                  normalizeTrackedParameters(
+                    exercise.trackedParameters ?? exercise.tracked_parameters,
+                  ),
+                ),
+              ]
+            : [
+                id,
+                exercise.exerciseId,
+                exercise.position,
+                exercise.exerciseComment?.trim() || null,
+                Boolean(exercise.supersetAfter),
+              ];
+
+          const workoutExerciseResult = await client.query(
+            workoutExerciseQuery,
+            workoutExerciseArgs,
           );
 
           exercise.id = workoutExerciseResult.rows[0].id;
